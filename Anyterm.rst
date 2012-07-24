@@ -1,8 +1,13 @@
-========================================================
-anytermを利用してWebブラウザからターミナルにアクセスする
-========================================================
+=========================================
+プロキシサーバごしにsshでアクセスする方法
+=========================================
+
 
 Amazon Linux AMI 2012.03から起動したEC2インスタンスで試した。
+
+
+anytermを利用してWebブラウザからターミナルにアクセスする
+========================================================
 
 必要なパッケージのインストール。
 開発環境、boost、httpdとmod_sslが必要。::
@@ -75,3 +80,31 @@ https://ec2-xxx-xx-xxx-xxx.ap-northeast-1.compute.amazonaws.com/anyterm
 
 microインスタンスで試したこともあって、mod_ssl経由になるとターミナルがややもっさりする感じがした。
 corkscrewが使える環境であれば、そちらを使った方が便利だと思われる。
+
+
+corkscrewを利用してsshコマンドでアクセスする
+============================================
+
+corkscrewはクライアント側だけで対応できる。
+プロキシサーバの設定次第では利用できない。
+
+まずビルドしてインストール。::
+
+  $ tar zxf corkscrew-2.0.tar.gz
+  $ cd corkscrew-2.0
+  $ ./configure
+  $ make
+  $ sudo make install
+
+使うときはsshのProxyCommandオプションで指定。::
+
+  $ ssh -i .ssh/hoge.pem \
+        -o 'ProxyCommand corkscrew proxy.example.com 8080 %h %p' \
+        ec2-user@ec2-xx-xxx-xx-xxx.ap-northeast-1.compute.amazonaws.com
+
+設定を.ssh/configに書いておくと、毎回コマンドラインで指定しなくても済む。
+(Hostは、そこから次のHostが出てくるまでの設定の対象を絞るための指定。)::
+
+  $ cat ~/.ssh/config
+  Host *.amazonaws.com
+  ProxyCommand corkscrew proxy.example.com 8080 %h %p
