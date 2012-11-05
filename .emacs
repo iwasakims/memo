@@ -2,6 +2,10 @@
 (global-font-lock-mode t)
 (transient-mark-mode t)
 
+(load "term/bobcat")
+(when (fboundp 'terminal-init-bobcat)
+  (terminal-init-bobcat))
+
 (setq c-default-style '((java-mode . "gnu")))
 (setq-default indent-tabs-mode nil)
 
