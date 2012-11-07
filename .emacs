@@ -1,13 +1,14 @@
 (setq load-path (cons "~" load-path))
 (global-font-lock-mode t)
 (transient-mark-mode t)
+(setq ls-lisp-dirs-first t)
+(setq-default indent-tabs-mode nil)
 
 (load "term/bobcat")
 (when (fboundp 'terminal-init-bobcat)
   (terminal-init-bobcat))
 
 (setq c-default-style '((java-mode . "gnu")))
-(setq-default indent-tabs-mode nil)
 
 ;(setq load-path (cons "/usr/local/src/ruby-1.8.7-p352/misc" load-path))
 ;(autoload 'rubydb "rubydb3x" "" t)
@@ -19,6 +20,7 @@
 
 (setq load-path (cons "/usr/local/share/gtags" load-path))
 (setq gtags-suggested-key-mapping t)
+(setq gtags-path-style 'relative)
 (when (locate-library "gtags") (require 'gtags))
 (add-hook 'c-mode-hook '(lambda () (gtags-mode 1)))
 (add-hook 'c++-mode-hook '(lambda () (gtags-mode 1)))
