@@ -10,13 +10,17 @@
 
 (setq c-default-style '((java-mode . "gnu")))
 
-;(setq load-path (cons "/usr/local/src/ruby-1.8.7-p352/misc" load-path))
-;(autoload 'rubydb "rubydb3x" "" t)
+(setq load-path (cons "/usr/local/src/ruby-1.8.7-p352/misc" load-path))
+(autoload 'rubydb "rubydb3x" "" t)
 
-;(require 'clojure-mode)
+(setq load-path (cons "/usr/local/src/clojure-mode" load-path))
+(require 'clojure-mode)
 ;(require 'paredit)
 ;(add-hook 'clojure-mode-hook '(lambda () (paredit-mode 1)))
 ;(add-hook 'clojure-mode-hook '(lambda () (gtags-mode 1)))
+
+(setq load-path (cons "/usr/local/src/scala-tool-support-2.10.0/scala-emacs-mode" load-path))
+(require 'scala-mode-auto)
 
 (setq load-path (cons "/usr/local/share/gtags" load-path))
 (setq gtags-suggested-key-mapping t)
