@@ -90,12 +90,47 @@ Maven
         <protocol>http</protocol>
         <host>proxy.example.com</host>
         <port>8080</port>
-        <username>ユーザ名</username>
-        <password>パスワード</password>
+        <username>username</username>
+        <password>password</password>
         <nonProxyHosts>127.0.0.1|*.example.com</nonProxyHosts>
       </proxy>
     </proxies>
   </settings>
+
+
+leiningen
+---------
+
+version 1はMaven依存で、たぶん~/.m2/settings.xmlで指定。::
+
+  <?xml version="1.0" encoding="UTF-8"?>
+  <settings>
+    <proxies>
+      <proxy>
+        <id>My Proxy</id>
+        <active />
+        <protocol>http</protocol>
+        <host>proxy.example.com</host>
+        <port>8080</port>
+        <username>username</username>
+        <password>password</password>
+        <nonProxyHosts>127.0.0.1|*.example.com</nonProxyHosts>
+      </proxy>
+    </proxies>
+  </settings>
+
+version 2系は環境変数方式::
+
+  http_proxy=http://username:password@proxy:port
+
+
+sbt
+---
+
+javaのシステムプロパティ経由で指定する。::
+
+  $ SBT_OPTS="-Dhttp.proxyHost=proxy.example.com -Dhttp.proxyPort=8080 -Dhttp.proxyUser=username -Dhttp.proxyPassword=password" \
+      sbt clean update package-dist
 
 
 easy_install
