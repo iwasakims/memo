@@ -36,3 +36,4 @@
 (add-hook 'java-mode-hook '(lambda () (gtags-mode 1)))
 (add-hook 'ruby-mode-hook '(lambda () (gtags-mode 1)))
 (add-hook 'clojure-mode-hook '(lambda () (gtags-mode 1)))
+(add-hook 'erlang-mode-hook '(lambda () (gtags-mode 1)))
