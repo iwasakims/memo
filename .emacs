@@ -17,7 +17,7 @@
 ;(require 'paredit)
 ;(add-hook 'clojure-mode-hook '(lambda () (paredit-mode 1)))
 (add-hook 'clojure-mode-hook
-          '(lambda () (setq gtags-symbol-regexp "[A-Za-z_][A-Za-z_0-9\-]*")))
+          '(lambda () (setq gtags-symbol-regexp "[A-Za-z_][A-Za-z_0-9\-\!\?]*")))
 
 (setq load-path (cons "/usr/local/src/scala-tool-support-2.10.0/scala-emacs-mode" load-path))
 (require 'scala-mode-auto)
