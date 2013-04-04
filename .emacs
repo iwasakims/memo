@@ -1,6 +1,7 @@
 (setq load-path (cons "~" load-path))
 (global-font-lock-mode t)
 (transient-mark-mode t)
+(setq frame-background-mode 'dark)
 (setq ls-lisp-dirs-first t)
 (setq-default indent-tabs-mode nil)
 (setq c-default-style '((java-mode . "gnu")))
