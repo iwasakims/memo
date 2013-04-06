@@ -1,0 +1,121 @@
+*RabbitMQの挙動の調べかた
+Erlangのお勉強も兼ねて。
+
+まず、Erlangをインストールする。
+>||
+$ sudo apt-get install erlang
+||<
+ソースコードを読むとき用の仕込みとして、.emascに以下のような記述を追加する。
+>|lisp|
+(setq load-path (cons "/usr/lib/erlang/lib/tools-2.6.7/emacs " load-path))
+(setq erlang-root-dir "/usr/lib/erlang")
+(require 'erlang-start)
+(add-hook 'erlang-mode-hook '(lambda () (gtags-mode 1)))
+||<
+rabbitmq-serverのビルドはドキュメントにあるとおりにやればできた。
+>||
+$ hg clone http://hg.rabbitmq.com/rabbitmq-codegen
+$ hg clone http://hg.rabbitmq.com/rabbitmq-server
+$ cd rabbitmq-server
+$ make
+||<
+exuberant-ctagsがErlangに対応していたので、ソース読み用にそれを利用する。
+>||
+$ gtags --gtagslabel=exuberant-ctags
+||<
+
+makeのrunターゲットを実行すると、serverが起動する。データファイルやログは/tmp下に出力される。
+>||
+$ make run
+||<
+起動したerlang shellで関数を実行することで、状態を確認できる。
+>||
+1> regs().
+...(省略)
+rabbit                <0.103.0>    application_master:start_        45055    0
+rabbit_alarm          <0.146.0>    gen_event:init_it/6                704    0
+rabbit_alarm_sup      <0.145.0>    supervisor:rabbit_restart           99    0
+rabbit_amqqueue_sup   <0.188.0>    supervisor2:init/1                  98    0
+rabbit_direct_client_ <0.200.0>    supervisor2:init/1                  54    0
+rabbit_disk_monitor   <0.150.0>    rabbit_disk_monitor:init/      2734286    0
+rabbit_disk_monitor_s <0.149.0>    supervisor:rabbit_restart           99    0
+rabbit_event          <0.142.0>    gen_event:init_it/6                609    0
+rabbit_event_sup      <0.141.0>    supervisor:rabbit_restart           99    0
+rabbit_guid           <0.174.0>    rabbit_guid:init/1                 110    0
+rabbit_guid_sup       <0.173.0>    supervisor:rabbit_restart         1002    0
+rabbit_log            <0.144.0>    rabbit_log:init/1                  851    0
+...(省略)
+||<
+トレースのためのモジュールを呼び出してみる。dbg:tpはトレース対象の指定で、モジュール、関数、アリティ、引数、返り値などのパターンを、[http://erlang.org/doc/apps/erts/match_spec.html:title=match_spec]にしたがって指定できる。また、dbg:pはどのプロセスをトレース対象とするかの指定で、allだと全部。詳細は[http://www.erlang.org/doc/man/dbg.html#p-1:title=dbgのドキュメント]で確認できる。
+>||
+1> dbg:start().
+{ok,<0.206.0>}
+
+2> Tracer = dbg:tracer().
+{ok,<0.206.0>}
+
+3> Tracer.
+{ok,<0.206.0>}
+
+4> dbg:tp(rabbit_variable_queue, '_', []).
+{ok,[{matched,rabbit@x121e,36}]}
+
+5> dbg:p(all, c).
+||<
+
+トレースを仕掛けた状態で、別コンソールからチュートリアルをダウンロードして実行してみる。
+>||
+$ cd ~/srcs
+$ git clone https://github.com/rabbitmq/rabbitmq-tutorials.git
+$ cd rabbitmq-tutorials/erlang/
+$ wget http://www.rabbitmq.com/releases/rabbitmq-erlang-client/v3.0.4/rabbit_common-3.0.4.ez
+$ unzip rabbit_common-3.0.4.ez
+$ ln -s rabbit_common-3.0.4 rabbit_common
+$ wget http://www.rabbitmq.com/releases/rabbitmq-erlang-client/v3.0.4/amqp_client-3.0.4.ez
+$ unzip amqp_client-3.0.4.ez
+$ ln -s amqp_client-3.0.4 amqp_client
+
+$ ./send.erl 
+ [x] Sent 'Hello World!'
+
+$ ./receive.erl 
+ [*] Waiting for messages. To exit press CTRL+C
+ [x] Received <<"Hello World!">>
+||<
+トレースを仕掛けた方のコンソールを見ると、トレースした結果がわらわらと出力されている。
+>||
+(<0.233.0>) call rabbit_variable_queue:init({amqqueue,{resource,<<"/">>,queue,<<"hello">>},
+          false,false,none,[],<0.233.0>,[],[],undefined,[]},false,#Fun<rabbit_amqqueue_process.5.115664289>)
+(<0.233.0>) call rabbit_variable_queue:drain_confirmed({vqstate,
+    {0,{[],[]}},
+    {0,{[],[]}},
+    {delta,undefined,0,undefined},
+    {0,{[],[]}},
+    {0,{[],[]}},
+    0,
+    {0,nil},
+    {0,nil},
+    {qistate,"/tmp/rabbitmq-rabbit-mnesia/queues/850UOO636QPB9FAFP10MQ2OM",
+        {{dict,0,16,16,8,80,48,
+             {[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]},
+             {{[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]}}},
+         []},
+        undefined,0,65536,#Fun<rabbit_variable_queue.2.87551502>,
+        {0,nil}},
+    {undefined,
+        {client_msstate,msg_store_transient,
+            <<239,174,50,42,106,128,27,95,229,82,194,50,42,156,133,246>>,
+            {dict,0,16,16,8,80,48,
+                {[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]},
+                {{[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]}}},
+            {state,200769,"/tmp/rabbitmq-rabbit-mnesia/msg_store_transient"},
+            rabbit_msg_store_ets_index,
+            "/tmp/rabbitmq-rabbit-mnesia/msg_store_transient",<0.180.0>,
+            204866,196665,208963,213060}},
+    false,0,0,0,infinity,0,0,0,0,0,
+||<
+
+トレースを止めて、設定した条件をクリアするためには以下を実行する。
+>||
+> dbg:stop_clear().
+||<
