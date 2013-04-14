@@ -15,6 +15,7 @@
 
 
 ;; C & Java
+(setq-default c-basic-offset 2)
 (setq c-default-style '((java-mode . "java")
                         (other . "gnu")))
 (add-hook 'c-mode-hook '(lambda () (gtags-mode 1)))
