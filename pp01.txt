@@ -1,0 +1,21 @@
+::
+
+ dd if=/dev/zero of=/home/iwasakims/vm/pp01.img bs=1M count=20480
+
+::
+
+ sudo virt-install \
+  --connect qemu:///system \
+  --accelerate \
+  --name=pp01 \
+  --vcpus=1 \
+  --ram=1024 \
+  --disk='path=/home/iwasakims/vm/pp01.img,bus=virtio' \
+  --network=network:default \
+  --keymap=ja \
+  --os-type=linux \
+  --os-variant=rhel6 \
+  --location='/home/iwasakims/Downloads/CentOS-6.4-x86_64-bin-DVD1.iso' \
+  --extra-args='console=tty0 console=ttyS0,115200n8' \
+  --nographics
+
