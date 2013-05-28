@@ -19,3 +19,23 @@
   --extra-args='console=tty0 console=ttyS0,115200n8' \
   --nographics
 
+
+::
+
+  sudo dd if=/dev/zero of=/home/iwasakims/vm/ma01.img bs=1M count=10240
+
+::
+
+ sudo virt-install \
+  --connect=qemu:///system \
+  --accelerate \
+  --name=ma01 \
+  --vcpus=1 \
+  --ram=1024 \
+  --disk=path=/home/iwasakims/vm/pp01.img,bus=virtio \
+  --network=network:one \
+  --keymap=ja \
+  --os-type=linux \
+  --os-variant=rhel6 \
+  --nographics \
+  --pxe
