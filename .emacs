@@ -64,3 +64,18 @@
       (append '(("\\.txt$" . rst-mode)
                 ("\\.rst$" . rst-mode))
               auto-mode-alist))
+
+
+;; Mac OS X
+;(create-fontset-from-ascii-font "Menlo-14:weight=normal:slant=normal"
+;                                nil
+;                                "menlokakugo")
+;(set-fontset-font "fontset-menlokakugo"
+;                  'unicode
+;                  (font-spec :family "Hiragino Kaku Gothic ProN" :size 16)
+;                  nil
+;                  'append)
+;(add-to-list 'default-frame-alist '(font . "fontset-menlokakugo"))
+;(add-to-list 'default-frame-alist '(width . 100))
+;(add-to-list 'default-frame-alist '(hight . 35))
+;(set-input-method "MacOSX")
