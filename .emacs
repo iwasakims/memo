@@ -12,6 +12,8 @@
 (setq gtags-suggested-key-mapping t)
 (setq gtags-path-style 'relative)
 (when (locate-library "gtags") (require 'gtags))
+(add-hook 'dired-mode-hook '(lambda () (gtags-mode 1)))
+(add-hook 'shell-script-mode-hook '(lambda () (gtags-mode 1)))
 
 
 ;; C & Java
@@ -48,6 +50,7 @@
 ;; Scala
 ;(setq load-path (cons "/usr/local/src/scala-tool-support-2.10.0/scala-emacs-mode" load-path))
 ;(require 'scala-mode-auto)
+;(add-hook 'scala-mode-hook '(lambda () (gtags-mode 1)))
 
 
 ;; Erlang
@@ -55,7 +58,6 @@
 (setq erlang-root-dir "/usr/lib/erlang")
 (require 'erlang-start)
 (add-hook 'erlang-mode-hook '(lambda () (gtags-mode 1)))
-
 
 ;; reStructuredText
 ;(require rst)
