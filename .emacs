@@ -3,6 +3,7 @@
 (transient-mark-mode t)
 (setq ls-lisp-dirs-first t)
 (setq-default indent-tabs-mode nil)
+(setq-default column-number-mode t)
 (setq use-dialog-box nil)
 ;(when (fboundp 'terminal-init-bobcat)
 ;  (terminal-init-bobcat))
