@@ -19,9 +19,7 @@
 # * limitations under the License.
 # */
 # This is used for starting multiple masters on the same machine.
-# run it from hbase-dir/ just like 'bin/hbase'
-# Supports up to 10 masters (limitation = overlapping ports)
-set -x
+# run it from HADOOP_HOME just like 'bin/yarn'
 
 bin=`dirname "${BASH_SOURCE-$0}"`
 bin=`cd "$bin" >/dev/null && pwd`
@@ -50,11 +48,11 @@ run_master () {
     -Dyarn.resourcemanager.ha.automatic-failover.enabled=false \
     -Dyarn.resourcemanager.cluster-id=cl1 \
     -Dyarn.resourcemanager.ha.id=${RMID} \
-    -Dyarn.resourcemanager.webapp.address.${RMID}=$ADDRESS:`expr 8088 + $OFFSET` \
     -Dyarn.resourcemanager.scheduler.address.${RMID}=$ADDRESS:`expr 8030 + $OFFSET` \
     -Dyarn.resourcemanager.resource-tracker.address.${RMID}=$ADDRESS:`expr 8031 + $OFFSET` \
     -Dyarn.resourcemanager.address.${RMID}=$ADDRESS:`expr 8032 + $OFFSET` \
-    -Dyarn.resourcemanager.admin.address.${RMID}=$ADDRESS:`expr 8033 + $OFFSET` "
+    -Dyarn.resourcemanager.admin.address.${RMID}=$ADDRESS:`expr 8033 + $OFFSET` \
+    -Dyarn.resourcemanager.webapp.address.${RMID}=$ADDRESS:`expr 8088 + $OFFSET` "
   "$bin"/yarn-daemon.sh --config "${YARN_CONF_DIR}" \
     "${COMMAND}" resourcemanager ${YARN_RESOURCEMANAGER_ARGS}
 }
@@ -69,7 +67,7 @@ do
   RMID=rm${i}
   RM_IDS="${RM_IDS},${RMID}"
   RM_HOSTS="${RM_HOSTS} -Dyarn.resourcemanager.hostname.${RMID}=`hostname`"
-done 
+done
 RM_IDS="-Dyarn.resourcemanager.ha.rm-ids=${RM_IDS:1}"
 
 for i in $*
