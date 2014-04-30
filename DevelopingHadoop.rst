@@ -20,7 +20,7 @@ protobuf、maven、findbugsは別途手動でインストール。::
 jdbによるJavaプログラムのデバッグ
 ---------------------------------
 
-どうみてもEclipseの方が便利だが、とりあえずCUIだけの環境用で調べる用に。
+どうみてもEclipseの方が便利だが、とりあえずCUIだけの環境で調べるために。
 Emacsと組み合わせると意外といける。
 
 - デバッギのJVMオプション。::
@@ -30,8 +30,7 @@ Emacsと組み合わせると意外といける。
 - jdbのコマンドラインを入力。
   ``-sourcepath`` オプションと値の間に空白を入れてはいけない。::
 
-    $ jdb -attach localhost:8765 \
-          -sourcepath~/srcs/hadoop-common/hadoop-common-project/hadoop-common/src/main/java:~/srcs/hadoop-common/hadoop-hdfs-project/hadoop-hdfs/src/main/java
+    jdb -attach localhost:8765 -sourcepath~/srcs/hadoop-common/hadoop-common-project/hadoop-common/src/main/java:~/srcs/hadoop-common/hadoop-hdfs-project/hadoop-hdfs/src/main/java
 
 - Emacsを使う場合、 ``M-x jdb`` を押した後、上記のコマンドラインを入力。
 
