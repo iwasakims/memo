@@ -1,3 +1,17 @@
+リンク
+-----
+
+- Mailing listの過去ログなどを横断的に検索できる便利サイト。
+  http://www.search-hadoop.com/
+
+- JIRAが落ちている?というときにみてみるとよい。
+  http://monitoring.apache.org/status/
+
+- Apacheプロジェクトでのvotingについて
+  http://www.apache.org/foundation/voting.html
+
+
+
 ビルド環境
 ----------
 
@@ -42,6 +56,11 @@ hadoop-distから実行できるようにpackage::
 
   mvn package -Pdist -Pnative -DskipTests -DskipITs
 
+dist環境は ``mvn clean`` したら消えてしまうので、
+とりあえず適当な場所に移動して利用するとよい。::
+
+  mv ~/srcs/hadoop-common/hadoop-dist/target/hadoop-3.0.0-SNAPSHOT ~/dist/
+
 siteドキュメントのビルド。各サブプロジェクトのディレクトリ内でも同様。::
 
   mvn site site:stage -DstagingDirectory=/var/www/html/hadoop-site
@@ -54,7 +73,7 @@ HBaseビルド時のHadoopのバージョン指定方法。::
 たまに使う
 ----------
 
-- dist環境のjarを主導で置き換え。::
+- dist環境のjarを手動で置き換え。::
 
     mvn package -DskipTests
     cp ~/srcs/hadoop-common/hadoop-common-project/hadoop-common/target/hadoop-common-3.0.0-SNAPSHOT.jar \
@@ -69,4 +88,37 @@ HBaseビルド時のHadoopのバージョン指定方法。::
 
     rm ~/.m2/repository/org/apache/hadoop/hadoop-{project,common,hdfs}/3.0.0-SNAPSHOT/*
     rm ~/.m2/repository/org/apache/hadoop/hadoop-*/3.0.0-SNAPSHOT/*
+
+
+メモ
+----
+
+- 開発中にコマンドを実行するときは ``--config path/to/confdir`` オプションで、
+  confディレクトリを指定すると便利。::
+
+    bin/hdfs --config ~/etc/hadoop.rmha dfs -ls /
+
+- ただしstart-dfs.shやstart-yarn.shは ``--config`` オプションを受け付けないので、
+  環境変数で指定。::
+
+    HADOOP_CONF_DIR=~/etc/hadoop.rmha sbin/start-dfs.sh 
+
+- zookeeper-3.4.6はCLIに互換性を壊す変更が入ったので、HBaseで問題がある。
+  3.4.7で修正が入る。
+
+- yarn-site.xmlやmapred-site.xmlの内容は、NameNodeやDataNodeにもロードされてしまう。
+  org.apache.hadoop.util.ReflectionUtils.setConfが呼ばれると、
+  JobConfが無条件にロードされることが原因。
+  HADOOP-1230によると、coreがmapredにconpile時に依存しないようにするため、
+  こうなっているらしい。
+  (JobConf初期化時に呼ばれるConfigUtil#loadResourcesメソッドが、
+  ConfigurationにstaticにYARN/MapReduceの設定ファイルを読み込む。)::
+    
+      public static void loadResources() {
+        addDeprecatedKeys();
+        Configuration.addDefaultResource("mapred-default.xml");
+        Configuration.addDefaultResource("mapred-site.xml");
+        Configuration.addDefaultResource("yarn-default.xml");
+        Configuration.addDefaultResource("yarn-site.xml");
+      }
 
