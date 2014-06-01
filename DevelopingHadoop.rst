@@ -157,10 +157,11 @@ HBase Reference Manualのビルド。事前に一度siteをビルドして、Jav
   ただし、getDataで返ってくるバイト列は後ろの方にゴミが入っている。
   正しいデータが入っているのは長さgetLengthまで。::
 
-  public class DataOutputBuffer extends DataOutputStream {
-  
-    private static class Buffer extends ByteArrayOutputStream {
-      public byte[] getData() { return buf; }
+    public class DataOutputBuffer extends DataOutputStream {
+    
+      private static class Buffer extends ByteArrayOutputStream {
+        public byte[] getData() { return buf; }
+
 
 - KeyValueはCellというインタフェースの実装になった。
   Cellが提供するメソッドが推奨され、古いKeyValueのメソッドはdeprecatedに。
