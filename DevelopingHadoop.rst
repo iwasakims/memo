@@ -1,3 +1,6 @@
+misc
+====
+
 リンク
 -----
 
@@ -9,7 +12,6 @@
 
 - Apacheプロジェクトでのvotingについて
   http://www.apache.org/foundation/voting.html
-
 
 
 ビルド環境
@@ -48,6 +50,11 @@ Emacsと組み合わせると意外といける。
 
 - Emacsを使う場合、 ``M-x jdb`` を押した後、上記のコマンドラインを入力。
 
+- yarnも含めた場合。::
+
+    jdb -attach localhost:8765 -sourcepath~/srcs/hadoop-common/hadoop-common-project/hadoop-common/src/main/java:~/srcs/hadoop-common/hadoop-hdfs-project/hadoop-hdfs/src/main/java:~/srcs/hadoop-common/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java
+
+
 
 ビルドオプション
 ----------------
@@ -61,13 +68,18 @@ dist環境は ``mvn clean`` したら消えてしまうので、
 
   mv ~/srcs/hadoop-common/hadoop-dist/target/hadoop-3.0.0-SNAPSHOT ~/dist/
 
-siteドキュメントのビルド。各サブプロジェクトのディレクトリ内でも同様。::
+hadoopのsiteドキュメントのビルド。各サブプロジェクトのディレクトリ内でも同様。::
 
   mvn site site:stage -DstagingDirectory=/var/www/html/hadoop-site
 
 HBaseビルド時のHadoopのバージョン指定方法。::
 
   mvn package -Phadoop-2.0 -Dhadoop-two.version=2.5.0-SNAPSHOT -DskipTests
+
+HBase Reference Manualのビルド。事前に一度siteをビルドして、Javadocを生成する必要がある。::
+
+  mvn site
+  mvn docbkx:generate-html
 
 
 たまに使う
@@ -91,7 +103,10 @@ HBaseビルド時のHadoopのバージョン指定方法。::
 
 
 メモ
-----
+====
+
+シェルスクリプト
+----------------
 
 - 開発中にコマンドを実行するときは ``--config path/to/confdir`` オプションで、
   confディレクトリを指定すると便利。::
@@ -102,9 +117,6 @@ HBaseビルド時のHadoopのバージョン指定方法。::
   環境変数で指定。::
 
     HADOOP_CONF_DIR=~/etc/hadoop.rmha sbin/start-dfs.sh 
-
-- zookeeper-3.4.6はCLIに互換性を壊す変更が入ったので、HBaseで問題がある。
-  3.4.7で修正が入る。
 
 - yarn-site.xmlやmapred-site.xmlの内容は、NameNodeやDataNodeにもロードされてしまう。
   org.apache.hadoop.util.ReflectionUtils.setConfが呼ばれると、
@@ -121,4 +133,36 @@ HBaseビルド時のHadoopのバージョン指定方法。::
         Configuration.addDefaultResource("yarn-default.xml");
         Configuration.addDefaultResource("yarn-site.xml");
       }
+
+バージョン
+----------
+
+- zookeeper-3.4.6はCLIに互換性を壊す変更が入ったので、HBaseで問題がある。
+  3.4.7で修正が入る。
+
+
+バイト列の操作
+--------------
+
+- Writableからbyte[]を取り出すために
+  org.apache.hadoop.hbase.util.Writablesというユーティリティが用意されている。
+  そこで使われているorg.apache.hadoop.io.WritableUtilsの中身をみると、
+  オブジェクトを複数まとめて一つのバイト列にする場合の
+  ByteArrayOutputBuffeの使い方として参考になる。
+
+- WritableUtilsはorg.apache.hadoop.io.DataOutputBufferという独自定義のDataOutputを利用している。
+  その内部で利用しているBufferはByteArrayOutputStreamの拡張で、
+  バッファを毎回確保しなおさず、サイズを倍々で増やしていくようにすると同時に、
+  byte[]をコピーせずに返せるようにそのまま返せるようになっている。
+  ただし、getDataで返ってくるバイト列は後ろの方にゴミが入っている。
+  正しいデータが入っているのは長さgetLengthまで。::
+
+  public class DataOutputBuffer extends DataOutputStream {
+  
+    private static class Buffer extends ByteArrayOutputStream {
+      public byte[] getData() { return buf; }
+
+- KeyValueはCellというインタフェースの実装になった。
+  Cellが提供するメソッドが推奨され、古いKeyValueのメソッドはdeprecatedに。
+
 
