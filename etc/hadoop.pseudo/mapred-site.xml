@@ -26,6 +26,10 @@
    <value>yarn</value>
  </property>
  <property>
+  <name>mapred.child.java.opts</name>
+  <value>-Xmx1G</value>
+ </property>
+ <property>
    <name>mapreduce.jobhistory.address</name>
    <value>192.168.56.2:10020</value>
  </property>

@@ -16,6 +16,7 @@
 (when (locate-library "gtags") (require 'gtags))
 (add-hook 'dired-mode-hook '(lambda () (gtags-mode 1)))
 (add-hook 'shell-script-mode-hook '(lambda () (gtags-mode 1)))
+(add-hook 'sgml-mode-hook '(lambda () (gtags-mode 1)))
 
 
 ;; C & Java
