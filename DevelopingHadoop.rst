@@ -102,6 +102,45 @@ HBase Reference Manualのビルド。事前に一度siteをビルドして、Jav
     rm ~/.m2/repository/org/apache/hadoop/hadoop-*/3.0.0-SNAPSHOT/*
 
 
+ライセンス
+==========
+
+参考
+----
+
+- ソースヘッダのライセンスの記載について:
+  http://www.apache.org/legal/src-headers.html
+
+- Apacheプロダクトとそれ以外のライセンスとの兼ね合いについて:
+  http://www.apache.org/legal/3party.html
+
+
+apache-rat-plugin
+-----------------
+
+多くのHadoop系プロダクトでは、
+Mavenによるビルド時にapache-rat-pluginによるライセンスのチェックが入る。
+.gitやprotobufで生成されるファイル、画像ファイルなど、
+チェックから除外したファイルについては、
+pom.xmlのpluginの設定で指定する必要がある。::
+
+      <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>.git/**</exclude>
+            <exclude>.svn/**</exclude>
+            <exclude>.idea/**</exclude>
+            <exclude>**/.settings/**</exclude>
+            <exclude>**/generated/**</exclude>
+            <exclude>src/site/resources/images/*</exclude>
+            <exclude>src/main/webapps/static/bootstrap-3.0.2/**</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
+
 メモ
 ====
 
