@@ -55,7 +55,6 @@ Emacsと組み合わせると意外といける。
     jdb -attach localhost:8765 -sourcepath~/srcs/hadoop-common/hadoop-common-project/hadoop-common/src/main/java:~/srcs/hadoop-common/hadoop-hdfs-project/hadoop-hdfs/src/main/java:~/srcs/hadoop-common/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java
 
 
-
 ビルドオプション
 ----------------
 
@@ -204,5 +203,20 @@ pom.xmlのpluginの設定で指定する必要がある。::
 
 - KeyValueはCellというインタフェースの実装になった。
   Cellが提供するメソッドが推奨され、古いKeyValueのメソッドはdeprecatedに。
+
+
+Mavenのエラー
+-------------
+
+以下のようなエラーメッセージを出力してビルドに失敗した。::
+
+  [ERROR] Plugin org.apache.hadoop:hadoop-maven-plugins:3.0.0-SNAPSHOT or one of its dependencies could not be resolved: Failed to read artifact descriptor for org.apache.hadoop:hadoop-maven-plugins:jar:3.0.0-SNAPSHOT: Could not find artifact org.apache.hadoop:hadoop-main:pom:3.0.0-SNAPSHOT -> [Help 1]
+
+hadoop-maven-pluginに依存しているhadoop-commonが、
+hadoop-main (which is parent of hadoop-project which is parent of hadoop-maven-plugins)
+を見つけられないという状況に見える。
+ソースツリーのトップで以下を実行し、hadoop-mainのpomをローカルにインストールしたら解消した。::
+
+  mvn install -pl :hadoop-main -DskipTests
 
 
