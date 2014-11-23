@@ -26,7 +26,7 @@ bin=`cd "$bin" >/dev/null && pwd`
 
 if [ $# -lt 2 ]; then
   S=`basename "${BASH_SOURCE-$0}"`
-  echo "Usage: $S [--config <conf-dir>] [start|stop|config] offset(s)"
+  echo "Usage: $S [--config <conf-dir>] [start|stop] offset(s)"
   echo ""
   echo "    e.g. $S start 1"
   exit
@@ -34,48 +34,32 @@ fi
 
 . "$bin"/../libexec/yarn-config.sh
 
-run_resourcemanager () {
+run_nodemanager () {
   COMMAND=$1
   shift
   DN=$1
   shift
-  RMID="rm${DN}"
+  OFFSET=`expr ${DN} \* 100`
   export YARN_IDENT_STRING="$USER-$DN"
+  ADDRESS="0.0.0.0"
+  NODEMANAGER_CONFIG=" \
+    -Dyarn.nodemanager.localizer.address=${ADDRESS}:`expr 8040 + ${OFFSET}` \
+    -Dyarn.nodemanager.address=${ADDRESS}:`expr 8041 + ${OFFSET}` \
+    -Dyarn.nodemanager.webapp.address=${ADDRESS}:`expr 8042 + ${OFFSET}` \
+    -Dmapreduce.shuffle.port=`expr 13562 + ${OFFSET}` \
+    -Dyarn.nodemanager.aux-services=mapreduce_shuffle \
+    -Dyarn.nodemanager.aux-services.mapreduce_shuffle.class=org.apache.hadoop.mapred.ShuffleHandler "
   "$bin"/yarn-daemon.sh --config "${YARN_CONF_DIR}" \
-    "${COMMAND}" resourcemanager "-Dyarn.resourcemanager.ha.id=${RMID}" $@
+    "${COMMAND}" nodemanager ${NODEMANAGER_CONFIG}
 }
+
+
 
 CMD=$1
 shift
-RMS=$*
+NMS=$*
 
-RM_IDS=""
-RM_HA_CONFIG=""
-for i in $RMS
+for i in $NMS
 do
-  RMID="rm${i}"
-  OFFSET=`expr ${i} \* 100`
-  HA_RM_IDS="${HA_RM_IDS},${RMID}"
-  ADDRESS="0.0.0.0"
-  RM_HA_CONFIG="${RM_HA_CONFIG} \
-    -Dyarn.resourcemanager.scheduler.address.${RMID}=${ADDRESS}:`expr 8030 + ${OFFSET}` \
-    -Dyarn.resourcemanager.resource-tracker.address.${RMID}=${ADDRESS}:`expr 8031 + ${OFFSET}` \
-    -Dyarn.resourcemanager.address.${RMID}=${ADDRESS}:`expr 8032 + ${OFFSET}` \
-    -Dyarn.resourcemanager.admin.address.${RMID}=${ADDRESS}:`expr 8033 + ${OFFSET}` \
-    -Dyarn.resourcemanager.webapp.address.${RMID}=${ADDRESS}:`expr 8088 + ${OFFSET}` "
+  run_nodemanager $CMD $i
 done
-RM_HA_CONFIG="${RM_HA_CONFIG} \
-  -Dyarn.resourcemanager.ha.enabled=true \
-  -Dyarn.resourcemanager.ha.automatic-failover.enabled=false \
-  -Dyarn.resourcemanager.cluster-id=cl1 \
-  -Dyarn.resourcemanager.ha.rm-ids=${HA_RM_IDS:1} "
-
-if [ $CMD = "config" ]
-then
-  echo $RM_HA_CONFIG
-else
-  for i in $RMS
-  do
-    run_resourcemanager $CMD $i $RM_HA_CONFIG
-  done
-fi

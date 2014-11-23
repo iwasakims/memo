@@ -211,7 +211,7 @@ esac
 # that bind to privileged ports to provide authentication of data transfer
 # protocol.  Jsvc is not required if SASL is configured for authentication of
 # data transfer protocol using non-privileged ports.
-# export JSVC_HOME=/usr/bin
+export JSVC_HOME=/usr/lib/bigtop-utils
 
 #
 # This directory contains pids for secure and privileged processes.
@@ -272,7 +272,7 @@ esac
 # to provide authentication of data transfer protocol.  This **MUST NOT** be
 # defined if SASL is configured for authentication of data transfer protocol
 # using non-privileged ports.
-# export HADOOP_SECURE_DN_USER=hdfs
+export HADOOP_SECURE_DN_USER=iwasakims
 
 # Supplemental options for secure datanodes
 # By default, we use jsvc which needs to know to launch a
