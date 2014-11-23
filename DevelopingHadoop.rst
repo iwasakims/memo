@@ -11,7 +11,10 @@ misc
   http://monitoring.apache.org/status/
 
 - Apacheプロジェクトでのvotingについて
-  http://www.apache.org/foundation/voting.html
+  http://www.apache.org/foundation/voting.
+
+- JIRAに添付されているpatchを表示するChrome extention
+  https://chrome.google.com/webstore/detail/git-patch-viewer/hkoggakcdopbgnaeeidcmopfekipkleg
 
 
 ビルド環境
@@ -151,19 +154,15 @@ HBase Reference Manualのビルド。事前に一度siteをビルドして、Jav
   ByteArrayOutputBuffeの使い方として参考になる。
 
 - WritableUtilsはorg.apache.hadoop.io.DataOutputBufferという独自定義のDataOutputを利用している。
-  その内部で利用しているBufferはByteArrayOutputStreamの拡張で、
-  バッファを毎回確保しなおさず、サイズを倍々で増やしていくようにすると同時に、
-  byte[]をコピーせずに返せるようにそのまま返せるようになっている。
-  ただし、getDataで返ってくるバイト列は後ろの方にゴミが入っている。
-  正しいデータが入っているのは長さgetLengthまで。::
+  DataOutputBuffが内部で利用しているBufferはByteArrayOutputStreamの拡張で、
+  byte[]をコピーせずに返せるようgetDataメソッドが追加されている。
+  ただし、getDataで返ってくるバイト列は後ろの方にゴミが入っているので、
+  getLengthメソッドでどこまでが正しいデータなのかを判断しなければならない。::
 
-    public class DataOutputBuffer extends DataOutputStream {
-    
-      private static class Buffer extends ByteArrayOutputStream {
-        public byte[] getData() { return buf; }
-
+    private static class Buffer extends ByteArrayOutputStream {
+      public byte[] getData() { return buf; }
+      public int getLength() { return count; }
 
 - KeyValueはCellというインタフェースの実装になった。
   Cellが提供するメソッドが推奨され、古いKeyValueのメソッドはdeprecatedに。
-
 
