@@ -62,6 +62,10 @@
 (require 'erlang-start)
 (add-hook 'erlang-mode-hook '(lambda () (gtags-mode 1)))
 
+;; golang
+(setq load-path (cons "/home/iwasakims/srcs/go-mode.el" load-path))
+(require 'go-mode-autoloads)
+
 ;; reStructuredText
 ;(require rst)
 (setq frame-background-mode 'dark)
