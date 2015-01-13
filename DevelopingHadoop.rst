@@ -81,6 +81,18 @@ HBase Reference Manualのビルド。事前に一度siteをビルドして、Jav
   mvn docbkx:generate-html
 
 
+リリース関連
+============
+
+signatureをチェック::
+
+  $ gpg --verify foo.tar.gz.asc
+
+hashcodeをチェック::
+
+  $ gpg --print-mds foo.tar.gz | diff - foo.tar.gz.mds && echo "ok."
+
+
 たまに使う
 ==========
 
