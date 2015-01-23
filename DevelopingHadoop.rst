@@ -13,6 +13,9 @@
 - JIRAに添付されているpatchを表示するChrome extention
   https://chrome.google.com/webstore/detail/git-patch-viewer/hkoggakcdopbgnaeeidcmopfekipkleg
 
+- Gitの設定について
+  https://git-wip-us.apache.org/
+
 
 ビルド環境
 ==========
