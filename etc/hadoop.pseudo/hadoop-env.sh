@@ -50,7 +50,7 @@
 # such as in /etc/profile.d
 
 # The java implementation to use.
-export JAVA_HOME=/usr/lib/jvm/java-1.7.0-openjdk.x86_64
+export JAVA_HOME=/usr/lib/jvm/java-1.7.0-openjdk
 export JAVA_HOME=${JAVA_HOME:-"hadoop-env.sh is not configured"}
 
 # Location of Hadoop's configuration information.  i.e., where this
