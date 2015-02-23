@@ -13,6 +13,9 @@
 - JIRAに添付されているpatchを表示するChrome extention
   https://chrome.google.com/webstore/detail/git-patch-viewer/hkoggakcdopbgnaeeidcmopfekipkleg
 
+- Gitの設定について
+  https://git-wip-us.apache.org/
+
 
 ビルド環境
 ==========
@@ -79,6 +82,18 @@ HBase Reference Manualのビルド。事前に一度siteをビルドして、Jav
 
   mvn site
   mvn docbkx:generate-html
+
+
+リリース関連
+============
+
+signatureをチェック::
+
+  $ gpg --verify foo.tar.gz.asc
+
+hashcodeをチェック::
+
+  $ gpg --print-mds foo.tar.gz | diff - foo.tar.gz.mds && echo "ok."
 
 
 たまに使う
