@@ -17,8 +17,11 @@
   https://git-wip-us.apache.org/
 
 
+ビルド
+======
+
 ビルド環境
-==========
+----------
 
 RedHat系の開発パッケージのインストール。::
 
@@ -36,30 +39,8 @@ protobuf、maven、findbugsは別途手動でインストール。::
   export PATH=$PATH:$FINDBUGS_HOME/bin
 
 
-jdbによるJavaプログラムのデバッグ
-=================================
-
-どうみてもEclipseの方が便利だが、とりあえずCUIだけの環境で調べるために。
-Emacsと組み合わせると意外といける。
-
-- デバッギのJVMオプション。::
-
-    -agentlib:jdwp=transport=dt_socket,address=localhost:8765,server=y,suspend=y
-
-- jdbのコマンドラインを入力。
-  ``-sourcepath`` オプションと値の間に空白を入れてはいけない。::
-
-    jdb -attach localhost:8765 -sourcepath~/srcs/hadoop-common/hadoop-common-project/hadoop-common/src/main/java:~/srcs/hadoop-common/hadoop-hdfs-project/hadoop-hdfs/src/main/java
-
-- Emacsを使う場合、 ``M-x jdb`` を押した後、上記のコマンドラインを入力。
-
-- yarnも含めた場合。::
-
-    jdb -attach localhost:8765 -sourcepath~/srcs/hadoop-common/hadoop-common-project/hadoop-common/src/main/java:~/srcs/hadoop-common/hadoop-hdfs-project/hadoop-hdfs/src/main/java:~/srcs/hadoop-common/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java
-
-
 ビルドオプション
-================
+----------------
 
 hadoop-distから実行できるようにpackage::
 
@@ -153,6 +134,46 @@ pom.xmlのpluginの設定で指定する必要がある。::
           </excludes>
         </configuration>
       </plugin>
+
+
+エディタ
+========
+
+pygments
+--------
+
+GNU GLOBAL 6.3.2以降とpygmetnsの組み合わせが便利。
+EPELのYumリポジトリからpipをインストールし、pipでpygmentsをインストールする。::
+
+  $ sudo yum install python-pip
+  $ sudo pip install pygments
+
+タグファイルを作る場合は、 ``--gtagslabel`` オプションの値にpygmentsを指定。::
+
+  $ gtags --gtagslabel=pygments
+
+
+jdbによるJavaプログラムのデバッグ
+=================================
+
+どうみてもEclipseの方が便利だが、とりあえずCUIだけの環境で調べるために。
+Emacsと組み合わせると意外といける。
+
+- デバッギのJVMオプション。::
+
+    -agentlib:jdwp=transport=dt_socket,address=localhost:8765,server=y,suspend=y
+
+- jdbのコマンドラインを入力。
+  ``-sourcepath`` オプションと値の間に空白を入れてはいけない。::
+
+    jdb -attach localhost:8765 -sourcepath~/srcs/hadoop-common/hadoop-common-project/hadoop-common/src/main/java:~/srcs/hadoop-common/hadoop-hdfs-project/hadoop-hdfs/src/main/java
+
+- Emacsを使う場合、 ``M-x jdb`` を押した後、上記のコマンドラインを入力。
+
+- yarnも含めた場合。::
+
+    jdb -attach localhost:8765 -sourcepath~/srcs/hadoop-common/hadoop-common-project/hadoop-common/src/main/java:~/srcs/hadoop-common/hadoop-hdfs-project/hadoop-hdfs/src/main/java:~/srcs/hadoop-common/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java
+
 
 
 メモ
