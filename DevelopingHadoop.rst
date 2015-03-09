@@ -145,12 +145,22 @@ pygments
 GNU GLOBAL 6.3.2以降とpygmetnsの組み合わせが便利。
 EPELのYumリポジトリからpipをインストールし、pipでpygmentsをインストールする。::
 
-  $ sudo yum install python-pip
+  $ sudo yum ctags
+  $ sudo yum --enablerepo=epel install python-pip
   $ sudo pip install pygments
 
 タグファイルを作る場合は、 ``--gtagslabel`` オプションの値にpygmentsを指定。::
 
   $ gtags --gtagslabel=pygments
+
+golangはpygmentsで処理されるはずなのだが、なぜかexuberant-ctagsにフォールバックしてうまくタグがつくれない。
+``~/.ctags`` に以下の内容を追加すると、とりあえずctagsで.goのタグを抽出することはできた。::
+
+  --langdef=Go
+  --langmap=Go:.go
+  --regex-Go=/func([ \t]+\([^)]+\))?[ \t]+([a-zA-Z0-9_]+)/\2/d,func/
+  --regex-Go=/var[ \t]+([a-zA-Z_][a-zA-Z0-9_]+)/\1/d,var/
+  --regex-Go=/type[ \t]+([a-zA-Z_][a-zA-Z0-9_]+)/\1/d,type/
 
 
 jdbによるJavaプログラムのデバッグ
