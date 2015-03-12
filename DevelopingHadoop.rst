@@ -16,6 +16,10 @@
 - Gitの設定について
   https://git-wip-us.apache.org/
 
+- Shellスクリプトのルール(hadoop3)
+  http://wiki.apache.org/hadoop/UnixShellScriptProgrammingGuide
+
+
 
 ビルド
 ======
@@ -184,6 +188,9 @@ Emacsと組み合わせると意外といける。
 
     jdb -attach localhost:8765 -sourcepath~/srcs/hadoop-common/hadoop-common-project/hadoop-common/src/main/java:~/srcs/hadoop-common/hadoop-hdfs-project/hadoop-hdfs/src/main/java:~/srcs/hadoop-common/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java
 
+- findコマンドでまとめて指定する試み::
+
+    jdb -attach localhost:8765 -sourcepath .`find . -wholename '*/src/main/java' -type d -print0 | sed -e 's/\./\:\./g'`
 
 
 メモ
