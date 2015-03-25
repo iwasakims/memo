@@ -8,16 +8,14 @@
 ;(when (fboundp 'terminal-init-bobcat)
 ;  (terminal-init-bobcat))
 
-
 ;; GNU GLOBAL
 (setq load-path (cons "/usr/local/share/gtags" load-path))
 (setq gtags-suggested-key-mapping t)
 (setq gtags-path-style 'relative)
 (when (locate-library "gtags") (require 'gtags))
 (add-hook 'dired-mode-hook '(lambda () (gtags-mode 1)))
-(add-hook 'shell-script-mode-hook '(lambda () (gtags-mode 1)))
+(add-hook 'sh-mode-hook '(lambda () (gtags-mode 1)))
 (add-hook 'sgml-mode-hook '(lambda () (gtags-mode 1)))
-
 
 ;; C & Java
 (setq-default c-basic-offset 2)
@@ -29,16 +27,17 @@
 (setq auto-mode-alist
       (append '(("\\.groovy$" . java-mode)) auto-mode-alist))
 
+;; Javascript
+(setq js-indent-level 2)
+(add-hook 'js-mode-hook '(lambda () (gtags-mode 1)))
 
 ;; Python
 (add-hook 'python-mode-hook '(lambda () (gtags-mode 1)))
-
 
 ;; Ruby
 ;(setq load-path (cons "/usr/local/src/ruby-1.8.7-p352/misc" load-path))
 ;(autoload 'rubydb "rubydb3x" "" t)
 (add-hook 'ruby-mode-hook '(lambda () (gtags-mode 1)))
-
 
 ;; Clojure
 ;(setq load-path (cons "/usr/local/src/clojure-mode" load-path))
@@ -49,12 +48,10 @@
 ;;(require 'paredit)
 ;;(add-hook 'clojure-mode-hook '(lambda () (paredit-mode 1)))
 
-
 ;; Scala
 ;(setq load-path (cons "/usr/local/src/scala-tool-support-2.10.0/scala-emacs-mode" load-path))
 ;(require 'scala-mode-auto)
 ;(add-hook 'scala-mode-hook '(lambda () (gtags-mode 1)))
-
 
 ;; Erlang
 (setq load-path (cons "/usr/lib/erlang/lib/tools-2.6.7/emacs " load-path))
@@ -65,6 +62,7 @@
 ;; golang
 (setq load-path (cons "/home/iwasakims/srcs/go-mode.el" load-path))
 (require 'go-mode-autoloads)
+(add-hook 'go-mode-hook '(lambda () (gtags-mode 1)))
 
 ;; reStructuredText
 ;(require rst)
