@@ -16,6 +16,7 @@
 (add-hook 'dired-mode-hook '(lambda () (gtags-mode 1)))
 (add-hook 'sh-mode-hook '(lambda () (gtags-mode 1)))
 (add-hook 'sgml-mode-hook '(lambda () (gtags-mode 1)))
+(add-hook 'nxml-mode-hook '(lambda () (gtags-mode 1)))
 
 ;; C & Java
 (setq-default c-basic-offset 2)

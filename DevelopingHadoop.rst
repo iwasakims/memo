@@ -69,6 +69,15 @@ HBase Reference Manualのビルド。事前に一度siteをビルドして、Jav
   mvn docbkx:generate-html
 
 
+checkstyleの実行
+----------------
+
+::
+
+  mvn compile checkstyle:checkstyle
+  
+
+
 リリース関連
 ============
 
