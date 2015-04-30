@@ -47,7 +47,7 @@ protobuf、maven、findbugsは別途手動でインストール。::
 ----------------
 
 hadoop-distから実行できるようにpackage::
-
+  
   mvn package -Pdist -Pnative -DskipTests -DskipITs
 
 dist環境は ``mvn clean`` したら消えてしまうので、
@@ -72,9 +72,14 @@ HBase Reference Manualのビルド。事前に一度siteをビルドして、Jav
 リリース関連
 ============
 
+
 signatureをチェック::
 
   $ gpg --verify foo.tar.gz.asc
+
+リリースマネージャのpublic keyを取得する必要がある場合は、以下の要領。::
+  
+  gpg --keyserver pgpkeys.mit.edu --recv-key C36C5F0F
 
 hashcodeをチェック::
 
