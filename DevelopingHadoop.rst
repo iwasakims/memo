@@ -88,7 +88,7 @@ signatureをチェック::
 
 リリースマネージャのpublic keyを取得する必要がある場合は、以下の要領。::
   
-  gpg --keyserver pgpkeys.mit.edu --recv-key C36C5F0F
+  $ gpg --keyserver pgpkeys.mit.edu --recv-key C36C5F0F
 
 hashcodeをチェック::
 
@@ -282,3 +282,25 @@ hadoop-main (which is parent of hadoop-project which is parent of hadoop-maven-p
 ソースツリーのトップで以下を実行し、hadoop-mainのpomをローカルにインストールしたら解消した。::
 
   mvn install -pl :hadoop-main -DskipTests
+
+
+htrace
+------
+
+htracedのREST APIをcurlコマンドでたたく。::
+
+  curl http://localhost:9095/query -G -d 'query={"pred":[],"lim":11}:'
+
+libhtraceとlibhdfsを使ったコードのコンパイル::
+
+  gcc -I/home/iwasakims/srcs/htrace/htrace-c/target/install/include \
+      -L/home/iwasakims/srcs/htrace/htrace-c/target/install/lib \
+      -I$HADOOP_HOME/include -L$HADOOP_HOME/lib/native \
+  -lhtrace -lhdfs -o test_libhdfs_write test_libhdfs_write.c
+
+実行::
+
+  export CLASSPATH=`$HADOOP_HOME/bin/hdfs classpath --glob`
+  export LD_LIBRARY_PATH=$HADOOP_HOME/lib/native:/home/iwasakims/srcs/htrace/htrace-c/target/install/lib 
+  ./test_libhdfs_write /tmp/test04.txt 2048 2048
+

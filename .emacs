@@ -77,16 +77,22 @@
 ;;
 (cond 
  ((eq window-system 'ns) ; macosx
-  (create-fontset-from-ascii-font "Menlo-14:weight=normal:slant=normal"
+  (create-fontset-from-ascii-font "Menlo-12:weight=normal:slant=normal"
                                   nil
                                   "menlokakugo")
   (set-fontset-font "fontset-menlokakugo"
                     'unicode
-                    (font-spec :family "Hiragino Kaku Gothic ProN" :size 16)
+                    (font-spec :family "Hiragino Kaku Gothic ProN" :size 12)
                     nil
                     'append)
   (add-to-list 'default-frame-alist '(font . "fontset-menlokakugo"))
+  (add-to-list 'initial-frame-alist '(font . "fontset-menlokakugo"))
+  (add-to-list 'face-font-rescale-alist
+               '(".*Hiragino Kaku Gothic ProN.*" . 1.2))
+  (add-hook 'after-init-hook
+            (lambda () (set-frame-font "fontset-menlokakugo")))
   (add-to-list 'default-frame-alist '(width . 100))
   (add-to-list 'default-frame-alist '(hight . 35))
+  (add-to-list 'default-frame-alist '(alpha . 80))
   (setq default-input-method "MacOSX")
   ))
