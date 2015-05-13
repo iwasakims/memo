@@ -114,6 +114,10 @@ hashcodeをチェック::
     rm ~/.m2/repository/org/apache/hadoop/hadoop-{project,common,hdfs}/3.0.0-SNAPSHOT/*
     rm ~/.m2/repository/org/apache/hadoop/hadoop-*/3.0.0-SNAPSHOT/*
 
+- sleepジョブの起動。::
+
+    $ bin/mapred org.apache.hadoop.test.MapredTestDriver sleep ...
+
 
 ライセンス
 ==========
