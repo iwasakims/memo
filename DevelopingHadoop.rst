@@ -72,9 +72,21 @@ HBase Reference Manualのビルド。事前に一度siteをビルドして、Jav
 checkstyleの実行
 ----------------
 
-::
+``target/test/checkstyle-errors.xml`` に結果が出力されるが、
+``-Dcheckstyle.consoleOutput=true`` を付けるとコンソールにもテキストで出力される。
+XMLと比較して見やすいかというとそれほどでもない。::
 
-  mvn compile checkstyle:checkstyle
+  mvn compile checkstyle:checkstyle -Dcheckstyle.consoleOutput=true
+
+
+test
+----
+
+libhdfsなどのnativeモジュールのテストだけ実行したい場合には、 
+``-Dtest`` の値にJavaのテストクラス名にマッチしない文字列を指定する。
+もっとちゃんとしたやり方があるかもしれない。::
+
+  $ mvn test -Pnative -Dtest=hoge
   
 
 
