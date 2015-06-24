@@ -19,6 +19,8 @@
 - Shellスクリプトのルール(hadoop3)
   http://wiki.apache.org/hadoop/UnixShellScriptProgrammingGuide
 
+- Apacheプロジェクトの開発者向けMSDNライセンス
+  https://svn.apache.org/repos/private/committers/donated-licenses/msdn-license-grants.txt
 
 
 ビルド
@@ -77,6 +79,16 @@ checkstyleの実行
 XMLと比較して見やすいかというとそれほどでもない。::
 
   mvn compile checkstyle:checkstyle -Dcheckstyle.consoleOutput=true
+
+
+findbugsの実行
+--------------
+
+target/findbugsXml.xmlに結果が出力される。
+普通の人間に読むことは難しいため、convertXmlToTextコマンドを利用するとよい。::
+
+  $ mvn compile findbugs:findbugs
+  $ /opt/findbugs-3.0.0/bin/convertXmlToText target/findbugsXml.xml
 
 
 test
