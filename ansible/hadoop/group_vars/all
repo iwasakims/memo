@@ -1,0 +1,7 @@
+files_dir: "/var/www/html/files"
+tarball: "hadoop-2.7.1.tar.gz"
+user: "bench"
+hadoop_home: "/home/bench/hadoop-2.7.1"
+master_host: "192.168.122.10"
+java_home: "/usr/lib/jvm/java-1.7.0-openjdk.x86_64"
+dfs_namenode_name_dir: "/tmp/hdfs/name"

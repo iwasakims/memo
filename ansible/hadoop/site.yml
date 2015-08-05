@@ -1,0 +1,11 @@
+- hosts:
+  - all
+  remote_user: root
+  roles:
+  - common
+
+- hosts:
+  - masters
+  remote_user: root
+  roles:
+  - master
