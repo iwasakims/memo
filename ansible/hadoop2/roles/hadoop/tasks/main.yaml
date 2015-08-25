@@ -1,0 +1,30 @@
+- name: download hadoop tarball
+  copy: src={{ files_dir }}/{{ hadoop_tarball }} dest=/home/{{ user }}/{{ hadoop_tarball }}
+
+- name: set owner of hadoop tarball
+  file: path=/home/{{ user }}/{{ hadoop_tarball }} owner={{ user }} group={{ user }}
+
+- name: extract hadoop tarball
+  command: tar xf /home/{{ user }}/{{ hadoop_tarball }}
+  args:
+    chdir: /home/{{ user }}
+    creates: "{{ hadoop_home }}"
+
+- name: set owner and group of hadoopp files
+  file: path={{ hadoop_home }} owner={{ user }} group={{ user }} recurse=true
+
+- name: create hadoop core-site.xml
+  template: src=core-site.xml dest={{ hadoop_home }}/etc/hadoop/core-site.xml owner={{ user }} group={{ user }}
+
+- name: create hadoop hdfs-site.xml
+  template: src=hdfs-site.xml dest={{ hadoop_home }}/etc/hadoop/hdfs-site.xml owner={{ user }} group={{ user }}
+
+- name: create hadoop yarn-site.xml
+  template: src=yarn-site.xml dest={{ hadoop_home }}/etc/hadoop/yarn-site.xml owner={{ user }} group={{ user }}
+
+- name: create hadoop mapred-site.xml
+  template: src=mapred-site.xml dest={{ hadoop_home }}/etc/hadoop/mapred-site.xml owner={{ user }} group={{ user }}
+
+- name: create hadoop hadoop-env.sh
+  template: src=hadoop-env.sh dest={{ hadoop_home }}/etc/hadoop/hadoop-env.sh owner={{ user }} group={{ user }}
+

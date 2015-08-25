@@ -1,0 +1,23 @@
+- hosts:
+  - masters
+  remote_user: "{{ user }}"
+  tasks:
+  - name: start zookeeper daemon
+    command: "{{ zookeeper_home }}/bin/zkServer.sh start"
+  - name: start journalnode daemon
+    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start journalnode"
+  - name: start namenode daemon
+    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start namenode"
+  - name: start hdfs zkfc daemon
+    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start zkfc"
+  - name: start resourcemanager daemon
+    command: "{{ hadoop_home }}/sbin/yarn-daemon.sh start resourcemanager"
+
+- hosts:
+  - slaves
+  remote_user: "{{ user }}"
+  tasks:
+  - name: start datanode daemon
+    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start datanode"
+  - name: start nodemanager daemon
+    command: "{{ hadoop_home }}/sbin/yarn-daemon.sh start nodemanager"

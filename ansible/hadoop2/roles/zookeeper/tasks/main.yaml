@@ -1,0 +1,23 @@
+- name: download zookeeper tarball
+  copy: src={{ files_dir }}/{{ zookeeper_tarball }} dest=/home/{{ user }}/{{ zookeeper_tarball }}
+
+- name: set owner of zookeeper tarball
+  file: path=/home/{{ user }}/{{ zookeeper_tarball }} owner={{ user }} group={{ user }}
+
+- name: extract zookeeper tarball
+  command: tar xf /home/{{ user }}/{{ zookeeper_tarball }}
+  args:
+    chdir: /home/{{ user }}
+    creates: "{{ zookeeper_home }}"
+
+- name: set owner and group of zookeeper files
+  file: path={{ zookeeper_home }} owner={{ user }} group={{ user }} recurse=true
+
+- name: create zookeeper cfg file
+  template: src=zoo.cfg dest={{ zookeeper_home }}/conf/zoo.cfg owner={{ user }} group={{ user }}
+
+- name: create zookeeper data directory
+  file: path={{ zookeeper_datadir }} owner={{ user }} group={{ user }} state=directory
+
+- name: create zookeeper myid file
+  template: src=myid dest={{ zookeeper_datadir }}/myid owner={{ user }} group={{ user }}

@@ -1,0 +1,9 @@
+- hosts:
+  - masters
+  remote_user: "{{ user }}"
+  tasks:
+  - name: format hdfs filesystem
+    command: "{{ hadoop_home }}/bin/hdfs namenode -format -force -nonInteractive"
+    args:
+      creates: "{{dfs_namenode_name_dir}}"
+

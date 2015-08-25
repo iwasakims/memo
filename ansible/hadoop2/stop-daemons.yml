@@ -1,0 +1,17 @@
+- hosts:
+  - masters
+  remote_user: "{{ user }}"
+  tasks:
+  - name: stop resourcemanager daemon
+    command: "{{ hadoop_home }}/sbin/yarn-daemon.sh stop resourcemanager"
+  - name: stop namenode daemon
+    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop namenode"
+
+- hosts:
+  - slaves
+  remote_user: "{{ user }}"
+  tasks:
+  - name: stop nodemanager daemon
+    command: "{{ hadoop_home }}/sbin/yarn-daemon.sh stop nodemanager"
+  - name: stop datanode daemon
+    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop datanode"
