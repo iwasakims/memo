@@ -1,5 +1,5 @@
 - name: download zookeeper tarball
-  copy: src={{ files_dir }}/{{ zookeeper_tarball }} dest=/home/{{ user }}/{{ zookeeper_tarball }}
+  copy: src={{ files_dir }}/{{ zookeeper_tarball }} dest=/home/{{ user }}/{{ zookeeper_tarball }} force=no
 
 - name: set owner of zookeeper tarball
   file: path=/home/{{ user }}/{{ zookeeper_tarball }} owner={{ user }} group={{ user }}

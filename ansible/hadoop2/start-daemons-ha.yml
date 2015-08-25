@@ -1,11 +1,17 @@
 - hosts:
-  - masters
+  - quorum
   remote_user: "{{ user }}"
   tasks:
   - name: start zookeeper daemon
     command: "{{ zookeeper_home }}/bin/zkServer.sh start"
   - name: start journalnode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start journalnode"
+
+- hosts:
+  - master1
+  - master2
+  remote_user: "{{ user }}"
+  tasks:
   - name: start namenode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start namenode"
   - name: start hdfs zkfc daemon

@@ -1,5 +1,5 @@
 - name: download hadoop tarball
-  copy: src={{ files_dir }}/{{ hadoop_tarball }} dest=/home/{{ user }}/{{ hadoop_tarball }}
+  copy: src={{ files_dir }}/{{ hadoop_tarball }} dest=/home/{{ user }}/{{ hadoop_tarball }} force=no
 
 - name: set owner of hadoop tarball
   file: path=/home/{{ user }}/{{ hadoop_tarball }} owner={{ user }} group={{ user }}

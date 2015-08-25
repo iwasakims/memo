@@ -1,5 +1,5 @@
 - hosts:
-  - masters
+  - master
   remote_user: "{{ user }}"
   tasks:
   - name: stop resourcemanager daemon

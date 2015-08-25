@@ -1,5 +1,5 @@
 - hosts:
-  - masters
+  - quorum
   remote_user: "{{ user }}"
   tasks:
   - name: start zookeeper daemon
@@ -11,6 +11,8 @@
   - master1
   remote_user: "{{ user }}"
   tasks:
+  - name: wait for journal nodes starting up
+    pause: minutes=1
   - name: format hdfs filesystem
     command: "{{ hadoop_home }}/bin/hdfs namenode -format -force -nonInteractive"
   - name: start namenode daemon
@@ -30,11 +32,17 @@
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start namenode"
 
 - hosts:
-  - masters
+  - master1
+  - master2
   remote_user: "{{ user }}"
   tasks:
   - name: stop namenode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop namenode"
+
+- hosts:
+  - quorum
+  remote_user: "{{ user }}"
+  tasks:
   - name: stop journalnode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop journalnode"
   - name: stop zookeeper daemon
