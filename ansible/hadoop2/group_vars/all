@@ -18,7 +18,7 @@ hadoop: "hadoop-2.7.1"
 hadoop_tarball: "{{ hadoop }}.tar.gz"
 hadoop_home: "/home/{{ user }}/{{ hadoop }}"
 dfs_namenode_name_dir: "/home/{{ user }}/hdfs2/name"
-dfs_datanode_data_dir: "/home/{{ user }}/hdfs2/data"
+dfs_datanode_data_dir: "[DISK]/home/{{ user }}/hdfs2/data1,[DISK]/home/{{ user }}/hdfs2/data2"
 dfs_journalnode_edits_dir: "/home/{{ user }}/hdfs2/journal"
 
 # for single master

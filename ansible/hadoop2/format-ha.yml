@@ -25,9 +25,7 @@
   remote_user: "{{ user }}"
   tasks:
   - name: bootstrap hdfs standby namenode
-    command: "{{ hadoop_home }}/bin/hdfs namenode -bootstrapStandby"
-    args:
-      creates: "{{dfs_namenode_name_dir}}"
+    command: "{{ hadoop_home }}/bin/hdfs namenode -bootstrapStandby -force -nonInteractive"
   - name: start namenode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start namenode"
 
