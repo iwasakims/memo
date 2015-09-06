@@ -24,7 +24,9 @@
                         (other . "gnu")))
 (add-hook 'c-mode-hook '(lambda () (gtags-mode 1)))
 (add-hook 'c++-mode-hook '(lambda () (gtags-mode 1)))
-(add-hook 'java-mode-hook '(lambda () (gtags-mode 1)))
+(add-hook 'java-mode-hook '(lambda ()
+                             (gtags-mode 1)
+                             (c-toggle-electric-state -1)))
 (setq auto-mode-alist
       (append '(("\\.groovy$" . java-mode)) auto-mode-alist))
 
