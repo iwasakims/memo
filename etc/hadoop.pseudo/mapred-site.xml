@@ -31,10 +31,10 @@
  </property>
  <property>
    <name>mapreduce.jobhistory.address</name>
-   <value>192.168.56.2:10020</value>
+   <value>centos7:10020</value>
  </property>
  <property>
    <name>mapreduce.jobhistory.webapp.address</name>
-   <value>192.168.56.2:19888</value>
+   <value>centos7:19888</value>
  </property>
 </configuration>
