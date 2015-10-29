@@ -2,15 +2,15 @@
   file: path={{ zookeeper_home }} state=absent
 
 - name: download zookeeper tarball
-  copy: src={{ files_dir }}/{{ zookeeper_tarball }} dest=/home/{{ user }}/{{ zookeeper_tarball }} force=no
+  copy: src={{ files_dir }}/{{ zookeeper_tarball }} dest={{ home }}/{{ zookeeper_tarball }} force=no
 
 - name: set owner of zookeeper tarball
-  file: path=/home/{{ user }}/{{ zookeeper_tarball }} owner={{ user }} group={{ user }}
+  file: path={{ home }}/{{ zookeeper_tarball }} owner={{ user }} group={{ user }}
 
 - name: extract zookeeper tarball
-  command: tar xf /home/{{ user }}/{{ zookeeper_tarball }}
+  command: tar xf {{ home }}/{{ zookeeper_tarball }}
   args:
-    chdir: /home/{{ user }}
+    chdir: "{{ home }}"
     creates: "{{ zookeeper_home }}"
 
 - name: set owner and group of zookeeper files

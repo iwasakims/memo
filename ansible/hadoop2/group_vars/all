@@ -1,11 +1,12 @@
 files_dir: "/home/iwasakims/files"
 user: "iwasakims"
+home: "/home/{{ user }}"
 java_home: "/usr/lib/jvm/java-1.7.0-openjdk.x86_64"
 
 zookeeper: "zookeeper-3.4.6"
 zookeeper_tarball: "{{ zookeeper }}.tar.gz"
-zookeeper_home: "/home/{{ user }}/{{ zookeeper }}"
-zookeeper_datadir: "/home/{{ user }}/zookeeper"
+zookeeper_home: "{{ home }}/{{ zookeeper }}"
+zookeeper_datadir: "{{ home }}/zoo"
 
 # for zookeeper and journalnode
 server_1: 192.168.122.11
@@ -14,12 +15,12 @@ server_3: 192.168.122.13
 
 hadoop: "hadoop-2.6.2"
 hadoop_tarball: "{{ hadoop }}.tar.gz"
-hadoop_home: "/home/{{ user }}/{{ hadoop }}"
-dfs_namenode_name_dir: "/home/{{ user }}/hdfs/name"
-data_dir_1: /home/{{ user }}/hdfs/data1
-data_dir_2: /home/{{ user }}/hdfs/data2
+hadoop_home: "{{ home }}/{{ hadoop }}"
+dfs_namenode_name_dir: "{{ home }}/hdfs/name"
+data_dir_1: "{{ home }}/hdfs/data1"
+data_dir_2: "{{ home }}/hdfs/data2"
 dfs_datanode_data_dir: "[DISK]{{ data_dir_1 }},[DISK]{{ data_dir_2 }}"
-dfs_journalnode_edits_dir: "/home/{{ user }}/hdfs/journal"
+dfs_journalnode_edits_dir: "{{ home }}/hdfs/journal"
 
 # for single master
 master_host: "192.168.122.10" 

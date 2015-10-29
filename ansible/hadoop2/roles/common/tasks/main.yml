@@ -5,13 +5,13 @@
 #  file: src={{ files_dir }}/hosts path=/etc/hosts owner=root group=root mode=0644
 
 - name: create ssh user config directory
-  file: path=/home/{{ user }}/.ssh state=directory owner={{ user }} group={{ user }} mode=0700
+  file: path={{ home }}/.ssh state=directory owner={{ user }} group={{ user }} mode=0700
 
 - name: create ssh user config file
-  copy: src=config dest=/home/{{ user }}/.ssh/config owner={{ user }} group={{ user }} mode=0600
+  copy: src=config dest={{ home }}/.ssh/config owner={{ user }} group={{ user }} mode=0600
 
 #- name: create ssh user key file
-#  copy: src={{ files_dir }}/id-rsa-bench dest=/home/{{ user }}/.ssh/id_rsa owner={{ user }} group={{ user }} mode=0600
+#  copy: src={{ files_dir }}/id-rsa-bench dest={{ home }}/.ssh/id_rsa owner={{ user }} group={{ user }} mode=0600
 #
 #- name: create ssh user authorized_keys file
-#  copy: src={{ files_dir }}/authorized_keys dest=/home/{{ user }}/.ssh/authorized_keys owner={{ user }} group={{ user }} mode=0600
+#  copy: src={{ files_dir }}/authorized_keys dest={{ home }}/.ssh/authorized_keys owner={{ user }} group={{ user }} mode=0600
