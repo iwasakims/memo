@@ -3,7 +3,7 @@
   - master1
   - master2
   - slaves
-  remote_user: root
+  remote_user: iwasakims
   roles:
   - common
   - zookeeper
