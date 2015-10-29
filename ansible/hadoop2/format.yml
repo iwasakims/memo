@@ -1,9 +1,52 @@
 - hosts:
-  - masters
+  - quorum
   remote_user: "{{ user }}"
   tasks:
+  - name: start zookeeper daemon
+    command: "{{ zookeeper_home }}/bin/zkServer.sh start"
+    when: ha
+  - name: start journalnode daemon
+    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start journalnode"
+    when: ha
+
+- hosts:
+  - master1
+  remote_user: "{{ user }}"
+  tasks:
+  - name: wait for journal nodes starting up
+    pause: seconds=30
+    when: ha
   - name: format hdfs filesystem
     command: "{{ hadoop_home }}/bin/hdfs namenode -format -force -nonInteractive"
-    args:
-      creates: "{{dfs_namenode_name_dir}}"
+    when: ha
+  - name: format znode for zkfc
+    command: "{{ hadoop_home }}/bin/hdfs zkfc -formatZK -force -nonInteractive"
+    when: ha
+  - name: start namenode daemon
+    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start namenode"
 
+- hosts:
+  - master2
+  remote_user: "{{ user }}"
+  tasks:
+  - name: bootstrap hdfs standby namenode
+    command: "{{ hadoop_home }}/bin/hdfs namenode -bootstrapStandby -force -nonInteractive"
+    when: ha
+
+- hosts:
+  - master1
+  remote_user: "{{ user }}"
+  tasks:
+  - name: stop namenode daemon
+    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop namenode"
+
+- hosts:
+  - quorum
+  remote_user: "{{ user }}"
+  tasks:
+  - name: stop journalnode daemon
+    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop journalnode"
+    when: ha
+  - name: stop zookeeper daemon
+    command: "{{ zookeeper_home }}/bin/zkServer.sh stop"
+    when: ha

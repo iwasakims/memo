@@ -1,11 +1,39 @@
 - hosts:
-  - master
+  - quorum
+  remote_user: "{{ user }}"
+  tasks:
+  - name: start zookeeper daemon
+    command: "{{ zookeeper_home }}/bin/zkServer.sh start"
+    when: ha
+  - name: start journalnode daemon
+    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start journalnode"
+    when: ha
+
+- hosts:
+  - master1
   remote_user: "{{ user }}"
   tasks:
   - name: start namenode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start namenode"
+  - name: start hdfs zkfc daemon
+    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start zkfc"
+    when: ha
   - name: start resourcemanager daemon
     command: "{{ hadoop_home }}/sbin/yarn-daemon.sh start resourcemanager"
+
+- hosts:
+  - master2
+  remote_user: "{{ user }}"
+  tasks:
+  - name: start namenode daemon
+    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start namenode"
+    when: ha
+  - name: start hdfs zkfc daemon
+    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start zkfc"
+    when: ha
+  - name: start resourcemanager daemon
+    command: "{{ hadoop_home }}/sbin/yarn-daemon.sh start resourcemanager"
+    when: ha
 
 - hosts:
   - slaves

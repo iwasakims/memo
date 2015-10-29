@@ -14,19 +14,19 @@ server_2: 192.168.122.12
 server_3: 192.168.122.13
 
 
-hadoop: "hadoop-2.7.1"
+hadoop: "hadoop-2.6.2"
 hadoop_tarball: "{{ hadoop }}.tar.gz"
 hadoop_home: "/home/{{ user }}/{{ hadoop }}"
-dfs_namenode_name_dir: "/home/{{ user }}/hdfs2/name"
-dfs_datanode_data_dir: "[DISK]/home/{{ user }}/hdfs2/data1,[DISK]/home/{{ user }}/hdfs2/data2"
-dfs_journalnode_edits_dir: "/home/{{ user }}/hdfs2/journal"
+dfs_namenode_name_dir: "/home/{{ user }}/hdfs/name"
+dfs_datanode_data_dir: "[DISK]/home/{{ user }}/hdfs/data1,[DISK]/home/{{ user }}/hdfs/data2"
+dfs_journalnode_edits_dir: "/home/{{ user }}/hdfs/journal"
 
 # for single master
 master_host: "192.168.122.10" 
 #defaultfs: "hdfs://{{ master_host }}:9000"
 
 # for NN/RM HA
+ha: True
 master_1: "192.168.122.11"
 master_2: "192.168.122.12"
 defaultfs: "hdfs://mycluster"
-

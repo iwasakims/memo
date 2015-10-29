@@ -1,4 +1,0 @@
-- name: format hdfs filesystem
-  command: sudo -u {{ user }} {{ hadoop_home }}/bin/hdfs namenode -format -nonInteractive
-  args:
-    creates: "{{dfs_namenode_name_dir}}"
