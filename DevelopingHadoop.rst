@@ -332,3 +332,8 @@ libhtraceとlibhdfsを使ったコードのコンパイル::
   export LD_LIBRARY_PATH=$HADOOP_HOME/lib/native:/home/iwasakims/srcs/htrace/htrace-c/target/install/lib 
   ./test_libhdfs_write /tmp/test04.txt 2048 2048
 
+htracedの特定のテストを実行::
+
+  cd htrace-htraced/go
+  export GOPATH=/home/iwasakims/srcs/htrace/htrace-htraced/go:/home/iwasakims/srcs/htrace/htrace-htraced/go/build
+  go test ./src/org/apache/htrace/htraced -run Client -v

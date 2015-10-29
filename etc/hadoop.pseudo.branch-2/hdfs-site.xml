@@ -22,6 +22,10 @@
   <value>/home/iwasakims/hdfs-b2/name</value>
  </property>
  <property>
+  <name>dfs.namenode.checkpoint.dir</name>
+  <value>/home/iwasakims/hdfs-b2/namesecondary</value>
+ </property>
+ <property>
   <name>dfs.datanode.data.dir</name>
   <value>/home/iwasakims/hdfs-b2/data</value>
  </property>
