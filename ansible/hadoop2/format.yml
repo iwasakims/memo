@@ -18,12 +18,12 @@
     when: ha
   - name: format hdfs filesystem
     command: "{{ hadoop_home }}/bin/hdfs namenode -format -force -nonInteractive"
-    when: ha
   - name: format znode for zkfc
     command: "{{ hadoop_home }}/bin/hdfs zkfc -formatZK -force -nonInteractive"
     when: ha
   - name: start namenode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start namenode"
+    when: ha
 
 - hosts:
   - master2
@@ -39,6 +39,7 @@
   tasks:
   - name: stop namenode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop namenode"
+    when: ha
 
 - hosts:
   - quorum
