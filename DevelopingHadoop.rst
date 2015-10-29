@@ -252,16 +252,22 @@ Setup
 
     ansible all -i ./hosts -u root -m user -a 'name=iwasakims'
 
-
 - authorized_keysの更新::
 
     ansible all -i ./hosts -u root -m authorized_key -a 'user=iwasakims key="{{ lookup("file", "/home/iwasakims/.ssh/id_rsa.pub") }}"'
 
-- インストール::
+- インストールと実行::
 
-   ansible-playbook -i hosts setup.yml
-   ansible-playbook -i hosts format.yml
-   ansible-playbook -i hosts start-daemons.yml
+    $ ls ~/files/
+    hadoop-2.6.2.tar.gz zookeeper-3.4.6.tar.gz
+    
+    $ ansible-playbook -i hosts setup.yml
+    $ ansible-playbook -i hosts format.yml
+    $ ansible-playbook -i hosts start-daemons.yml
+    
+    $ ansible master1 -i hosts -u iwasakims -a '/home/bench/hadoop-2.6.2/bin/yarn jar /home/bench/hadoop-2.6.2/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.6.2.jar pi 9 1000000'
+    
+    $ ansible-playbook -i hosts stop-daemons.yml
 
 
 メモ
