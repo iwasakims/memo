@@ -3,7 +3,7 @@
   - master1
   - master2
   - slaves
-  remote_user: iwasakims
+  remote_user: "{{ user }}"
   roles:
   - common
   - zookeeper

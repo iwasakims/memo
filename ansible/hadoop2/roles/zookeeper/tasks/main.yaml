@@ -1,3 +1,6 @@
+- name: rm zookeeper home
+  file: path={{ zookeeper_home }} state=absent
+
 - name: download zookeeper tarball
   copy: src={{ files_dir }}/{{ zookeeper_tarball }} dest=/home/{{ user }}/{{ zookeeper_tarball }} force=no
 
@@ -15,6 +18,9 @@
 
 - name: create zookeeper cfg file
   template: src=zoo.cfg dest={{ zookeeper_home }}/conf/zoo.cfg owner={{ user }} group={{ user }}
+
+- name: rm zookeeper data directory
+  file: path={{ zookeeper_datadir }} state=absent
 
 - name: create zookeeper data directory
   file: path={{ zookeeper_datadir }} owner={{ user }} group={{ user }} state=directory

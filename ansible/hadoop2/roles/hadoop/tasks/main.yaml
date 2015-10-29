@@ -1,3 +1,18 @@
+- name: rm name dir
+  file: path={{ dfs_namenode_name_dir }} state=absent
+
+- name: rm jn edits dir
+  file: path={{ dfs_journalnode_edits_dir }} state=absent
+
+- name: rm data dir 1
+  file: path={{ data_dir_1 }} state=absent
+
+- name: rm data dir 2
+  file: path={{ data_dir_2 }} state=absent
+
+- name: rm hadoop home
+  file: path={{ hadoop_home }} state=absent
+
 - name: download hadoop tarball
   copy: src={{ files_dir }}/{{ hadoop_tarball }} dest=/home/{{ user }}/{{ hadoop_tarball }} force=no
 
@@ -27,4 +42,3 @@
 
 - name: create hadoop hadoop-env.sh
   template: src=hadoop-env.sh dest={{ hadoop_home }}/etc/hadoop/hadoop-env.sh owner={{ user }} group={{ user }}
-
