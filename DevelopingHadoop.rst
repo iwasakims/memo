@@ -99,7 +99,17 @@ libhdfsなどのnativeモジュールのテストだけ実行したい場合に�
 もっとちゃんとしたやり方があるかもしれない。::
 
   $ mvn test -Pnative -Dtest=hoge
-  
+
+
+サブツリーでビルド
+------------------
+
+サブプロジェクトには
+hadoop-main -> hadoop-project -> hadoop-common
+のような親子関係があるため、サブツリーにcdしてビルドを実行するには、
+一度ソースツリーのトップでhadoop-mainやhadoop-projectをinstallしておく必要がある。::
+
+  mvn install -pl :hadoop-main -pl :hadoop-project -DskipTests
 
 
 リリース関連
@@ -212,7 +222,7 @@ golangはpygmentsで処理されるはずなのだが、なぜかexuberant-ctags
 jdbによるJavaプログラムのデバッグ
 =================================
 
-どうみてもEclipseの方が便利だが、とりあえずCUIだけの環境で調べるために。
+どうみてもEclipseやIntelliJと使った方が便利だが、CUIだけの環境で調べるために。
 Emacsと組み合わせると意外といける。
 
 - デバッギのJVMオプション。::
@@ -233,6 +243,25 @@ Emacsと組み合わせると意外といける。
 - findコマンドでまとめて指定する試み::
 
     jdb -attach localhost:8765 -sourcepath .`find . -wholename '*/src/main/java' -type d -print0 | sed -e 's/\./\:\./g'`
+
+
+Setup
+=====
+
+- ユーザの作成::
+
+    ansible all -i ./hosts -u root -m user -a 'name=iwasakims'
+
+
+- authorized_keysの更新::
+
+    ansible all -i ./hosts -u root -m authorized_key -a 'user=iwasakims key="{{ lookup("file", "/home/iwasakims/.ssh/id_rsa.pub") }}"'
+
+- インストール::
+
+   ansible-playbook -i hosts setup.yml
+   ansible-playbook -i hosts format.yml
+   ansible-playbook -i hosts start-daemons.yml
 
 
 メモ
@@ -295,21 +324,6 @@ Emacsと組み合わせると意外といける。
 
 - KeyValueはCellというインタフェースの実装になった。
   Cellが提供するメソッドが推奨され、古いKeyValueのメソッドはdeprecatedに。
-
-
-Mavenのエラー
--------------
-
-以下のようなエラーメッセージを出力してビルドに失敗した。::
-
-  [ERROR] Plugin org.apache.hadoop:hadoop-maven-plugins:3.0.0-SNAPSHOT or one of its dependencies could not be resolved: Failed to read artifact descriptor for org.apache.hadoop:hadoop-maven-plugins:jar:3.0.0-SNAPSHOT: Could not find artifact org.apache.hadoop:hadoop-main:pom:3.0.0-SNAPSHOT -> [Help 1]
-
-hadoop-maven-pluginに依存しているhadoop-commonが、
-hadoop-main (which is parent of hadoop-project which is parent of hadoop-maven-plugins)
-を見つけられないという状況に見える。
-ソースツリーのトップで以下を実行し、hadoop-mainのpomをローカルにインストールしたら解消した。::
-
-  mvn install -pl :hadoop-main -DskipTests
 
 
 htrace
