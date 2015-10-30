@@ -265,7 +265,7 @@ Setup
     $ ansible-playbook -i hosts format.yml
     $ ansible-playbook -i hosts start-daemons.yml
     
-    $ ansible master1 -i hosts -u iwasakims -a '/home/bench/hadoop-2.6.2/bin/yarn jar /home/bench/hadoop-2.6.2/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.6.2.jar pi 9 1000000'
+    $ ansible master1 -i hosts -u iwasakims -a '/home/iwasakims/hadoop-2.6.2/bin/yarn jar /home/iwasakims/hadoop-2.6.2/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.6.2.jar pi 9 1000000'
     
     $ ansible-playbook -i hosts stop-daemons.yml
 
