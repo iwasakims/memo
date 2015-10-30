@@ -2,6 +2,7 @@
   - quorum
   - master1
   - master2
+  - master3
   - slaves
   remote_user: "{{ user }}"
   roles:

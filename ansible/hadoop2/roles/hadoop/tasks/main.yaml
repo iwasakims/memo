@@ -1,17 +1,22 @@
 - name: rm name dir
   file: path={{ dfs_namenode_name_dir }} state=absent
+  when: cleanup
 
 - name: rm jn edits dir
   file: path={{ dfs_journalnode_edits_dir }} state=absent
+  when: cleanup
 
 - name: rm data dir 1
   file: path={{ data_dir_1 }} state=absent
+  when: cleanup
 
 - name: rm data dir 2
   file: path={{ data_dir_2 }} state=absent
+  when: cleanup
 
 - name: rm hadoop home
   file: path={{ hadoop_home }} state=absent
+  when: cleanup
 
 - name: download hadoop tarball
   copy: src={{ files_dir }}/{{ hadoop_tarball }} dest={{ home }}/{{ hadoop_tarball }} force=no

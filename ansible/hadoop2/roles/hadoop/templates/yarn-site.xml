@@ -51,11 +51,11 @@
   </property>
   <property>
     <name>yarn.resourcemanager.hostname.rm1</name>
-    <value>{{ master_1 }}</value>
+    <value>{{ master_2 }}</value>
   </property>
   <property>
     <name>yarn.resourcemanager.hostname.rm2</name>
-    <value>{{ master_2 }}</value>
+    <value>{{ master_3 }}</value>
   </property>
   <property>
     <name>yarn.resourcemanager.zk-address</name>

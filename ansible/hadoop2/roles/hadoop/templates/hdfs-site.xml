@@ -28,7 +28,7 @@
   </property>
   <property>
     <name>dfs.namenode.rpc-address.mycluster.nn2</name>
-    <value>{{ master_2 }}:8020</value>
+    <value>{{ master_3 }}:8020</value>
   </property>
   <property>
     <name>dfs.namenode.http-address.mycluster.nn1</name>
@@ -36,7 +36,7 @@
   </property>
   <property>
     <name>dfs.namenode.http-address.mycluster.nn2</name>
-    <value>{{ master_2 }}:50070</value>
+    <value>{{ master_3 }}:50070</value>
   </property>
   <property>
     <name>dfs.namenode.shared.edits.dir</name>

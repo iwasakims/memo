@@ -1,5 +1,6 @@
 - name: rm zookeeper home
   file: path={{ zookeeper_home }} state=absent
+  when: cleanup
 
 - name: download zookeeper tarball
   copy: src={{ files_dir }}/{{ zookeeper_tarball }} dest={{ home }}/{{ zookeeper_tarball }} force=no
@@ -21,6 +22,7 @@
 
 - name: rm zookeeper data directory
   file: path={{ zookeeper_datadir }} state=absent
+  when: cleanup
 
 - name: create zookeeper data directory
   file: path={{ zookeeper_datadir }} owner={{ user }} group={{ user }} state=directory

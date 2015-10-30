@@ -1,5 +1,5 @@
 - hosts:
-  - master2
+  - master3
   remote_user: "{{ user }}"
   tasks:
   - name: stop resourcemanager daemon
@@ -13,11 +13,16 @@
     when: ha
 
 - hosts:
-  - master1
+  - master2
   remote_user: "{{ user }}"
   tasks:
   - name: stop resourcemanager daemon
     command: "{{ hadoop_home }}/sbin/yarn-daemon.sh stop resourcemanager"
+
+- hosts:
+  - master1
+  remote_user: "{{ user }}"
+  tasks:
   - name: stop zkfc daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop zkfc"
     when: ha
