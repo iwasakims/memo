@@ -19,8 +19,12 @@
 - Shellスクリプトのルール(hadoop3)
   http://wiki.apache.org/hadoop/UnixShellScriptProgrammingGuide
 
+- 私家版スタイルガイド by Steve Loughran
+  https://github.com/steveloughran/formality/blob/master/styleguide/styleguide.md
+
 - Apacheプロジェクトの開発者向けMSDNライセンス
   https://svn.apache.org/repos/private/committers/donated-licenses/msdn-license-grants.txt
+
 
 
 ビルド
