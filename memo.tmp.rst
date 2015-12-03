@@ -1,3 +1,55 @@
+.. contents::
+
+
+build & test
+============
+
+assembly
+--------
+
+- hadoop-hdfsは個別のassembly descriptorを用意していない。
+  hadoop-project-dist/pom.xmlの設定によって、hadoop-dist.xmlが利用される。
+  maven-assembly-pluginの設定を上書きしないサブプロジェクトも同様のはず。
+
+- hadoop-commonもhadoop-hdfsもtest-jarをshare/${hadoop.component}に配置している。::
+
+    <fileSet>
+      <directory>${project.build.directory}</directory>
+      <outputDirectory>/share/hadoop/${hadoop.component}</outputDirectory>
+      <includes>
+        <include>${project.artifactId}-${project.version}.jar</include>
+        <include>${project.artifactId}-${project.version}-tests.jar</include>
+      </includes>
+      <excludes>
+        <exclude>hadoop-tools-dist-*.jar</exclude>
+      </excludes>
+    </fileSet>
+
+- hadoop-yarn-server-testsのtest-jarがshare/hadoop/yarn/test下にあるのは、
+  hadoop-yarn-dist.xmlの以下の記述による。
+  YARN-429によって、classpathが通らない場所に移動された。::
+
+    <moduleSet>
+      <includes>
+        <include>org.apache.hadoop:hadoop-yarn-server-tests</include>
+      </includes>
+      <binaries>
+        <attachmentClassifier>tests</attachmentClassifier>
+        <outputDirectory>share/hadoop/${hadoop.component}/test</outputDirectory>
+        <includeDependencies>false</includeDependencies>
+        <unpack>false</unpack>
+      </binaries>
+    </moduleSet>
+
+
+Mockito
+-------
+
+- CallsRealMethodsが、本来の値を返すAnswer実装。
+  ``Mockito.CALLS_REAL_METHODS`` で取得できる。
+
+
+
 configuration & scripts
 =======================
 
@@ -80,6 +132,7 @@ configuration & scripts
     [10] org.apache.hadoop.hdfs.server.datanode.DataNode.secureMain (DataNode.java:1,990)
     [11] org.apache.hadoop.hdfs.server.datanode.DataNode.main (DataNode.java:2,014)
 
+
 RPC
 ===
  
@@ -115,6 +168,30 @@ RPC
     public interface ClientNamenodeProtocolPB extends
       ClientNamenodeProtocol.BlockingInterface {
     }
+
+
+Server
+------
+
+- listenerは1つ。acceptしてconnectionを各readerのpendingConnectionsというキューに積む。
+
+- readerは複数いる。listenerはreaderをラウンドロビンで使う。
+
+- readerがsocketから読み込んで作成したCallオブジェクトは単一のcallQueueに積まれる。
+
+- callQueueからCallを取り出して処理をするhandlerが複数いる。
+
+
+NameNode
+--------
+
+- "dfs.namenode.servicerpc-address"を指定すると、
+  ClientNamenodeProtocol以外をserveするためのserviceRpcServerが追加で作成される。
+  クライアントからNameNodeに過大なアクセスがあっても、
+  DataNodeからのリクエスト等を処理できるようにするため。
+  おそらくは後方互換性のため、serviceRpcServerとclientRpcServerのどちらも、
+  すべてのプロトコルを処理できるようになっている。
+
 
 
 security
@@ -181,6 +258,8 @@ ZKFC
 
 HDFS
 ====
+
+- defaultFsのデフォルト値は"file:///"
 
 - FsDatasetImplへのcontentionが発生する例: HDFS-7489
 
