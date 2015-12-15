@@ -49,7 +49,6 @@ Mockito
   ``Mockito.CALLS_REAL_METHODS`` で取得できる。
 
 
-
 configuration & scripts
 =======================
 

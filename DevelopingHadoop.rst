@@ -104,6 +104,10 @@ libhdfsなどのnativeモジュールのテストだけ実行したい場合に�
 
   $ mvn test -Pnative -Dtest=hoge
 
+テスト連打::
+
+   for i in `seq 100` ; do echo $i && mvn test -Dtest=TestGangliaMetrics || break  ; done
+
 
 サブツリーでビルド
 ------------------
@@ -337,7 +341,7 @@ Setup
 
 
 htrace
-------
+======
 
 htracedのREST APIをcurlコマンドでたたく。::
 
@@ -361,3 +365,26 @@ htracedの特定のテストを実行::
   cd htrace-htraced/go
   export GOPATH=/home/iwasakims/srcs/htrace/htrace-htraced/go:/home/iwasakims/srcs/htrace/htrace-htraced/go/build
   go test ./src/org/apache/htrace/htraced -run Client -v
+
+テスト用のspanをロード::
+
+  htraceTool load '{"a":"b9f2a1e07b6e4f16b0c2b27303b20e79",
+    "b":1424736225037,"e":1424736225901,
+    "d":"ClientNamenodeProtocol#getFileInfo",
+    "r":"FsShell",
+    "p":["3afebdc0a13f4feb811cc5c0e42d30b1"]}'
+
+htracd用設定::
+
+  <property>
+    <name>hadoop.htrace.span.receiver.classes</name>
+    <value>org.apache.htrace.impl.HTracedSpanReceiver</value>
+  </property>
+  <property>
+    <name>hadoop.htrace.htraced.receiver.address</name>
+    <value>centos7:9075</value>
+  </property>
+
+FsShellからtracing::
+
+  hdfs dfs -Dfs.shell.htrace.sampler.classes=AlwaysSampler -put test.dat /tmp/
