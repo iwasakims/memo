@@ -136,6 +136,13 @@ hashcodeをチェック::
 
   $ gpg --print-mds foo.tar.gz | diff - foo.tar.gz.mds && echo "ok."
 
+環境やバージョンの違いに起因して??? ``gpg --verify`` の出力の改行位置は一定しない雰囲気。
+ワンライナーを利用して適当に合わせる。::
+
+  $ cat hadoop-2.7.2-RC2-src.tar.gz.mds | perl -00pe 's/\n[ ]+/ /g' - > 1.mds
+  $ gpg --print-mds hadoop-2.7.2-RC2-src.tar.gz.mds | perl -00pe 's/\n[ ]+/ /g' - > 2.mds
+  $ diff 1.mds 2.mds
+
 
 たまに使う
 ==========
@@ -388,3 +395,19 @@ htracd用設定::
 FsShellからtracing::
 
   hdfs dfs -Dfs.shell.htrace.sampler.classes=AlwaysSampler -put test.dat /tmp/
+
+
+htrace-hbase
+------------
+
+HBaseSpanReceiverを利用するためには、以下のjarも必要。
+(htrace-core-3.1.0は、hbase-clientが使う。
+hbase-clientとしてのtracing設定がoffだとしても、
+htrace関連クラスのロードは実行されるので、
+無いとjava.lang.NoClassDefFoundError。)
+
+- hbase-annotation
+- hbase-client
+- hbase-common
+- hbase-protocol
+- htrace-core-3.1.0
