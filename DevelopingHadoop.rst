@@ -207,7 +207,7 @@ pom.xmlのpluginの設定で指定する必要がある。::
       </plugin>
 
 
-エディタ
+開発環境
 ========
 
 pygments
@@ -234,10 +234,22 @@ golangはpygmentsで処理されるはずなのだが、なぜかexuberant-ctags
   --regex-Go=/type[ \t]+([a-zA-Z_][a-zA-Z0-9_]+)/\1/d,type/
 
 
-jdbによるJavaプログラムのデバッグ
-=================================
+diff
+----
 
-どうみてもEclipseやIntelliJと使った方が便利だが、CUIだけの環境で調べるために。
+side by sideで差分を表示::
+
+  $ git difftool -y -x "diff -y -W 240" | less
+
+EPELからcolordiffをインストールして使うと、より見やすい。::
+
+  $ git difftool -y -x "colordiff -y -W 240" | less -R
+
+
+jdb
+---
+
+どうみてもEclipseやIntelliJを使った方が便利だが、CUIだけの環境で調べるために。
 Emacsと組み合わせると意外といける。
 
 - デバッギのJVMオプション。::
