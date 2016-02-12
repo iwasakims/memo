@@ -25,7 +25,8 @@
 - Apacheプロジェクトの開発者向けMSDNライセンス
   https://svn.apache.org/repos/private/committers/donated-licenses/msdn-license-grants.txt
 
-
+- Apacheコミュニティについて
+  https://community.apache.org/
 
 ビルド
 ======
