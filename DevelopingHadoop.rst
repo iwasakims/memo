@@ -330,6 +330,32 @@ Setup
         Configuration.addDefaultResource("yarn-site.xml");
       }
 
+  - 直接JobConfを使っていないクラスでも、
+    ReflectionUtils#setConf(から呼ばれるReflectionUtils#setJobConf)によって、
+    上記のコードが呼ばれてしまうことになる。
+    UserToGroupsMappingをロードする家庭でReflectionUtilsが使われるので、
+    広範囲に影響する::
+
+	at org.apache.hadoop.conf.Configuration.addDefaultResource(Configuration.java:752)
+	at org.apache.hadoop.mapreduce.util.ConfigUtil.loadResources(ConfigUtil.java:43)
+	at org.apache.hadoop.mapred.JobConf.<clinit>(JobConf.java:124)
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:278)
+	at org.apache.hadoop.conf.Configuration.getClassByNameOrNull(Configuration.java:2200)
+	at org.apache.hadoop.util.ReflectionUtils.setJobConf(ReflectionUtils.java:95)
+	at org.apache.hadoop.util.ReflectionUtils.setConf(ReflectionUtils.java:78)
+	at org.apache.hadoop.util.ReflectionUtils.newInstance(ReflectionUtils.java:136)
+	at org.apache.hadoop.security.Groups.<init>(Groups.java:81)
+	at org.apache.hadoop.security.Groups.<init>(Groups.java:76)
+	at org.apache.hadoop.security.Groups.getUserToGroupsMappingService(Groups.java:318)
+	at org.apache.hadoop.security.UserGroupInformation.initialize(UserGroupInformation.java:298)
+	at org.apache.hadoop.security.UserGroupInformation.setConfiguration(UserGroupInformation.java:326)
+	at org.apache.hadoop.hdfs.server.datanode.DataNode.instantiateDataNode(DataNode.java:2460)
+	at org.apache.hadoop.hdfs.server.datanode.DataNode.createDataNode(DataNode.java:2510)
+	at org.apache.hadoop.hdfs.server.datanode.DataNode.secureMain(DataNode.java:2690)
+	at org.apache.hadoop.hdfs.server.datanode.DataNode.main(DataNode.java:2714)
+
+
 バージョン
 ----------
 
