@@ -14,7 +14,7 @@
   remote_user: "{{ user }}"
   tasks:
   - name: wait for journal nodes starting up
-    pause: seconds=30
+    pause: seconds=60
     when: ha
   - name: format hdfs filesystem
     command: "{{ hadoop_home }}/bin/hdfs namenode -format -force -nonInteractive"

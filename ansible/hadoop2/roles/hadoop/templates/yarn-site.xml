@@ -2,7 +2,6 @@
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 
 <configuration>
-
   <property>
     <name>yarn.resourcemanager.hostname</name>
     <value>{{ master_host }}</value>
