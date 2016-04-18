@@ -16,6 +16,10 @@
     <value>org.apache.hadoop.mapred.ShuffleHandler</value>
   </property>
   <property>
+    <name>yarn.app.mapreduce.am.admin.user.env</name>
+    <value>LD_LIBRARY_PATH=$HADOOP_COMMON_HOME/lib/native:$LD_LIBRARY_PATH</value>
+  </property>
+  <property>
     <name>yarn.log-aggregation-enable</name>
     <value>true</value>
   </property>
