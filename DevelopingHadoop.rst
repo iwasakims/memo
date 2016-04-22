@@ -96,6 +96,14 @@ target/findbugsXml.xmlに結果が出力される。
   $ /opt/findbugs-3.0.0/bin/convertXmlToText target/findbugsXml.xml
 
 
+deprecation warningsの確認
+--------------------------
+
+::
+
+  $ mvn clean compile -Dmaven.compiler.showDeprecation=true
+
+
 test
 ----
 
