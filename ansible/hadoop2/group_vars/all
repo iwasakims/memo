@@ -4,7 +4,7 @@ user: "iwasakims"
 home: "/home/{{ user }}"
 java_home: "/usr/lib/jvm/java-1.7.0-openjdk.x86_64"
 
-zookeeper: "zookeeper-3.4.6"
+zookeeper: "zookeeper-3.4.5-cdh5.4.7"
 zookeeper_tarball: "{{ zookeeper }}.tar.gz"
 zookeeper_home: "{{ home }}/{{ zookeeper }}"
 zookeeper_datadir: "{{ home }}/zoo"
@@ -14,7 +14,7 @@ server_1: 192.168.122.11
 server_2: 192.168.122.12
 server_3: 192.168.122.13
 
-hadoop: "hadoop-2.6.2"
+hadoop: "hadoop-2.6.0-cdh5.4.7"
 hadoop_tarball: "{{ hadoop }}.tar.gz"
 hadoop_home: "{{ home }}/{{ hadoop }}"
 dfs_namenode_name_dir: "{{ home }}/hdfs/name"
