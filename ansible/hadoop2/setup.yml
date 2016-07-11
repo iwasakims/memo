@@ -1,4 +1,10 @@
 - hosts:
+  - all
+  roles:
+  - common
+  remote_user: "{{ user }}"
+
+- hosts:
   - quorum
   - master1
   - master2
@@ -6,6 +12,5 @@
   - slaves
   remote_user: "{{ user }}"
   roles:
-  - common
   - zookeeper
   - hadoop

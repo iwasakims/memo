@@ -1,6 +1,3 @@
-#- name: create user to run benchmark
-#  user: name={{ user }}
-#
 #- name: create hosts file
 #  file: src={{ files_dir }}/hosts path=/etc/hosts owner=root group=root mode=0644
 
@@ -10,6 +7,13 @@
 - name: create ssh user config file
   copy: src=config dest={{ home }}/.ssh/config owner={{ user }} group={{ user }} mode=0600
 
+# - name: install jdk
+#   package: name={{ java_package }} state=present
+#   become: yes
+
+#- name: create user to run benchmark
+#  user: name={{ user }}
+#
 #- name: create ssh user key file
 #  copy: src={{ files_dir }}/id-rsa-bench dest={{ home }}/.ssh/id_rsa owner={{ user }} group={{ user }} mode=0600
 #
