@@ -5,12 +5,15 @@
   - name: stop resourcemanager daemon
     command: "{{ hadoop_home }}/sbin/yarn-daemon.sh stop resourcemanager"
     when: ha
+    ignore_errors: yes
   - name: stop zkfc daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop zkfc"
     when: ha
+    ignore_errors: yes
   - name: stop namenode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop namenode"
     when: ha
+    ignore_errors: yes
 
 - hosts:
   - master2
@@ -18,6 +21,7 @@
   tasks:
   - name: stop resourcemanager daemon
     command: "{{ hadoop_home }}/sbin/yarn-daemon.sh stop resourcemanager"
+    ignore_errors: yes
 
 - hosts:
   - master1
@@ -26,8 +30,10 @@
   - name: stop zkfc daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop zkfc"
     when: ha
+    ignore_errors: yes
   - name: stop namenode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop namenode"
+    ignore_errors: yes
 
 - hosts:
   - slaves
@@ -35,8 +41,10 @@
   tasks:
   - name: stop nodemanager daemon
     command: "{{ hadoop_home }}/sbin/yarn-daemon.sh stop nodemanager"
+    ignore_errors: yes
   - name: stop datanode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop datanode"
+    ignore_errors: yes
 
 - hosts:
   - quorum
@@ -45,6 +53,8 @@
   - name: stop journalnode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop journalnode"
     when: ha
+    ignore_errors: yes
   - name: stop zookeeper daemon
     command: "{{ zookeeper_home }}/bin/zkServer.sh stop"
     when: ha
+    ignore_errors: yes
