@@ -47,13 +47,20 @@
     ignore_errors: yes
 
 - hosts:
-  - quorum
+  - master1
+  - master2
+  - master3
   remote_user: "{{ user }}"
   tasks:
   - name: stop journalnode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop journalnode"
     when: ha
     ignore_errors: yes
+
+- hosts:
+  - quorum
+  remote_user: "{{ user }}"
+  tasks:
   - name: stop zookeeper daemon
     command: "{{ zookeeper_home }}/bin/zkServer.sh stop"
     when: ha

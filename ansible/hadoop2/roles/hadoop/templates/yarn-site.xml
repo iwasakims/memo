@@ -4,7 +4,7 @@
 <configuration>
   <property>
     <name>yarn.resourcemanager.hostname</name>
-    <value>{{ master_host }}</value>
+    <value>{{ master_2 }}</value>
   </property>
   <property>
     <name>yarn.nodemanager.aux-services</name>
@@ -62,7 +62,7 @@
   </property>
   <property>
     <name>yarn.resourcemanager.zk-address</name>
-    <value>{{ server_1 }}:2181,{{ server_2 }}:2181,{{ server_3 }}:2181</value>
+    <value> zookeeper_address </value>
   </property>
   <property>
     <name>yarn.resourcemanager.ha.automatic-failover.enabled</name>

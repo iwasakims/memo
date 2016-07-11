@@ -1,5 +1,6 @@
-#- name: create hosts file
-#  file: src={{ files_dir }}/hosts path=/etc/hosts owner=root group=root mode=0644
+- name: create hosts file
+  template: src=hosts dest=/etc/hosts owner=root group=root
+  become: yes
 
 - name: create ssh user config directory
   file: path={{ home }}/.ssh state=directory owner={{ user }} group={{ user }} mode=0700
@@ -7,9 +8,9 @@
 - name: create ssh user config file
   copy: src=config dest={{ home }}/.ssh/config owner={{ user }} group={{ user }} mode=0600
 
-# - name: install jdk
-#   package: name={{ java_package }} state=present
-#   become: yes
+- name: install jdk
+  package: name={{ java_package }} state=present
+  become: yes
 
 #- name: create user to run benchmark
 #  user: name={{ user }}

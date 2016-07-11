@@ -12,10 +12,10 @@
   </property>
   <property>
     <name>mapreduce.jobhistory.address</name>
-    <value>{{ master_host }}:10020</value>
+    <value>{{ master_2 }}:10020</value>
   </property>
   <property>
     <name>mapreduce.jobhistory.webapp.address</name>
-    <value>{{ master_host }}:19888</value>
+    <value>{{ master_2 }}:19888</value>
   </property>
 </configuration>

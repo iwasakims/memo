@@ -5,6 +5,13 @@
   - name: start zookeeper daemon
     command: "{{ zookeeper_home }}/bin/zkServer.sh start"
     when: ha
+
+- hosts:
+  - master1
+  - master2
+  - master3
+  remote_user: "{{ user }}"
+  tasks:
   - name: start journalnode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start journalnode"
     when: ha
@@ -42,12 +49,19 @@
     when: ha
 
 - hosts:
-  - quorum
+  - master1
+  - master2
+  - master3
   remote_user: "{{ user }}"
   tasks:
   - name: stop journalnode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop journalnode"
     when: ha
+
+- hosts:
+  - quorum
+  remote_user: "{{ user }}"
+  tasks:
   - name: stop zookeeper daemon
     command: "{{ zookeeper_home }}/bin/zkServer.sh stop"
     when: ha
