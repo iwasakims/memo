@@ -41,19 +41,3 @@
     owner: "{{ hbase_user }}"
     group: "{{ hbase_group }}"
     state: link
-
-- name: create hbase native lib directory
-  file:
-    path: "{{ hbase_home }}/lib/native/Linux-amd64-64"
-    owner: "{{ hbase_user }}"
-    group: "{{ hbase_group }}"
-    state: directory
-
-- name: create symlink to libhadoop.so
-  file:
-    src: "{{ hadoop_home }}/lib/native/libhadoop.so"
-    dest: "{{ hbase_home }}/lib/native/Linux-amd64-64/libhadoop.so"
-    mode: "0755"
-    owner: "{{ hbase_user }}"
-    group: "{{ hbase_group }}"
-    state: link
