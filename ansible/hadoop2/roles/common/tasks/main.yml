@@ -2,6 +2,14 @@
   template: src=hosts dest=/etc/hosts owner=root group=root
   become: yes
 
+- name: disable selinux
+  selinux: state=disabled
+  become: yes
+
+- name: disable iptables
+  service: name=iptables enabled=no state=stopped
+  become: yes
+
 - name: create ssh user config directory
   file: path={{ home }}/.ssh state=directory owner={{ user }} group={{ user }} mode=0700
 
