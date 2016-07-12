@@ -6,6 +6,7 @@ java_package: "java-1.8.0-openjdk-devel"
 java_home: "/usr/lib/jvm/java-1.8.0-openjdk.x86_64"
 packaging: "tarball"
 
+
 #zookeeper: "zookeeper-3.4.6"
 zookeeper: "zookeeper-3.4.5-cdh5.7.1"
 zookeeper_tarball: "{{ zookeeper }}.tar.gz"
@@ -19,6 +20,7 @@ zookeeper_home: "{{ home }}/{{ zookeeper }}"
 zookeeper_confdir: "{{ zookeeper_home }}/conf"
 zookeeper_datadir: "{{ home }}/zookeeper"
 myid: "-1"
+
 
 #hadoop: "hadoop-2.7.2"
 hadoop: "hadoop-2.6.0-cdh5.7.1"
@@ -49,3 +51,13 @@ master_1: "{{ groups['master1'][0] }}"
 master_2: "{{ groups['master2'][0] }}"
 master_3: "{{ groups['master3'][0] }}"
 defaultfs: "hdfs://mycluster"
+
+
+#hbase: "hbase-1.2.1"
+hbase: "hbase-1.2.0-cdh5.7.1"
+#hbase_tarball: "{{ hbase }}-bin.tar.gz"
+hbase_tarball: "{{ hbase }}.tar.gz"
+hbase_user: "{{ user }}"
+hbase_group: "{{ user }}"
+hbase_home: "{{ home }}/{{ hbase }}"
+hbase_confdir: "{{ hbase_home }}/conf"

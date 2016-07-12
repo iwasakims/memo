@@ -7,6 +7,7 @@
   remote_user: "{{ user }}"
   become: yes
   roles:
-  - common
-  - zookeeper
-  - hadoop
+#  - common
+#  - zookeeper
+#  - hadoop
+  - hbase

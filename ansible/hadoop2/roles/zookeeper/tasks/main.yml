@@ -15,6 +15,7 @@
   unarchive: 
     src: "{{ home }}/{{ zookeeper_tarball }}"
     dest: "{{ home }}"
+    creates: "{{ zookeeper_home }}"
     owner: "{{ zookeeper_user }}"
     group: "{{ zookeeper_group }}"
   when: packaging == "tarball"

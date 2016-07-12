@@ -2,6 +2,9 @@
   - master3
   remote_user: "{{ user }}"
   tasks:
+  - name: stop hmaster daemon
+    command: "{{ hbase_home }}/bin/hbase-daemon.sh stop master"
+    ignore_errors: yes
   - name: stop resourcemanager daemon
     command: "{{ hadoop_home }}/sbin/yarn-daemon.sh stop resourcemanager"
     when: ha
@@ -19,6 +22,9 @@
   - master2
   remote_user: "{{ user }}"
   tasks:
+  - name: stop hmaster daemon
+    command: "{{ hbase_home }}/bin/hbase-daemon.sh stop master"
+    ignore_errors: yes
   - name: stop resourcemanager daemon
     command: "{{ hadoop_home }}/sbin/yarn-daemon.sh stop resourcemanager"
     ignore_errors: yes
@@ -27,6 +33,9 @@
   - master1
   remote_user: "{{ user }}"
   tasks:
+  - name: stop hmaster daemon
+    command: "{{ hbase_home }}/bin/hbase-daemon.sh stop master"
+    ignore_errors: yes
   - name: stop zkfc daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop zkfc"
     when: ha
@@ -39,6 +48,9 @@
   - slaves
   remote_user: "{{ user }}"
   tasks:
+  - name: stop regionserver daemon
+    command: "{{ hbase_home }}/bin/hbase-daemon.sh stop regionserver"
+    ignore_errors: yes
   - name: stop nodemanager daemon
     command: "{{ hadoop_home }}/sbin/yarn-daemon.sh stop nodemanager"
     ignore_errors: yes

@@ -25,6 +25,8 @@
   - name: start hdfs zkfc daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start zkfc"
     when: ha
+  - name: start hmaster daemon
+    command: "{{ hbase_home }}/bin/hbase-daemon.sh start master"
 
 - hosts:
   - master2
@@ -34,6 +36,8 @@
     command: "{{ hadoop_home }}/sbin/yarn-daemon.sh start resourcemanager"
   - name: wait for resourcemanager starting up
     pause: seconds=10
+  - name: start hmaster daemon
+    command: "{{ hbase_home }}/bin/hbase-daemon.sh start master"
 
 - hosts:
   - master3
@@ -48,6 +52,8 @@
   - name: start resourcemanager daemon
     command: "{{ hadoop_home }}/sbin/yarn-daemon.sh start resourcemanager"
     when: ha
+  - name: start hmaster daemon
+    command: "{{ hbase_home }}/bin/hbase-daemon.sh start master"
 
 - hosts:
   - slaves
@@ -57,3 +63,5 @@
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start datanode"
   - name: start nodemanager daemon
     command: "{{ hadoop_home }}/sbin/yarn-daemon.sh start nodemanager"
+  - name: start regionserver daemon
+    command: "{{ hbase_home }}/bin/hbase-daemon.sh start regionserver"

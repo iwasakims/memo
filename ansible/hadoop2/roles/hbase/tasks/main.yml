@@ -1,0 +1,43 @@
+- name: rm hbase home
+  file: path={{ hbase_home }} state=absent
+  when: cleanup
+
+- name: download hbase tarball
+  copy:
+    src: "{{ files_dir }}/{{ hbase_tarball }}"
+    dest: "{{ home }}/{{ hbase_tarball }}"
+    force: no
+    owner: "{{ hbase_user }}"
+    group: "{{ hbase_group }}"
+  when: packaging == "tarball"
+
+- name: extract hbase tarball
+  unarchive: 
+    src: "{{ home }}/{{ hbase_tarball }}"
+    dest: "{{ home }}"
+    creates: "{{ hbase_home }}"
+    owner: "{{ hbase_user }}"
+    group: "{{ hbase_group }}"
+  when: packaging == "tarball"
+
+- name: create hbase hbase-site.xml
+  template:
+    src: "hbase-site.xml"
+    dest: "{{ hbase_confdir }}/hbase-site.xml"
+    owner: "{{ hbase_user }}"
+    group: "{{ hbase_group }}"
+
+- name: create hbase hbase-env.sh
+  template:
+    src: "hbase-env.sh"
+    dest: "{{ hbase_confdir }}/hbase-env.sh"
+    owner: "{{ hbase_user }}"
+    group: "{{ hbase_group }}"
+
+- name: create symlink to hdfs-site.xml
+  file:
+    src: "{{ hadoop_confdir }}/hdfs-site.xml"
+    dest: "{{ hbase_confdir }}/hdfs-site.xml"
+    owner: "{{ hbase_user }}"
+    group: "{{ hbase_group }}"
+    state: link

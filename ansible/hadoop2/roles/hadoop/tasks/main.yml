@@ -31,6 +31,7 @@
   unarchive: 
     src: "{{ home }}/{{ hadoop_tarball }}"
     dest: "{{ home }}"
+    creates: "{{ hadoop_home }}"
     owner: "{{ hadoop_user }}"
     group: "{{ hadoop_group }}"
   when: packaging == "tarball"
