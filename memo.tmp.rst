@@ -295,6 +295,13 @@ HDFS
 - DFSOutputStream#completeFileはサーバ側のcompleteが成功するまで何度かリトライする。
   replication.minに達していないと成功しないから。
 
+- MD5MD5CRC32については、
+  DFSClient#getFileChecksumを見るのが参考になる。
+  DataNodeから各ブロックのmd5を取得し、全ブロック分のバイト列のdigestを取得する。
+
+  - ブロックのmd5はDataXceiver#blockChecksumの中で都度計算される。
+    .metaの中のcrc32すべてに対してdigestを取る。
+
 
 BlockManager
 ------------
@@ -640,3 +647,28 @@ CMS
     https://blogs.oracle.com/jonthecollector/entry/did_you_know
 
 - "-Xmx"で指定されるMaxHeapのサイズは、Permanent領域の分を含まない。
+
+
+EC2
+===
+
+インスタンス起動時にとりあえずでsshのlisten portを追加するためのuser data。::
+
+  #!/bin/bash
+  setenforce 0
+  service iptables stop
+  echo "" >> /etc/ssh/sshd_config
+  echo "Port 22" >> /etc/ssh/sshd_config
+  echo "Port 443" >> /etc/ssh/sshd_config
+  service sshd reload
+
+あるいは::
+
+  #cloud-config
+  runcmd:
+   - setenforce 0
+   - service iptables stop
+   - [ sh, -c, '/bin/echo "" >> /etc/ssh/sshd_config' ]
+   - [ sh, -c, '/bin/echo "Port 22" >> /etc/ssh/sshd_config' ]
+   - [ sh, -c, '/bin/echo "Port 443" >> /etc/ssh/sshd_config' ]
+   - service sshd reload
