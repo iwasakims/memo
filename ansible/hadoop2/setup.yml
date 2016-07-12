@@ -5,6 +5,7 @@
   - master3
   - slaves
   remote_user: "{{ user }}"
+  become: yes
   roles:
   - common
   - zookeeper

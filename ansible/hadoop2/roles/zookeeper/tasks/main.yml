@@ -3,22 +3,24 @@
   when: cleanup
 
 - name: download zookeeper tarball
-  copy: src={{ files_dir }}/{{ zookeeper_tarball }} dest={{ home }}/{{ zookeeper_tarball }} force=no
-
-- name: set owner of zookeeper tarball
-  file: path={{ home }}/{{ zookeeper_tarball }} owner={{ user }} group={{ user }}
+  copy:
+    src: "{{ files_dir }}/{{ zookeeper_tarball }}"
+    dest: "{{ home }}/{{ zookeeper_tarball }}"
+    force: no
+    owner: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+  when: packaging == "tarball"
 
 - name: extract zookeeper tarball
-  command: tar xf {{ home }}/{{ zookeeper_tarball }}
-  args:
-    chdir: "{{ home }}"
-    creates: "{{ zookeeper_home }}"
-
-- name: set owner and group of zookeeper files
-  file: path={{ zookeeper_home }} owner={{ user }} group={{ user }} recurse=true
+  unarchive: 
+    src: "{{ home }}/{{ zookeeper_tarball }}"
+    dest: "{{ home }}"
+    owner: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+  when: packaging == "tarball"
 
 - name: create zookeeper cfg file
-  template: src=zoo.cfg dest={{ zookeeper_home }}/conf/zoo.cfg owner={{ user }} group={{ user }}
+  template: src=zoo.cfg dest={{ zookeeper_confdir }}/zoo.cfg owner={{ user }} group={{ user }}
 
 - name: rm zookeeper data directory
   file: path={{ zookeeper_datadir }} state=absent

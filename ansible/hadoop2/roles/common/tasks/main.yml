@@ -1,14 +1,11 @@
 - name: create hosts file
   template: src=hosts dest=/etc/hosts owner=root group=root
-  become: yes
 
 - name: disable selinux
   selinux: state=disabled
-  become: yes
 
 - name: disable iptables
   service: name=iptables enabled=no state=stopped
-  become: yes
 
 - name: create ssh user config directory
   file: path={{ home }}/.ssh state=directory owner={{ user }} group={{ user }} mode=0700
@@ -18,7 +15,10 @@
 
 - name: install jdk
   package: name={{ java_package }} state=present
-  become: yes
+
+- name: get cdh repository location
+  get_url: url=https://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/cloudera-cdh5.repo dest=/etc/yum.repos.d/
+  when: packaging == "rpm"
 
 #- name: create user to run benchmark
 #  user: name={{ user }}
