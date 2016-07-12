@@ -18,10 +18,12 @@ zookeeper_address: "{{ zookeeper_1 }}:2181,{{ zookeeper_2 }}:2181,{{ zookeeper_3
 zookeeper_home: "{{ home }}/{{ zookeeper }}"
 zookeeper_confdir: "{{ zookeeper_home }}/conf"
 zookeeper_datadir: "{{ home }}/zookeeper"
+myid: "-1"
 
 #hadoop: "hadoop-2.7.2"
 hadoop: "hadoop-2.6.0-cdh5.7.1"
 hadoop_tarball: "{{ hadoop }}.tar.gz"
+hadoop_user: "{{user}}"
 hadoop_group: "{{user}}"
 hdfs_user: "{{user}}"
 hdfs_group: "{{user}}"
@@ -29,19 +31,17 @@ yarn_user: "{{user}}"
 yarn_group: "{{user}}"
 mapred_user: "{{user}}"
 mapred_group: "{{user}}"
-dfs_namenode_name_dir: "{{ home }}/hdfs/name"
-data_dir_1: "{{ home }}/hdfs/data1"
-data_dir_2: "{{ home }}/hdfs/data2"
-dfs_datanode_data_dir: "[DISK]{{ data_dir_1 }},[DISK]{{ data_dir_2 }}"
-dfs_journalnode_edits_dir: "{{ home }}/hdfs/journal"
-
 hadoop_home: "{{ home }}/{{ hadoop }}"
 hadoop_confdir: "{{ hadoop_home }}/etc/hadoop"
 hdfs_home: "{{ hadoop_home}}"
 yarn_home: "{{ hadoop_home}}"
 mapred_home: "{{ hadoop_home}}"
 
-
+dfs_namenode_name_dir: "{{ home }}/hdfs/name"
+data_dir_1: "{{ home }}/hdfs/data1"
+data_dir_2: "{{ home }}/hdfs/data2"
+dfs_datanode_data_dir: "[DISK]{{ data_dir_1 }},[DISK]{{ data_dir_2 }}"
+dfs_journalnode_edits_dir: "{{ home }}/hdfs/journal"
 
 # for NN/RM HA
 ha: True

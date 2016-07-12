@@ -19,31 +19,53 @@
   when: cleanup
 
 - name: download hadoop tarball
-  copy: src={{ files_dir }}/{{ hadoop_tarball }} dest={{ home }}/{{ hadoop_tarball }} force=no
-
-- name: set owner of hadoop tarball
-  file: path={{ home }}/{{ hadoop_tarball }} owner={{ user }} group={{ user }}
+  copy:
+    src: "{{ files_dir }}/{{ hadoop_tarball }}"
+    dest: "{{ home }}/{{ hadoop_tarball }}"
+    force: no
+    owner: "{{ hadoop_user }}"
+    group: "{{ hadoop_group }}"
+  when: packaging == "tarball"
 
 - name: extract hadoop tarball
-  command: tar xf {{ home }}/{{ hadoop_tarball }}
-  args:
-    chdir: "{{ home }}"
-    creates: "{{ hadoop_home }}"
-
-- name: set owner and group of hadoopp files
-  file: path={{ hadoop_home }} owner={{ user }} group={{ user }} recurse=true
+  unarchive: 
+    src: "{{ home }}/{{ hadoop_tarball }}"
+    dest: "{{ home }}"
+    owner: "{{ hadoop_user }}"
+    group: "{{ hadoop_group }}"
+  when: packaging == "tarball"
 
 - name: create hadoop core-site.xml
-  template: src=core-site.xml dest={{ hadoop_home }}/etc/hadoop/core-site.xml owner={{ user }} group={{ user }}
+  template:
+    src: "core-site.xml"
+    dest: "{{ hadoop_confdir }}/core-site.xml"
+    owner: "{{ hadoop_user }}"
+    group: "{{ hadoop_group }}"
 
 - name: create hadoop hdfs-site.xml
-  template: src=hdfs-site.xml dest={{ hadoop_home }}/etc/hadoop/hdfs-site.xml owner={{ user }} group={{ user }}
+  template:
+    src: "hdfs-site.xml"
+    dest: "{{ hadoop_confdir }}/hdfs-site.xml"
+    owner: "{{ hdfs_user }}"
+    group: "{{ hdfs_group }}"
 
 - name: create hadoop yarn-site.xml
-  template: src=yarn-site.xml dest={{ hadoop_home }}/etc/hadoop/yarn-site.xml owner={{ user }} group={{ user }}
+  template:
+    src: "yarn-site.xml"
+    dest: "{{ hadoop_confdir }}/yarn-site.xml"
+    owner: "{{ yarn_user }}"
+    group: "{{ yarn_group }}"
 
 - name: create hadoop mapred-site.xml
-  template: src=mapred-site.xml dest={{ hadoop_home }}/etc/hadoop/mapred-site.xml owner={{ user }} group={{ user }}
+  template:
+    src: "mapred-site.xml"
+    dest: "{{ hadoop_confdir }}/mapred-site.xml"
+    owner: "{{ mapred_user }}"
+    group: "{{ mapred_group }}"
 
 - name: create hadoop hadoop-env.sh
-  template: src=hadoop-env.sh dest={{ hadoop_home }}/etc/hadoop/hadoop-env.sh owner={{ user }} group={{ user }}
+  template:
+    src: "hadoop-env.sh"
+    dest: "{{ hadoop_confdir }}/hadoop-env.sh"
+    owner: "{{ hadoop_user }}"
+    group: "{{ hadoop_group }}"

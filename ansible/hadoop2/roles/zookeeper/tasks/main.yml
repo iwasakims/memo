@@ -20,14 +20,26 @@
   when: packaging == "tarball"
 
 - name: create zookeeper cfg file
-  template: src=zoo.cfg dest={{ zookeeper_confdir }}/zoo.cfg owner={{ user }} group={{ user }}
+  template:
+    src: "zoo.cfg"
+    dest: "{{ zookeeper_confdir }}/zoo.cfg"
+    owner: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
 
 - name: rm zookeeper data directory
   file: path={{ zookeeper_datadir }} state=absent
   when: cleanup
 
 - name: create zookeeper data directory
-  file: path={{ zookeeper_datadir }} owner={{ user }} group={{ user }} state=directory
+  file:
+    path: "{{ zookeeper_datadir }}"
+    owner: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+    state: directory
 
 - name: create zookeeper myid file
-  template: src=myid dest={{ zookeeper_datadir }}/myid owner={{ user }} group={{ user }}
+  template:
+    src: "myid"
+    dest: "{{ zookeeper_datadir }}/myid"
+    owner: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
