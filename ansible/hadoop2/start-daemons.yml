@@ -4,6 +4,8 @@
   tasks:
   - name: start zookeeper daemon
     command: "{{ zookeeper_home }}/bin/zkServer.sh start"
+    args:
+      chdir: "{{ zookeeper_home }}"
     when: ha
 
 - hosts:
@@ -25,8 +27,6 @@
   - name: start hdfs zkfc daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start zkfc"
     when: ha
-  - name: start hmaster daemon
-    command: "{{ hbase_home }}/bin/hbase-daemon.sh start master"
 
 - hosts:
   - master2
@@ -36,8 +36,6 @@
     command: "{{ hadoop_home }}/sbin/yarn-daemon.sh start resourcemanager"
   - name: wait for resourcemanager starting up
     pause: seconds=10
-  - name: start hmaster daemon
-    command: "{{ hbase_home }}/bin/hbase-daemon.sh start master"
 
 - hosts:
   - master3
@@ -52,8 +50,6 @@
   - name: start resourcemanager daemon
     command: "{{ hadoop_home }}/sbin/yarn-daemon.sh start resourcemanager"
     when: ha
-  - name: start hmaster daemon
-    command: "{{ hbase_home }}/bin/hbase-daemon.sh start master"
 
 - hosts:
   - slaves
@@ -63,5 +59,23 @@
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start datanode"
   - name: start nodemanager daemon
     command: "{{ hadoop_home }}/sbin/yarn-daemon.sh start nodemanager"
+
+- hosts:
+  - master1
+  - master2
+  - master3
+  remote_user: "{{ user }}"
+  tasks:
+  - name: start hmaster daemon
+    command: "{{ hbase_home }}/bin/hbase-daemon.sh start master"
+    args:
+      chdir: "{{ hbase_home }}"
+
+- hosts:
+  - slaves
+  remote_user: "{{ user }}"
+  tasks:
   - name: start regionserver daemon
     command: "{{ hbase_home }}/bin/hbase-daemon.sh start regionserver"
+    args:
+      chdir: "{{ hbase_home }}"

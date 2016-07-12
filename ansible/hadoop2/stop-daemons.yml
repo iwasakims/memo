@@ -1,10 +1,35 @@
 - hosts:
+  - slaves
+  remote_user: "{{ user }}"
+  tasks:
+  - name: stop regionserver daemon
+    command: "{{ hbase_home }}/bin/hbase-daemon.sh stop regionserver"
+    args:
+      chdir: "{{ hbase_home }}"
+    ignore_errors: yes
+  - name: stop nodemanager daemon
+    command: "{{ hadoop_home }}/sbin/yarn-daemon.sh stop nodemanager"
+    ignore_errors: yes
+  - name: stop datanode daemon
+    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop datanode"
+    ignore_errors: yes
+
+- hosts:
+  - master1
+  - master2
   - master3
   remote_user: "{{ user }}"
   tasks:
   - name: stop hmaster daemon
     command: "{{ hbase_home }}/bin/hbase-daemon.sh stop master"
+    args:
+      chdir: "{{ hbase_home }}"
     ignore_errors: yes
+
+- hosts:
+  - master3
+  remote_user: "{{ user }}"
+  tasks:
   - name: stop resourcemanager daemon
     command: "{{ hadoop_home }}/sbin/yarn-daemon.sh stop resourcemanager"
     when: ha
@@ -22,9 +47,6 @@
   - master2
   remote_user: "{{ user }}"
   tasks:
-  - name: stop hmaster daemon
-    command: "{{ hbase_home }}/bin/hbase-daemon.sh stop master"
-    ignore_errors: yes
   - name: stop resourcemanager daemon
     command: "{{ hadoop_home }}/sbin/yarn-daemon.sh stop resourcemanager"
     ignore_errors: yes
@@ -33,29 +55,12 @@
   - master1
   remote_user: "{{ user }}"
   tasks:
-  - name: stop hmaster daemon
-    command: "{{ hbase_home }}/bin/hbase-daemon.sh stop master"
-    ignore_errors: yes
   - name: stop zkfc daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop zkfc"
     when: ha
     ignore_errors: yes
   - name: stop namenode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop namenode"
-    ignore_errors: yes
-
-- hosts:
-  - slaves
-  remote_user: "{{ user }}"
-  tasks:
-  - name: stop regionserver daemon
-    command: "{{ hbase_home }}/bin/hbase-daemon.sh stop regionserver"
-    ignore_errors: yes
-  - name: stop nodemanager daemon
-    command: "{{ hadoop_home }}/sbin/yarn-daemon.sh stop nodemanager"
-    ignore_errors: yes
-  - name: stop datanode daemon
-    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop datanode"
     ignore_errors: yes
 
 - hosts:
@@ -75,5 +80,7 @@
   tasks:
   - name: stop zookeeper daemon
     command: "{{ zookeeper_home }}/bin/zkServer.sh stop"
+    args:
+      chdir: "{{ zookeeper_home }}"
     when: ha
     ignore_errors: yes
