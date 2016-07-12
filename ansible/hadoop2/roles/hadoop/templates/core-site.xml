@@ -12,6 +12,6 @@
   </property>
   <property>
     <name>hadoop.security.group.mapping</name>
-    <value>org.apache.hadoop.security.JniBasedUnixGroupsMapping</value>
+    <value>org.apache.hadoop.security.JniBasedUnixGroupsMappingWithFallback</value>
   </property>
 </configuration>

@@ -62,10 +62,6 @@
     <name>dfs.ha.fencing.methods</name>
     <value>shell(/bin/true)</value>
   </property>
-  <property>
-    <name>hadoop.security.group.mapping</name>
-    <value>org.apache.hadoop.security.JniBasedUnixGroupsMappingWithFallback</value>
-  </property>
   <!--
   <property>
     <name>dfs.client.read.shortcircuit</name>
