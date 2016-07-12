@@ -70,3 +70,13 @@
     dest: "{{ hadoop_confdir }}/hadoop-env.sh"
     owner: "{{ hadoop_user }}"
     group: "{{ hadoop_group }}"
+
+- name: download hadoop native library
+  copy:
+    src: "{{ files_dir }}/libhadoop.so"
+    dest: "{{ hadoop_home }}/lib/native/"
+    force: no
+    mode: "0755"
+    owner: "{{ hadoop_user }}"
+    group: "{{ hadoop_group }}"
+

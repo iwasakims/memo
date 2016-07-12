@@ -41,3 +41,12 @@
     owner: "{{ hbase_user }}"
     group: "{{ hbase_group }}"
     state: link
+
+- name: create symlink to libhadoop.so
+  file:
+    src: "{{ hadoop_home }}/lib/native/libhadoop.so"
+    dest: "{{ hbase_home }}/lib/native/libhadoop.so"
+    mode: "0755"
+    owner: "{{ hbase_user }}"
+    group: "{{ hbase_group }}"
+    state: link
