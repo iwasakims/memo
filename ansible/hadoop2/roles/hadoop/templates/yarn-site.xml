@@ -62,7 +62,7 @@
   </property>
   <property>
     <name>yarn.resourcemanager.zk-address</name>
-    <value> zookeeper_address </value>
+    <value>{{ zookeeper_address }}</value>
   </property>
   <property>
     <name>yarn.resourcemanager.ha.automatic-failover.enabled</name>
