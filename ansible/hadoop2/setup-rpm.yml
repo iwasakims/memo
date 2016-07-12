@@ -1,0 +1,28 @@
+- hosts:
+  - quorum
+  - master1
+  - master2
+  - master3
+  - slaves
+  remote_user: "{{ user }}"
+  become: yes
+  roles:
+  - common
+  - zookeeper
+#  - hadoop
+#  - hbase
+  vars:
+  - packaging: "rpm"
+  - zookeeper_user: "zookeeper"
+  - zookeeper_group: "zookeeper"
+  - zookeeper_home: "/usr/lib/zookeeper"
+  - zookeeper_datadir: "/var/lib/zookeeper"
+  - zookeeper_confdir: "/etc/zookeeper/conf"
+
+- hosts:
+  - quorum
+  remote_user: "{{ user }}"
+  become: yes
+  tasks:
+  - name: install zookeeper-server
+    package: name=zookeeper-server state=present

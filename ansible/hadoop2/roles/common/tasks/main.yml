@@ -1,3 +1,6 @@
+- name: remove require tty
+  lineinfile: regexp="^Defaults\s+requiretty" dest=/etc/sudoers state=absent
+
 - name: create hosts file
   template: src=hosts dest=/etc/hosts owner=root group=root
 

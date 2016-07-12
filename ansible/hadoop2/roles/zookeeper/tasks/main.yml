@@ -1,6 +1,6 @@
 - name: rm zookeeper home
   file: path={{ zookeeper_home }} state=absent
-  when: cleanup
+  when: cleanup and packaging == "tarball"
 
 - name: download zookeeper tarball
   copy:
@@ -19,6 +19,22 @@
     owner: "{{ zookeeper_user }}"
     group: "{{ zookeeper_group }}"
   when: packaging == "tarball"
+
+- name: remove zookeeper-package
+  package: name=zookeeper state=present state=absent
+  when: cleanup and packaging == "rpm"
+
+- name: install zookeeper-package
+  package: name=zookeeper state=present
+  when: packaging == "rpm"
+
+- name: create zookeeper default file
+  template:
+    src: "zookeeper"
+    dest: "/etc/default/zookeeper"
+    owner: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+  when: packaging == "rpm"
 
 - name: create zookeeper cfg file
   template:
