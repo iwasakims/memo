@@ -4,8 +4,7 @@
   - master2
   - master3
   - slaves
-  remote_user: "{{ user }}"
-  become: yes
+  become: true
   roles:
   - common
   - zookeeper
@@ -27,8 +26,7 @@
 
 - hosts:
   - quorum
-  remote_user: "{{ user }}"
-  become: yes
+  become: true
   tasks:
   - name: install zookeeper-server
     package: name=zookeeper-server state=present
@@ -37,10 +35,41 @@
   - master1
   - master2
   - master3
-  remote_user: "{{ user }}"
-  become: yes
+  become: true
   tasks:
   - name: install journalnode 
     package: name=hadoop-hdfs-journalnode state=present
 
+- hosts:
+  - master1
+  - master3
+  become: true
+  tasks:
+  - name: install namdenode 
+    package: name=hadoop-hdfs-namenode state=present
+  - name: install zkfc
+    package: name=hadoop-hdfs-zkfc state=present
 
+- hosts:
+  - master2
+  - master3
+  become: true
+  tasks:
+  - name: install esourcemanager
+    package: name=hadoop-yarn-resourcemanager state=present
+
+- hosts:
+  - master3
+  become: true
+  tasks:
+  - name: install historyserver
+    package: name=hadoop-mapreduce-historyserver state=present
+
+- hosts:
+  - slaves
+  become: true
+  tasks:
+  - name: install datanode 
+    package: name=hadoop-hdfs-datanode state=present
+  - name: install nodemanager
+    package: name=hadoop-yarn-nodemanager state=present

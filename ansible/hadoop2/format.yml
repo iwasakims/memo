@@ -3,7 +3,6 @@
   tasks:
   - name: start zookeeper daemon
     command: "{{ zookeeper_home }}/bin/zkServer.sh start"
-    when: ha
 
 - hosts:
   - master1
@@ -12,36 +11,30 @@
   tasks:
   - name: start journalnode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start journalnode"
-    when: ha
 
 - hosts:
   - master1
   tasks:
   - name: wait for journal nodes starting up
     pause: seconds=60
-    when: ha
   - name: format hdfs filesystem
     command: "{{ hadoop_home }}/bin/hdfs namenode -format -force -nonInteractive"
   - name: format znode for zkfc
     command: "{{ hadoop_home }}/bin/hdfs zkfc -formatZK -force -nonInteractive"
-    when: ha
   - name: start namenode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start namenode"
-    when: ha
 
 - hosts:
   - master3
   tasks:
   - name: bootstrap hdfs standby namenode
     command: "{{ hadoop_home }}/bin/hdfs namenode -bootstrapStandby -force -nonInteractive"
-    when: ha
 
 - hosts:
   - master1
   tasks:
   - name: stop namenode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop namenode"
-    when: ha
 
 - hosts:
   - master1
@@ -50,11 +43,9 @@
   tasks:
   - name: stop journalnode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop journalnode"
-    when: ha
 
 - hosts:
   - quorum
   tasks:
   - name: stop zookeeper daemon
     command: "{{ zookeeper_home }}/bin/zkServer.sh stop"
-    when: ha

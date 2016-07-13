@@ -36,11 +36,11 @@
     group: "{{ hadoop_group }}"
   when: packaging == "tarball"
 
-- name: remove hadoop-package
+- name: remove hadoop package
   package: name=hadoop state=present state=absent
   when: cleanup and packaging == "rpm"
 
-- name: install hadoop-package
+- name: install hadoop package
   package: name=hadoop state=present
   when: packaging == "rpm"
 

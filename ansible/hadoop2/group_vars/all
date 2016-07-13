@@ -1,4 +1,4 @@
-cleanup: True
+cleanup: true
 user: "centos"
 home: "/home/{{ user }}"
 files_dir: "{{ home }}/files"
@@ -32,7 +32,6 @@ mapred_user: "{{ user }}"
 hadoop_home: "{{ home }}/{{ hadoop }}"
 hadoop_confdir: "{{ hadoop_home }}/etc/hadoop"
 
-ha: True
 master_1: "{{ groups['master1'][0] }}"
 master_2: "{{ groups['master2'][0] }}"
 master_3: "{{ groups['master3'][0] }}"

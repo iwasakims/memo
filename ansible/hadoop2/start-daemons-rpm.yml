@@ -14,7 +14,6 @@
 #  tasks:
 #  - name: start journalnode daemon
 #    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start journalnode"
-#    when: ha
 #
 #- hosts:
 #  - master1
@@ -24,7 +23,6 @@
 #    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start namenode"
 #  - name: start hdfs zkfc daemon
 #    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start zkfc"
-#    when: ha
 #
 #- hosts:
 #  - master2
@@ -41,13 +39,10 @@
 #  tasks:
 #  - name: start namenode daemon
 #    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start namenode"
-#    when: ha
 #  - name: start hdfs zkfc daemon
 #    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start zkfc"
-#    when: ha
 #  - name: start resourcemanager daemon
 #    command: "{{ hadoop_home }}/sbin/yarn-daemon.sh start resourcemanager"
-#    when: ha
 #
 #- hosts:
 #  - slaves

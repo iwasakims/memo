@@ -1,13 +1,13 @@
 - hosts:
   - quorum
-  become: yes
+  become: true
   tasks:
   - name: init zookeeper data dir
     command: "service zookeeper-server init --force"
 
 - hosts:
   - quorum
-  become: yes
+  become: true
   tasks:
   - name: start zookeeper daemon
     service: name=zookeeper-server state=started
@@ -16,58 +16,51 @@
   - master1
   - master2
   - master3
-  become: yes
+  become: true
   tasks:
   - name: start journalnode daemon
     service: name=hadoop-hdfs-journalnode state=started
-    when: ha
 
-#- hosts:
-#  - master1
-#  remote_user: "{{ user }}"
-#  tasks:
-#  - name: wait for journal nodes starting up
-#    pause: seconds=60
-#    when: ha
-#  - name: format hdfs filesystem
-#    command: "{{ hadoop_home }}/bin/hdfs namenode -format -force -nonInteractive"
-#  - name: format znode for zkfc
-#    command: "{{ hadoop_home }}/bin/hdfs zkfc -formatZK -force -nonInteractive"
-#    when: ha
-#  - name: start namenode daemon
-#    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start namenode"
-#    when: ha
-#
-#- hosts:
-#  - master3
-#  remote_user: "{{ user }}"
-#  tasks:
-#  - name: bootstrap hdfs standby namenode
-#    command: "{{ hadoop_home }}/bin/hdfs namenode -bootstrapStandby -force -nonInteractive"
-#    when: ha
-#
-#- hosts:
-#  - master1
-#  remote_user: "{{ user }}"
-#  tasks:
-#  - name: stop namenode daemon
-#    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop namenode"
-#    when: ha
-#
-#- hosts:
-#  - master1
-#  - master2
-#  - master3
-#  remote_user: "{{ user }}"
-#  tasks:
-#  - name: stop journalnode daemon
-#    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop journalnode"
-#    when: ha
-#
-#- hosts:
-#  - quorum
-#  remote_user: "{{ user }}"
-#  tasks:
-#  - name: stop zookeeper daemon
-#    command: "{{ zookeeper_home }}/bin/zkServer.sh stop"
-#    when: ha
+- hosts:
+  - master1
+  become: true
+  tasks:
+  - name: wait for journal nodes starting up
+    pause: seconds=60
+  - name: format hdfs filesystem
+    command: "service hadoop-hdfs-namenode init"
+  - name: format znode for zkfc
+    command: "service hadoop-hdfs-init init"
+  - name: start namenode daemon
+    service: name=hadoop-hdfs-namenode state=started
+
+- hosts:
+  - master3
+  tasks:
+  become: true
+  become_user: "{{ hdfs }}"
+  - name: bootstrap hdfs standby namenode
+    command: "hdfs namenode -bootstrapStandby -force -nonInteractive"
+
+- hosts:
+  - master1
+  become: true
+  tasks:
+  - name: stop namenode daemon
+    service: name=hadoop-hdfs-namenode state=stopped
+
+- hosts:
+  - master1
+  - master2
+  - master3
+  become: true
+  tasks:
+  - name: stop journalnode daemon
+    service: name=hadoop-hdfs-journalnode state=stopped
+
+- hosts:
+  - quorum
+  remote_user: "{{ user }}"
+  tasks:
+  - name: stop zookeeper daemon
+    command: "{{ zookeeper_home }}/bin/zkServer.sh stop"
