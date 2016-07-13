@@ -9,7 +9,7 @@
     service: name=hadoop-yarn-nodemanager state=stopped
     ignore_errors: yes
   - name: stop datanode daemon
-    service: name=hadoop-hdfs-datandoe state=stopped
+    service: name=hadoop-hdfs-datanode state=stopped
     ignore_errors: yes
 
 #- hosts:
@@ -26,6 +26,9 @@
   - master3
   become: true
   tasks:
+#  - name: stop historyserver daemon
+#    service: name=hadoop-mapreduce-historyserver state=stopped
+#    ignore_errors: yes
   - name: stop resourcemanager daemon
     service: name=hadoop-yarn-resourcemanager state=stopped
     ignore_errors: yes

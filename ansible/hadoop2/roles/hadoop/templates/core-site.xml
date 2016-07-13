@@ -8,7 +8,7 @@
   </property>
   <property>
     <name>hadoop.tmp.dir</name>
-    <value>/tmp/hadoop-{{ user }}</value>
+    <value>{{ hadoop_tmp_dir }}</value>
   </property>
   <property>
     <name>hadoop.security.group.mapping</name>

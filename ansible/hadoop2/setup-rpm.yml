@@ -9,7 +9,7 @@
   - common
   - zookeeper
   - hadoop
-#  - hbase
+  # - hbase
   vars:
   - packaging: "rpm"
   - zookeeper_user: "zookeeper"
@@ -23,6 +23,7 @@
   - mapred_user: "mapred"
   - hadoop_home: "/usr/lib/hadoop"
   - hadoop_confdir: "/etc/hadoop/conf"
+  - hdfs_vardir: "/var/lib/hadoop-hdfs"
   - dfs_namenode_name_dir: "/var/lib/hadoop-hdfs/name"
   - dfs_journalnode_edits_dir: "/var/lib/hadoop-hdfs/journal"
   - data_dir_1: "/data1"
@@ -60,7 +61,7 @@
   - master3
   become: true
   tasks:
-  - name: install esourcemanager
+  - name: install resourcemanager
     package: name=hadoop-yarn-resourcemanager state=present
 
 - hosts:

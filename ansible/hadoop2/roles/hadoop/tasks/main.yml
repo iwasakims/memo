@@ -1,3 +1,7 @@
+- name: rm tmp dir
+  file: path={{ hadoop_tmp_dir }} state=absent
+  when: cleanup
+
 - name: rm name dir
   file: path={{ dfs_namenode_name_dir }} state=absent
   when: cleanup
@@ -13,6 +17,14 @@
 - name: rm data dir 2
   file: path={{ data_dir_2 }} state=absent
   when: cleanup
+
+- name: create tmp
+  file:
+    path: "{{ hadoop_tmp_dir }}"
+    owner: "{{ hadoop_user }}"
+    group: "{{ hadoop_group }}"
+    mode: "0775"
+    state: directory
 
 - name: create data dir1
   file:
@@ -30,6 +42,10 @@
 
 - name: rm hadoop home
   file: path={{ hadoop_home }} state=absent
+  when: cleanup
+
+- name: rm hadoop confidr
+  file: path={{ hadoop_confdir }} state=absent
   when: cleanup
 
 - name: download hadoop tarball
@@ -92,6 +108,7 @@
     dest: "{{ hadoop_confdir }}/hadoop-env.sh"
     owner: "{{ hadoop_user }}"
     group: "{{ hadoop_group }}"
+  when: packaging == "tarball"
 
 - name: download hadoop native library
   copy:

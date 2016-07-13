@@ -62,14 +62,12 @@
     <name>dfs.ha.fencing.methods</name>
     <value>shell(/bin/true)</value>
   </property>
-  <!--
   <property>
     <name>dfs.client.read.shortcircuit</name>
     <value>true</value>
   </property>
   <property>
     <name>dfs.domain.socket.path</name>
-    <value>{{ hadoop_home }}/dn.sock</value>
+    <value>{{ hdfs_vardir }}/dn.sock</value>
   </property>
-  -->
 </configuration>

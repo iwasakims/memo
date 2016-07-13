@@ -42,8 +42,8 @@
     service: name=hadoop-hdfs-zkfc state=started
   - name: start resourcemanager daemon
     service: name=hadoop-yarn-resourcemanager state=started
-  - name: start historyserver daemon
-    service: name=hadoop-mapreduce-historyserver state=started
+#  - name: start historyserver daemon
+#    service: name=hadoop-mapreduce-historyserver state=started
 
 - hosts:
   - slaves
