@@ -55,13 +55,3 @@
     group: "{{ hbase_user }}"
   tags:
   - configuration
-
-- name: create symlink to hdfs-site.xml
-  file:
-    src: "{{ hadoop_confdir }}/hdfs-site.xml"
-    dest: "{{ hbase_confdir }}/hdfs-site.xml"
-    owner: "{{ hbase_user }}"
-    group: "{{ hbase_user }}"
-    state: link
-  tags:
-  - configuration
