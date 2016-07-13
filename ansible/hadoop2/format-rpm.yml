@@ -24,13 +24,19 @@
 - hosts:
   - master1
   become: true
+  become_user: "hdfs"
   tasks:
   - name: wait for journal nodes starting up
     pause: seconds=60
   - name: format hdfs filesystem
-    command: "service hadoop-hdfs-namenode init"
+    command: "hdfs namenode -format -force -nonInteractive"
   - name: format znode for zkfc
-    command: "service hadoop-hdfs-zkfc init"
+    command: "hdfs zkfc -formatZK -force -nonInteractive"
+
+- hosts:
+  - master1
+  become: true
+  tasks:
   - name: start namenode daemon
     service: name=hadoop-hdfs-namenode state=started
 

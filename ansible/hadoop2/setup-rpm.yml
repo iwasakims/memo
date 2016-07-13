@@ -11,7 +11,7 @@
   - hadoop
   - hbase
   vars:
-  - cleanup: false
+  - cleanup: true
   - packaging: "rpm"
   - zookeeper_user: "zookeeper"
   - zookeeper_home: "/usr/lib/zookeeper"

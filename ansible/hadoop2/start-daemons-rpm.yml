@@ -56,6 +56,18 @@
 
 - hosts:
   - master1
+  become: true
+  become_user: "hdfs" 
+  tasks:
+  - name: create hbase rootdir
+    command: "hdfs dfs -mkdir -p /hbase"
+  - name: chown hbase rootdir
+    command: "hdfs dfs -chown hbase:hbase /hbase"
+  tags:
+  - hbase
+
+- hosts:
+  - master1
   - master2
   - master3
   become: true
