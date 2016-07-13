@@ -14,10 +14,12 @@
   vars:
   - packaging: "rpm"
   - zookeeper_user: "zookeeper"
-  - zookeeper_group: "zookeeper"
   - zookeeper_home: "/usr/lib/zookeeper"
   - zookeeper_datadir: "/var/lib/zookeeper"
   - zookeeper_confdir: "/etc/zookeeper/conf"
+  - hadoop_user: "hadoop"
+  - hadoop_home: "/usr/lib/hadoop"
+  - hadoop_confdir: "/etc/hadoop/conf"
 
 - hosts:
   - quorum
@@ -26,3 +28,15 @@
   tasks:
   - name: install zookeeper-server
     package: name=zookeeper-server state=present
+
+- hosts:
+  - master1
+  - master2
+  - master3
+  remote_user: "{{ user }}"
+  become: yes
+  tasks:
+  - name: install journalnode 
+    package: name=hadoop-hdfs-journalnode state=present
+
+

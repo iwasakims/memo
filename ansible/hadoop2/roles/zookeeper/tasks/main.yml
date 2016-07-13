@@ -8,7 +8,7 @@
     dest: "{{ home }}/{{ zookeeper_tarball }}"
     force: no
     owner: "{{ zookeeper_user }}"
-    group: "{{ zookeeper_group }}"
+    group: "{{ zookeeper_user }}"
   when: packaging == "tarball"
 
 - name: extract zookeeper tarball
@@ -17,7 +17,7 @@
     dest: "{{ home }}"
     creates: "{{ zookeeper_home }}"
     owner: "{{ zookeeper_user }}"
-    group: "{{ zookeeper_group }}"
+    group: "{{ zookeeper_user }}"
   when: packaging == "tarball"
 
 - name: remove zookeeper-package
@@ -33,7 +33,7 @@
     src: "zookeeper"
     dest: "/etc/default/zookeeper"
     owner: "{{ zookeeper_user }}"
-    group: "{{ zookeeper_group }}"
+    group: "{{ zookeeper_user }}"
   when: packaging == "rpm"
 
 - name: create zookeeper cfg file
@@ -41,7 +41,7 @@
     src: "zoo.cfg"
     dest: "{{ zookeeper_confdir }}/zoo.cfg"
     owner: "{{ zookeeper_user }}"
-    group: "{{ zookeeper_group }}"
+    group: "{{ zookeeper_user }}"
 
 - name: rm zookeeper data directory
   file: path={{ zookeeper_datadir }} state=absent
@@ -51,7 +51,7 @@
   file:
     path: "{{ zookeeper_datadir }}"
     owner: "{{ zookeeper_user }}"
-    group: "{{ zookeeper_group }}"
+    group: "{{ zookeeper_user }}"
     state: directory
 
 - name: create zookeeper myid file
@@ -59,4 +59,4 @@
     src: "myid"
     dest: "{{ zookeeper_datadir }}/myid"
     owner: "{{ zookeeper_user }}"
-    group: "{{ zookeeper_group }}"
+    group: "{{ zookeeper_user }}"

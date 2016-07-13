@@ -24,7 +24,7 @@
     dest: "{{ home }}/{{ hadoop_tarball }}"
     force: no
     owner: "{{ hadoop_user }}"
-    group: "{{ hadoop_group }}"
+    group: "{{ hadoop_user }}"
   when: packaging == "tarball"
 
 - name: extract hadoop tarball
@@ -33,7 +33,7 @@
     dest: "{{ home }}"
     creates: "{{ hadoop_home }}"
     owner: "{{ hadoop_user }}"
-    group: "{{ hadoop_group }}"
+    group: "{{ hadoop_user }}"
   when: packaging == "tarball"
 
 - name: create hadoop core-site.xml
@@ -41,35 +41,35 @@
     src: "core-site.xml"
     dest: "{{ hadoop_confdir }}/core-site.xml"
     owner: "{{ hadoop_user }}"
-    group: "{{ hadoop_group }}"
+    group: "{{ hadoop_user }}"
 
 - name: create hadoop hdfs-site.xml
   template:
     src: "hdfs-site.xml"
     dest: "{{ hadoop_confdir }}/hdfs-site.xml"
     owner: "{{ hdfs_user }}"
-    group: "{{ hdfs_group }}"
+    group: "{{ hadoop_user }}"
 
 - name: create hadoop yarn-site.xml
   template:
     src: "yarn-site.xml"
     dest: "{{ hadoop_confdir }}/yarn-site.xml"
     owner: "{{ yarn_user }}"
-    group: "{{ yarn_group }}"
+    group: "{{ hadoop_user }}"
 
 - name: create hadoop mapred-site.xml
   template:
     src: "mapred-site.xml"
     dest: "{{ hadoop_confdir }}/mapred-site.xml"
     owner: "{{ mapred_user }}"
-    group: "{{ mapred_group }}"
+    group: "{{ hadoop_user }}"
 
 - name: create hadoop hadoop-env.sh
   template:
     src: "hadoop-env.sh"
     dest: "{{ hadoop_confdir }}/hadoop-env.sh"
     owner: "{{ hadoop_user }}"
-    group: "{{ hadoop_group }}"
+    group: "{{ hadoop_user }}"
 
 - name: download hadoop native library
   copy:
@@ -78,5 +78,5 @@
     force: no
     mode: "0755"
     owner: "{{ hadoop_user }}"
-    group: "{{ hadoop_group }}"
+    group: "{{ hadoop_user }}"
 
