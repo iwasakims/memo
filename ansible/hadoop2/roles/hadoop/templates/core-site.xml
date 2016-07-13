@@ -7,10 +7,6 @@
     <value>{{ defaultfs }}</value>
   </property>
   <property>
-    <name>hadoop.tmp.dir</name>
-    <value>{{ hadoop_tmp_dir }}</value>
-  </property>
-  <property>
     <name>hadoop.security.group.mapping</name>
     <value>org.apache.hadoop.security.JniBasedUnixGroupsMappingWithFallback</value>
   </property>
