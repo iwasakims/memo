@@ -20,19 +20,22 @@
     group: "{{ hbase_user }}"
   when: packaging == "tarball"
 
+- name: remove hbase package
+  package: name=hbase state=present state=absent
+  when: cleanup and packaging == "rpm"
+
+- name: install hbase package
+  package: name=hbase state=present
+  when: packaging == "rpm"
+
 - name: create hbase hbase-site.xml
   template:
     src: "hbase-site.xml"
     dest: "{{ hbase_confdir }}/hbase-site.xml"
     owner: "{{ hbase_user }}"
     group: "{{ hbase_user }}"
-
-- name: create hbase hbase-env.sh
-  template:
-    src: "hbase-env.sh"
-    dest: "{{ hbase_confdir }}/hbase-env.sh"
-    owner: "{{ hbase_user }}"
-    group: "{{ hbase_user }}"
+  tags:
+  - configuration
 
 - name: create symlink to hdfs-site.xml
   file:
@@ -41,3 +44,24 @@
     owner: "{{ hbase_user }}"
     group: "{{ hbase_user }}"
     state: link
+  tags:
+  - configuration
+
+- name: create hbase hbase-env.sh
+  template:
+    src: "hbase-env.sh"
+    dest: "{{ hbase_confdir }}/hbase-env.sh"
+    owner: "{{ hbase_user }}"
+    group: "{{ hbase_user }}"
+  tags:
+  - configuration
+
+- name: create symlink to hdfs-site.xml
+  file:
+    src: "{{ hadoop_confdir }}/hdfs-site.xml"
+    dest: "{{ hbase_confdir }}/hdfs-site.xml"
+    owner: "{{ hbase_user }}"
+    group: "{{ hbase_user }}"
+    state: link
+  tags:
+  - configuration

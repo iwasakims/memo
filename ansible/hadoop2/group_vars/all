@@ -21,6 +21,7 @@ zookeeper_3: "{{ groups['quorum'][2] }}"
 zookeeper_address: "{{ zookeeper_1 }}:2181,{{ zookeeper_2 }}:2181,{{ zookeeper_3 }}:2181"
 myid: "-1"
 
+
 #hadoop: "hadoop-2.7.2"
 hadoop: "hadoop-2.6.0-cdh5.7.1"
 hadoop_tarball: "{{ hadoop }}.tar.gz"

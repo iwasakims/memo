@@ -9,8 +9,9 @@
   - common
   - zookeeper
   - hadoop
-  # - hbase
+  - hbase
   vars:
+  - cleanup: false
   - packaging: "rpm"
   - zookeeper_user: "zookeeper"
   - zookeeper_home: "/usr/lib/zookeeper"
@@ -18,17 +19,19 @@
   - zookeeper_confdir: "/etc/zookeeper/conf"
   - hadoop_user: "root"
   - hadoop_group: "hadoop"
-  - hdfs_user: "hdfs"
-  - yarn_user: "yarn"
-  - mapred_user: "mapred"
   - hadoop_home: "/usr/lib/hadoop"
   - hadoop_confdir: "/etc/hadoop/conf"
+  - hdfs_user: "hdfs"
   - hdfs_vardir: "/var/lib/hadoop-hdfs"
+  - yarn_user: "yarn"
+  - mapred_user: "mapred"
   - dfs_namenode_name_dir: "/var/lib/hadoop-hdfs/name"
   - dfs_journalnode_edits_dir: "/var/lib/hadoop-hdfs/journal"
   - data_dir_1: "/data1"
   - data_dir_2: "/data2"
   - dfs_datanode_data_dir: "[DISK]{{ data_dir_1 }},[DISK]{{ data_dir_2 }}"
+  - hbase_user: "hbase"
+  - hbase_confdir: "/etc/hbase/conf"
 
 - hosts:
   - quorum
@@ -79,3 +82,25 @@
     package: name=hadoop-hdfs-datanode state=present
   - name: install nodemanager
     package: name=hadoop-yarn-nodemanager state=present
+  - name: install regionserver
+    package: name=hbase-regionserver state=present
+
+- hosts:
+  - master1
+  - master2
+  - master3
+  become: true
+  tasks:
+  - name: install hmaster 
+    package: name=hbase-master state=present
+  tags:
+  - hbase
+
+- hosts:
+  - slaves
+  become: true
+  tasks:
+  - name: install regionserver
+    package: name=hbase-regionserver state=present
+  tags:
+  - hbase

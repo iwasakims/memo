@@ -54,18 +54,22 @@
   - name: start nodemanager daemon
     service: name=hadoop-yarn-nodemanager state=started
 
-#- hosts:
-#  - master1
-#  - master2
-#  - master3
-#  become: true
-#  tasks:
-#  - name: start hmaster daemon
-#    service: name=hbase-master state=started
-#
-#- hosts:
-#  - slaves
-#  become: true
-#  tasks:
-#  - name: start regionserver daemon
-#    service: name=hbase-regionserver state=started
+- hosts:
+  - master1
+  - master2
+  - master3
+  become: true
+  tasks:
+  - name: start hmaster daemon
+    service: name=hbase-master state=started
+  tags:
+  - hbase
+
+- hosts:
+  - slaves
+  become: true
+  tasks:
+  - name: start regionserver daemon
+    service: name=hbase-regionserver state=started
+  tags:
+  - hbase
