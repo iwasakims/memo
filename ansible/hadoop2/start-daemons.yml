@@ -1,6 +1,5 @@
 - hosts:
   - quorum
-  remote_user: "{{ user }}"
   tasks:
   - name: start zookeeper daemon
     command: "{{ zookeeper_home }}/bin/zkServer.sh start"
@@ -12,7 +11,6 @@
   - master1
   - master2
   - master3
-  remote_user: "{{ user }}"
   tasks:
   - name: start journalnode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start journalnode"
@@ -20,7 +18,6 @@
 
 - hosts:
   - master1
-  remote_user: "{{ user }}"
   tasks:
   - name: start namenode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start namenode"
@@ -30,7 +27,6 @@
 
 - hosts:
   - master2
-  remote_user: "{{ user }}"
   tasks:
   - name: start resourcemanager daemon
     command: "{{ hadoop_home }}/sbin/yarn-daemon.sh start resourcemanager"
@@ -39,7 +35,6 @@
 
 - hosts:
   - master3
-  remote_user: "{{ user }}"
   tasks:
   - name: start namenode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start namenode"
@@ -53,7 +48,6 @@
 
 - hosts:
   - slaves
-  remote_user: "{{ user }}"
   tasks:
   - name: start datanode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start datanode"
@@ -64,7 +58,6 @@
   - master1
   - master2
   - master3
-  remote_user: "{{ user }}"
   tasks:
   - name: start hmaster daemon
     command: "{{ hbase_home }}/bin/hbase-daemon.sh start master"
@@ -73,7 +66,6 @@
 
 - hosts:
   - slaves
-  remote_user: "{{ user }}"
   tasks:
   - name: start regionserver daemon
     command: "{{ hbase_home }}/bin/hbase-daemon.sh start regionserver"

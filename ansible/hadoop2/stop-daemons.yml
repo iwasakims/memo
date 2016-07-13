@@ -1,6 +1,5 @@
 - hosts:
   - slaves
-  remote_user: "{{ user }}"
   tasks:
   - name: stop regionserver daemon
     command: "{{ hbase_home }}/bin/hbase-daemon.sh stop regionserver"
@@ -18,7 +17,6 @@
   - master1
   - master2
   - master3
-  remote_user: "{{ user }}"
   tasks:
   - name: stop hmaster daemon
     command: "{{ hbase_home }}/bin/hbase-daemon.sh stop master"
@@ -28,7 +26,6 @@
 
 - hosts:
   - master3
-  remote_user: "{{ user }}"
   tasks:
   - name: stop resourcemanager daemon
     command: "{{ hadoop_home }}/sbin/yarn-daemon.sh stop resourcemanager"
@@ -45,7 +42,6 @@
 
 - hosts:
   - master2
-  remote_user: "{{ user }}"
   tasks:
   - name: stop resourcemanager daemon
     command: "{{ hadoop_home }}/sbin/yarn-daemon.sh stop resourcemanager"
@@ -53,7 +49,6 @@
 
 - hosts:
   - master1
-  remote_user: "{{ user }}"
   tasks:
   - name: stop zkfc daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop zkfc"
@@ -67,7 +62,6 @@
   - master1
   - master2
   - master3
-  remote_user: "{{ user }}"
   tasks:
   - name: stop journalnode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop journalnode"
@@ -76,7 +70,6 @@
 
 - hosts:
   - quorum
-  remote_user: "{{ user }}"
   tasks:
   - name: stop zookeeper daemon
     command: "{{ zookeeper_home }}/bin/zkServer.sh stop"

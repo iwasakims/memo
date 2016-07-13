@@ -8,7 +8,7 @@
     dest: "{{ home }}/{{ hbase_tarball }}"
     force: no
     owner: "{{ hbase_user }}"
-    group: "{{ hbase_group }}"
+    group: "{{ hbase_user }}"
   when: packaging == "tarball"
 
 - name: extract hbase tarball
@@ -17,7 +17,7 @@
     dest: "{{ home }}"
     creates: "{{ hbase_home }}"
     owner: "{{ hbase_user }}"
-    group: "{{ hbase_group }}"
+    group: "{{ hbase_user }}"
   when: packaging == "tarball"
 
 - name: create hbase hbase-site.xml
@@ -25,19 +25,19 @@
     src: "hbase-site.xml"
     dest: "{{ hbase_confdir }}/hbase-site.xml"
     owner: "{{ hbase_user }}"
-    group: "{{ hbase_group }}"
+    group: "{{ hbase_user }}"
 
 - name: create hbase hbase-env.sh
   template:
     src: "hbase-env.sh"
     dest: "{{ hbase_confdir }}/hbase-env.sh"
     owner: "{{ hbase_user }}"
-    group: "{{ hbase_group }}"
+    group: "{{ hbase_user }}"
 
 - name: create symlink to hdfs-site.xml
   file:
     src: "{{ hadoop_confdir }}/hdfs-site.xml"
     dest: "{{ hbase_confdir }}/hdfs-site.xml"
     owner: "{{ hbase_user }}"
-    group: "{{ hbase_group }}"
+    group: "{{ hbase_user }}"
     state: link

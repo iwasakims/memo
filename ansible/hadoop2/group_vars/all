@@ -22,7 +22,7 @@ zookeeper_address: "{{ zookeeper_1 }}:2181,{{ zookeeper_2 }}:2181,{{ zookeeper_3
 myid: "-1"
 
 #hadoop: "hadoop-2.7.2"
-iadoop: "hadoop-2.6.0-cdh5.7.1"
+hadoop: "hadoop-2.6.0-cdh5.7.1"
 hadoop_tarball: "{{ hadoop }}.tar.gz"
 hadoop_user: "{{user}}"
 hdfs_user: "{{user}}"

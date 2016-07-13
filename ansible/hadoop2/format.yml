@@ -1,6 +1,5 @@
 - hosts:
   - quorum
-  remote_user: "{{ user }}"
   tasks:
   - name: start zookeeper daemon
     command: "{{ zookeeper_home }}/bin/zkServer.sh start"
@@ -10,7 +9,6 @@
   - master1
   - master2
   - master3
-  remote_user: "{{ user }}"
   tasks:
   - name: start journalnode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start journalnode"
@@ -18,7 +16,6 @@
 
 - hosts:
   - master1
-  remote_user: "{{ user }}"
   tasks:
   - name: wait for journal nodes starting up
     pause: seconds=60
@@ -34,7 +31,6 @@
 
 - hosts:
   - master3
-  remote_user: "{{ user }}"
   tasks:
   - name: bootstrap hdfs standby namenode
     command: "{{ hadoop_home }}/bin/hdfs namenode -bootstrapStandby -force -nonInteractive"
@@ -42,7 +38,6 @@
 
 - hosts:
   - master1
-  remote_user: "{{ user }}"
   tasks:
   - name: stop namenode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop namenode"
@@ -52,7 +47,6 @@
   - master1
   - master2
   - master3
-  remote_user: "{{ user }}"
   tasks:
   - name: stop journalnode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop journalnode"
@@ -60,7 +54,6 @@
 
 - hosts:
   - quorum
-  remote_user: "{{ user }}"
   tasks:
   - name: stop zookeeper daemon
     command: "{{ zookeeper_home }}/bin/zkServer.sh stop"
