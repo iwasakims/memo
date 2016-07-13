@@ -23,6 +23,11 @@
   - mapred_user: "mapred"
   - hadoop_home: "/usr/lib/hadoop"
   - hadoop_confdir: "/etc/hadoop/conf"
+  - dfs_namenode_name_dir: "/var/lib/hadoop-hdfs/name"
+  - dfs_journalnode_edits_dir: "/var/lib/hadoop-hdfs/journal"
+  - data_dir_1: "/data1"
+  - data_dir_2: "/data2"
+  - dfs_datanode_data_dir: "[DISK]{{ data_dir_1 }},[DISK]{{ data_dir_2 }}"
 
 - hosts:
   - quorum

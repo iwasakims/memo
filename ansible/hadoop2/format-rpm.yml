@@ -30,15 +30,15 @@
   - name: format hdfs filesystem
     command: "service hadoop-hdfs-namenode init"
   - name: format znode for zkfc
-    command: "service hadoop-hdfs-init init"
+    command: "service hadoop-hdfs-zkfc init"
   - name: start namenode daemon
     service: name=hadoop-hdfs-namenode state=started
 
 - hosts:
   - master3
-  tasks:
   become: true
-  become_user: "{{ hdfs }}"
+  become_user: "hdfs"
+  tasks:
   - name: bootstrap hdfs standby namenode
     command: "hdfs namenode -bootstrapStandby -force -nonInteractive"
 
@@ -60,7 +60,7 @@
 
 - hosts:
   - quorum
-  remote_user: "{{ user }}"
+  become: true
   tasks:
   - name: stop zookeeper daemon
-    command: "{{ zookeeper_home }}/bin/zkServer.sh stop"
+    service: name=zookeeper-server state=stopped

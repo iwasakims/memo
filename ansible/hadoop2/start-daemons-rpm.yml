@@ -1,74 +1,71 @@
 - hosts:
   - quorum
-  remote_user: "{{ user }}"
-  become: yes
+  become: true
   tasks:
   - name: start zookeeper daemon
     service: name=zookeeper-server state=started
+
+- hosts:
+  - master1
+  - master2
+  - master3
+  become: true
+  tasks:
+  - name: start journalnode daemon
+    service: name=hadoop-hdfs-journalnode state=started
+
+- hosts:
+  - master1
+  become: true
+  tasks:
+  - name: start namenode daemon
+    service: name=hadoop-hdfs-namenode state=started
+  - name: start hdfs zkfc daemon
+    service: name=hadoop-hdfs-zkfc state=started
+
+- hosts:
+  - master2
+  become: true
+  tasks:
+  - name: start resourcemanager daemon
+    service: name=hadoop-yarn-resourcemanager state=started
+  - name: wait for resourcemanager starting up
+    pause: seconds=10
+
+- hosts:
+  - master3
+  become: true
+  tasks:
+  - name: start namenode daemon
+    service: name=hadoop-hdfs-namenode state=started
+  - name: start hdfs zkfc daemon
+    service: name=hadoop-hdfs-zkfc state=started
+  - name: start resourcemanager daemon
+    service: name=hadoop-yarn-resourcemanager state=started
+  - name: start historyserver daemon
+    service: name=hadoop-mapreduce-historyserver state=started
+
+- hosts:
+  - slaves
+  become: true
+  tasks:
+  - name: start datanode daemon
+    service: name=hadoop-hdfs-datanode state=started
+  - name: start nodemanager daemon
+    service: name=hadoop-yarn-nodemanager state=started
 
 #- hosts:
 #  - master1
 #  - master2
 #  - master3
-#  remote_user: "{{ user }}"
-#  tasks:
-#  - name: start journalnode daemon
-#    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start journalnode"
-#
-#- hosts:
-#  - master1
-#  remote_user: "{{ user }}"
-#  tasks:
-#  - name: start namenode daemon
-#    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start namenode"
-#  - name: start hdfs zkfc daemon
-#    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start zkfc"
-#
-#- hosts:
-#  - master2
-#  remote_user: "{{ user }}"
-#  tasks:
-#  - name: start resourcemanager daemon
-#    command: "{{ hadoop_home }}/sbin/yarn-daemon.sh start resourcemanager"
-#  - name: wait for resourcemanager starting up
-#    pause: seconds=10
-#
-#- hosts:
-#  - master3
-#  remote_user: "{{ user }}"
-#  tasks:
-#  - name: start namenode daemon
-#    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start namenode"
-#  - name: start hdfs zkfc daemon
-#    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start zkfc"
-#  - name: start resourcemanager daemon
-#    command: "{{ hadoop_home }}/sbin/yarn-daemon.sh start resourcemanager"
-#
-#- hosts:
-#  - slaves
-#  remote_user: "{{ user }}"
-#  tasks:
-#  - name: start datanode daemon
-#    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start datanode"
-#  - name: start nodemanager daemon
-#    command: "{{ hadoop_home }}/sbin/yarn-daemon.sh start nodemanager"
-#
-#- hosts:
-#  - master1
-#  - master2
-#  - master3
-#  remote_user: "{{ user }}"
+#  become: true
 #  tasks:
 #  - name: start hmaster daemon
-#    command: "{{ hbase_home }}/bin/hbase-daemon.sh start master"
-#    args:
-#      chdir: "{{ hbase_home }}"
+#    service: name=hbase-master state=started
 #
 #- hosts:
 #  - slaves
-#  remote_user: "{{ user }}"
+#  become: true
 #  tasks:
 #  - name: start regionserver daemon
-#    command: "{{ hbase_home }}/bin/hbase-daemon.sh start regionserver"
-#    args:
-#      chdir: "{{ hbase_home }}"
+#    service: name=hbase-regionserver state=started
