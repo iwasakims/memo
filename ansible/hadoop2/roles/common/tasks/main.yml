@@ -1,8 +1,12 @@
 - name: remove require tty
   lineinfile: regexp="^Defaults\s+requiretty" dest=/etc/sudoers state=absent
+  tags:
+  - configuration
 
 - name: create hosts file
   template: src=hosts dest=/etc/hosts owner=root group=root
+  tags:
+  - configuration
 
 - name: disable selinux
   selinux: state=disabled
@@ -12,9 +16,13 @@
 
 - name: create ssh user config directory
   file: path={{ home }}/.ssh state=directory owner={{ user }} group={{ user }} mode=0700
+  tags:
+  - configuration
 
 - name: create ssh user config file
   copy: src=config dest={{ home }}/.ssh/config owner={{ user }} group={{ user }} mode=0600
+  tags:
+  - configuration
 
 - name: install jdk
   package: name={{ java_package }} state=present

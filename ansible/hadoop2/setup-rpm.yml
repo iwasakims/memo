@@ -16,7 +16,7 @@
   - zookeeper_home: "/usr/lib/zookeeper"
   - zookeeper_datadir: "/var/lib/zookeeper"
   - zookeeper_confdir: "/etc/zookeeper/conf"
-  - hadoop_user: "root"
+  - hadoop_user: "root" # only used as owner of conf files
   - hadoop_group: "hadoop"
   - hadoop_home: "/usr/lib/hadoop"
   - hadoop_confdir: "/etc/hadoop/conf"
