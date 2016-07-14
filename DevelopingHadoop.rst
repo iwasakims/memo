@@ -363,6 +363,11 @@ Setup
 	at org.apache.hadoop.hdfs.server.datanode.DataNode.secureMain(DataNode.java:2690)
 	at org.apache.hadoop.hdfs.server.datanode.DataNode.main(DataNode.java:2714)
 
+- 再帰的にset -xが有効になるようにして、hoge.shをデバッグする。::
+
+    $ sudo /bin/sh -x -c 'export SHELLOPTS && hoge.sh'
+
+
 
 バージョン
 ----------
