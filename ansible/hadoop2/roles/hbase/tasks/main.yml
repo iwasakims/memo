@@ -1,6 +1,5 @@
 - name: rm hbase home
   file: path={{ hbase_home }} state=absent
-  when: cleanup
 
 - name: download hbase tarball
   copy:
@@ -22,7 +21,7 @@
 
 - name: remove hbase package
   package: name=hbase state=present state=absent
-  when: cleanup and packaging == "rpm"
+  when: packaging == "rpm"
 
 - name: install hbase package
   package: name=hbase state=present

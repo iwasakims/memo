@@ -1,4 +1,3 @@
-cleanup: true
 user: "centos"
 home: "/home/{{ user }}"
 files_dir: "{{ home }}/files"

@@ -1,6 +1,6 @@
 - name: rm zookeeper home
   file: path={{ zookeeper_home }} state=absent
-  when: cleanup and packaging == "tarball"
+  when: packaging == "tarball"
 
 - name: download zookeeper tarball
   copy:
@@ -22,7 +22,7 @@
 
 - name: remove zookeeper-package
   package: name=zookeeper state=present state=absent
-  when: cleanup and packaging == "rpm"
+  when: packaging == "rpm"
 
 - name: install zookeeper-package
   package: name=zookeeper state=present
@@ -45,7 +45,6 @@
 
 - name: rm zookeeper data directory
   file: path={{ zookeeper_datadir }} state=absent
-  when: cleanup
 
 - name: create zookeeper data directory
   file:
