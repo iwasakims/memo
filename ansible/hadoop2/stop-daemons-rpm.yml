@@ -76,6 +76,8 @@
   - name: stop journalnode daemon
     service: name=hadoop-hdfs-journalnode state=stopped
     ignore_errors: yes
+  tags:
+  - journalnode
 
 - hosts:
   - quorum

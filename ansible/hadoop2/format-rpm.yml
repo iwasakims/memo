@@ -39,6 +39,22 @@
   tasks:
   - name: start namenode daemon
     service: name=hadoop-hdfs-namenode state=started
+  - name: start zkfc daemon
+    service: name=hadoop-hdfs-zkfc state=started
+
+- hosts:
+  - master1
+  become: true
+  become_user: "hdfs" 
+  tasks:
+  - name: create tmpdir
+    command: "hdfs dfs -mkdir -p /tmp"
+  - name: set permission to tmpdir
+    command: "hdfs dfs -chmod 777 /tmp"
+  - name: create hbase rootdir
+    command: "hdfs dfs -mkdir -p /hbase"
+  - name: chown hbase rootdir
+    command: "hdfs dfs -chown hbase:hbase /hbase"
 
 - hosts:
   - master3
@@ -52,6 +68,8 @@
   - master1
   become: true
   tasks:
+  - name: stop zkfc daemon
+    service: name=hadoop-hdfs-zkfc state=stopped
   - name: stop namenode daemon
     service: name=hadoop-hdfs-namenode state=stopped
 

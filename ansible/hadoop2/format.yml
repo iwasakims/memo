@@ -23,6 +23,22 @@
     command: "{{ hadoop_home }}/bin/hdfs zkfc -formatZK -force -nonInteractive"
   - name: start namenode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start namenode"
+  - name: start zkfc daemon
+    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start namenode"
+
+- hosts:
+  - master1
+  become: true
+  become_user: "hdfs" 
+  tasks:
+  - name: create tmpdir
+    command: "{{ hadoop_home }}/bin/hdfs dfs -mkdir -p /tmp"
+  - name: set permission to tmpdir
+    command: "{{ hadoop_home }}/bin/hdfs dfs -chmod 777 /tmp"
+  - name: create hbase rootdir
+    command: "{{ hadoop_home }}/bin/hdfs dfs -mkdir -p /hbase"
+  - name: chown hbase rootdir
+    command: "{{ hadoop_home }}/bin/hdfs dfs -chown hbase:hbase /hbase"
 
 - hosts:
   - master3

@@ -13,6 +13,8 @@
   tasks:
   - name: start journalnode daemon
     service: name=hadoop-hdfs-journalnode state=started
+  tags:
+  - journalnode
 
 - hosts:
   - master1
@@ -53,18 +55,6 @@
     service: name=hadoop-hdfs-datanode state=started
   - name: start nodemanager daemon
     service: name=hadoop-yarn-nodemanager state=started
-
-- hosts:
-  - master1
-  become: true
-  become_user: "hdfs" 
-  tasks:
-  - name: create hbase rootdir
-    command: "hdfs dfs -mkdir -p /hbase"
-  - name: chown hbase rootdir
-    command: "hdfs dfs -chown hbase:hbase /hbase"
-  tags:
-  - hbase
 
 - hosts:
   - master1
