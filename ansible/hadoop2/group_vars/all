@@ -7,7 +7,7 @@ packaging: "tarball"
 
 
 #zookeeper: "zookeeper-3.4.6"
-zookeeper: "zookeeper-3.4.5-cdh5.7.1"
+zookeeper: "zookeeper-3.4.5-cdh5.8.0"
 zookeeper_tarball: "{{ zookeeper }}.tar.gz"
 zookeeper_user: "{{ user }}"
 zookeeper_home: "{{ home }}/{{ zookeeper }}"
@@ -22,7 +22,7 @@ myid: "-1"
 
 
 #hadoop: "hadoop-2.7.2"
-hadoop: "hadoop-2.6.0-cdh5.7.1"
+hadoop: "hadoop-2.6.0-cdh5.8.0"
 hadoop_tarball: "{{ hadoop }}.tar.gz"
 hadoop_user: "{{ user }}"
 hadoop_group: "{{ user }}"
@@ -46,7 +46,7 @@ dfs_journalnode_edits_dir: "{{ home }}/hdfs/journal"
 
 
 #hbase: "hbase-1.2.1"
-hbase: "hbase-1.2.0-cdh5.7.1"
+hbase: "hbase-1.2.0-cdh5.8.0"
 #hbase_tarball: "{{ hbase }}-bin.tar.gz"
 hbase_tarball: "{{ hbase }}.tar.gz"
 hbase_user: "{{ user }}"

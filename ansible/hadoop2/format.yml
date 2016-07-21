@@ -24,12 +24,10 @@
   - name: start namenode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start namenode"
   - name: start zkfc daemon
-    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start namenode"
+    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh start zkfc"
 
 - hosts:
   - master1
-  become: true
-  become_user: "hdfs" 
   tasks:
   - name: create tmpdir
     command: "{{ hadoop_home }}/bin/hdfs dfs -mkdir -p /tmp"
@@ -49,6 +47,8 @@
 - hosts:
   - master1
   tasks:
+  - name: stop zkfc daemon
+    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop zkfc"
   - name: stop namenode daemon
     command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop namenode"
 

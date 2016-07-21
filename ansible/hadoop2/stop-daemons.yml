@@ -3,15 +3,9 @@
   tasks:
   - name: stop regionserver daemon
     command: "{{ hbase_home }}/bin/hbase-daemon.sh stop regionserver"
-    args:
-      chdir: "{{ hbase_home }}"
     ignore_errors: yes
-  - name: stop nodemanager daemon
-    command: "{{ hadoop_home }}/sbin/yarn-daemon.sh stop nodemanager"
-    ignore_errors: yes
-  - name: stop datanode daemon
-    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop datanode"
-    ignore_errors: yes
+  tags:
+  - hbase
 
 - hosts:
   - master1
@@ -20,8 +14,18 @@
   tasks:
   - name: stop hmaster daemon
     command: "{{ hbase_home }}/bin/hbase-daemon.sh stop master"
-    args:
-      chdir: "{{ hbase_home }}"
+    ignore_errors: yes
+  tags:
+  - hbase
+
+- hosts:
+  - slaves
+  tasks:
+  - name: stop nodemanager daemon
+    command: "{{ hadoop_home }}/sbin/yarn-daemon.sh stop nodemanager"
+    ignore_errors: yes
+  - name: stop datanode daemon
+    command: "{{ hadoop_home }}/sbin/hadoop-daemon.sh stop datanode"
     ignore_errors: yes
 
 - hosts:

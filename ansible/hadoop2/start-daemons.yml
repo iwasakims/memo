@@ -54,14 +54,18 @@
   - master3
   tasks:
   - name: start hmaster daemon
-    command: "{{ hbase_home }}/bin/hbase-daemon.sh start master"
+    command: "nohup {{ hbase_home }}/bin/hbase-daemon.sh start master"
     args:
       chdir: "{{ hbase_home }}"
+  tags:
+  - hbase
 
 - hosts:
   - slaves
   tasks:
   - name: start regionserver daemon
-    command: "{{ hbase_home }}/bin/hbase-daemon.sh start regionserver"
+    command: "nohup {{ hbase_home }}/bin/hbase-daemon.sh start regionserver"
     args:
       chdir: "{{ hbase_home }}"
+  tags:
+  - hbase
