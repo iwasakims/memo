@@ -19,6 +19,10 @@
     group: "{{ hbase_user }}"
   when: packaging == "tarball"
 
+- name: chown hbase home 
+  file: path={{ hbase_home }} owner={{ hbase_user }} group={{ hbase_user }} recurse=true
+  when: packaging == "tarball"
+
 - name: remove hbase package
   package: name=hbase state=present state=absent
   when: packaging == "rpm"
@@ -33,16 +37,6 @@
     dest: "{{ hbase_confdir }}/hbase-site.xml"
     owner: "{{ hbase_user }}"
     group: "{{ hbase_user }}"
-  tags:
-  - configuration
-
-- name: create symlink to hdfs-site.xml
-  file:
-    src: "{{ hadoop_confdir }}/hdfs-site.xml"
-    dest: "{{ hbase_confdir }}/hdfs-site.xml"
-    owner: "{{ hbase_user }}"
-    group: "{{ hbase_user }}"
-    state: link
   tags:
   - configuration
 
