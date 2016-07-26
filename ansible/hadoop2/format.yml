@@ -35,8 +35,8 @@
     command: "{{ hadoop_home }}/bin/hdfs dfs -chmod 777 /tmp"
   - name: create hbase rootdir
     command: "{{ hadoop_home }}/bin/hdfs dfs -mkdir -p /hbase"
-  - name: chown hbase rootdir
-    command: "{{ hadoop_home }}/bin/hdfs dfs -chown hbase:hbase /hbase"
+#  - name: chown hbase rootdir
+#    command: "{{ hadoop_home }}/bin/hdfs dfs -chown hbase:hbase /hbase"
 
 - hosts:
   - master3

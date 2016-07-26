@@ -6,8 +6,8 @@ java_home: "/usr/lib/jvm/java-1.8.0-openjdk.x86_64"
 packaging: "tarball"
 
 
-#zookeeper: "zookeeper-3.4.6"
-zookeeper: "zookeeper-3.4.5-cdh5.8.0"
+zookeeper: "zookeeper-3.4.8"
+#zookeeper: "zookeeper-3.4.5-cdh5.8.0"
 zookeeper_tarball: "{{ zookeeper }}.tar.gz"
 zookeeper_user: "{{ user }}"
 zookeeper_home: "{{ home }}/{{ zookeeper }}"
@@ -21,9 +21,9 @@ zookeeper_address: "{{ zookeeper_1 }}:2181,{{ zookeeper_2 }}:2181,{{ zookeeper_3
 myid: "-1"
 
 
-#hadoop: "hadoop-2.7.2"
-hadoop: "hadoop-2.6.0-cdh5.8.0"
-hadoop_tarball: "{{ hadoop }}.tar.gz"
+hadoop: "hadoop-2.7.3"
+#hadoop: "hadoop-2.6.0-cdh5.8.0"
+hadoop_tarball: "{{ hadoop }}-RC0.tar.gz"
 hadoop_user: "{{ user }}"
 hadoop_group: "{{ user }}"
 hdfs_user: "{{ user }}"
@@ -45,10 +45,10 @@ dfs_datanode_data_dir: "[DISK]{{ data_dir_1 }},[DISK]{{ data_dir_2 }}"
 dfs_journalnode_edits_dir: "{{ home }}/hdfs/journal"
 
 
-#hbase: "hbase-1.2.1"
-hbase: "hbase-1.2.0-cdh5.8.0"
-#hbase_tarball: "{{ hbase }}-bin.tar.gz"
-hbase_tarball: "{{ hbase }}.tar.gz"
+hbase: "hbase-1.2.2"
+#hbase: "hbase-1.2.0-cdh5.8.0"
+hbase_tarball: "{{ hbase }}-bin.tar.gz"
+#hbase_tarball: "{{ hbase }}.tar.gz"
 hbase_user: "{{ user }}"
 hbase_home: "{{ home }}/{{ hbase }}"
 hbase_confdir: "{{ hbase_home }}/conf"
