@@ -529,16 +529,11 @@ source tarballをlocalに配置する。tarballのファイル名がpackage-x.y.
   $ vi myconfig.yaml
   $ cat myconfig.yaml
   docker:
-          memory_size: "2048"
-          image: "bigtop/deploy:centos-6"
-  
-  boot2docker:
-          memory_size: "2048"
-          number_cpus: "1"
-  
+    memory_size: "4096"
+    image: "bigtop/deploy:centos-6"
   repo: "http://192.168.122.1/bigtop"
   distro: centos
-  components: [zookeeper, hadoop, yarn, hbase]
+  components: [zookeeper, hadoop, yarn]
   namenode_ui_port: "50070"
   yarn_ui_port: "8088"
   hbase_ui_port: "60010"
