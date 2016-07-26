@@ -463,3 +463,90 @@ htrace関連クラスのロードは実行されるので、
 - hbase-common
 - hbase-protocol
 - htrace-core-3.1.0
+
+
+Bigtop
+======
+
+tarballからhadoopのrpmをビルドしてsmoke-testを流してみる
+--------------------------------------------------------
+
+1度source tarballからビルドしてlocal repositoryにパッケージをインストールする。::
+
+  $ tar zxf hadoop-2.7.3-RC0-src.tar.gz
+  $ cd hadoop-2.7.3-src
+  $ mvn clean install -DskipTests
+
+bigtop.bomを編集して、自ノードからsource tarballをダウンロードしてビルドするような設定に修正する。::
+
+  $ git clone https://github.com/apache/bigtop
+  $ cd bigtop 
+  $ vi bigtop.bom
+  $ git diff
+  diff --git a/bigtop.bom b/bigtop.bom
+  index 1b0a96b..ab7f0bf 100644
+  --- a/bigtop.bom
+  +++ b/bigtop.bom
+  @@ -122,12 +122,12 @@ bigtop {
+       'hadoop' {
+         name    = 'hadoop'
+         relNotes = 'Apache Hadoop'
+  -      version { base = '2.7.2'; pkg = base; release = 1 }
+  +      version { base = '2.7.3'; pkg = base; release = 1 }
+         tarball { destination = "${name}-${version.base}.tar.gz"
+                   source      = "${name}-${version.base}-src.tar.gz" }
+  -      url     { download_path = "/$name/common/$name-${version.base}"
+  -                site = "${apache.APACHE_MIRROR}/${download_path}"
+  -                archive = "${apache.APACHE_ARCHIVE}/${download_path}" }
+  +      url     { download_path = ""
+  +                site = "http://localhost/iwasakims"
+  +                archive = "" }
+       }
+       'ignite-hadoop' {
+         name    = 'ignite-hadoop'
+
+source tarballをlocalに配置する。tarballのファイル名がpackage-x.y.z-srcとなっているような暗黙の想定があるので、適当にrenameする。::
+
+  $ cp hadoop-2.7.3-RC0-src.tar.gz /var/www/html/iwasakims/hadoop-2.7.3-src.tar.gz
+
+必要なrpmをビルドする。::
+
+  $ gradle bigtop-groovy-rpm
+  $ gradle bigtop-groovy-rpm
+  $ gradle bigtop-jsvc-rpm
+  $ gradle bigtop-tomcat-rpm
+  $ gradle bigtop-utils-rpm
+  $ gradle hadoop-rpm
+
+できたrpmをyumリポジトリに配置する。::
+
+  $ mv output/* /var/www/html/bigtop
+  $ createrepo --update /var/www/html/bigtop
+
+起動するcontainerの設定と、自分で作ったyumリポジトリの場所を設定ファイルに記述する。::
+
+  $ bigtop-deploy/vm/vagrant-puppet-docker/
+  $ vi myconfig.yaml
+  $ cat myconfig.yaml
+  docker:
+          memory_size: "2048"
+          image: "bigtop/deploy:centos-6"
+  
+  boot2docker:
+          memory_size: "2048"
+          number_cpus: "1"
+  
+  repo: "http://192.168.122.1/bigtop"
+  distro: centos
+  components: [zookeeper, hadoop, yarn, hbase]
+  namenode_ui_port: "50070"
+  yarn_ui_port: "8088"
+  hbase_ui_port: "60010"
+  enable_local_repo: false
+  smoke_test_components: [hdfs, mapreduce, yarn]
+  jdk: "java-1.7.0-openjdk-devel.x86_64"
+
+docker-hadoop.shを実行し、containerを起動してsmoke-testsを実行する。-c 3は3ノード起動するという意味。::
+
+  $ ./docker-hadoop.sh -C myconfig.yaml -c 3 --smoke-tests
+
