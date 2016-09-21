@@ -117,6 +117,9 @@ libhdfsなどのnativeモジュールのテストだけ実行したい場合に�
 
    for i in `seq 100` ; do echo $i && mvn test -Dtest=TestGangliaMetrics || break  ; done
 
+テストを複数プロセスで並列実行。これでポートやファイルについてのraceによる問題を再現できる場合がある。::
+
+  $ mvn test -Pparallel-tests
 
 サブツリーでビルド
 ------------------
