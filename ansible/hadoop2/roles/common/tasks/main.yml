@@ -8,6 +8,10 @@
   tags:
   - configuration
 
+- name: install libselinux-python package
+  package: name=libselinux-python state=present
+  when: packaging == "rpm"
+
 - name: disable selinux
   selinux: state=disabled
 

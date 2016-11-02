@@ -10,20 +10,6 @@
 - name: rm data dir 2
   file: path={{ data_dir_2 }} state=absent
 
-- name: create data dir1
-  file:
-    path: "{{ data_dir_1 }}"
-    owner: "{{ hdfs_user }}"
-    group: "{{ hadoop_group }}"
-    state: directory
-
-- name: create data dir2
-  file:
-    path: "{{ data_dir_2 }}"
-    owner: "{{ hdfs_user }}"
-    group: "{{ hadoop_group }}"
-    state: directory
-
 - name: rm hadoop home
   file: path={{ hadoop_home }} state=absent
 
@@ -55,6 +41,28 @@
 - name: install hadoop package
   package: name=hadoop state=present
   when: packaging == "rpm"
+
+- name: install hdfs package
+  package: name=hadoop-hdfs state=present
+  when: packaging == "rpm"
+
+- name: install yarn package
+  package: name=hadoop-yarn state=present
+  when: packaging == "rpm"
+
+- name: create data dir1
+  file:
+    path: "{{ data_dir_1 }}"
+    owner: "{{ hdfs_user }}"
+    group: "{{ hadoop_group }}"
+    state: directory
+
+- name: create data dir2
+  file:
+    path: "{{ data_dir_2 }}"
+    owner: "{{ hdfs_user }}"
+    group: "{{ hadoop_group }}"
+    state: directory
 
 - name: create hadoop core-site.xml
   template:
