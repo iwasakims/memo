@@ -17,6 +17,7 @@
     creates: "{{ hbase_home }}"
     owner: "{{ hbase_user }}"
     group: "{{ hbase_user }}"
+    copy: no
   when: packaging == "tarball"
 
 - name: chown hbase home 

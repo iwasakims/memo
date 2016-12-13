@@ -32,6 +32,7 @@
     creates: "{{ hadoop_home }}"
     owner: "{{ hadoop_user }}"
     group: "{{ hadoop_group }}"
+    copy: no
   when: packaging == "tarball"
 
 - name: remove hadoop package

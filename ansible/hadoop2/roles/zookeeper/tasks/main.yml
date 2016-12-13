@@ -18,6 +18,7 @@
     creates: "{{ zookeeper_home }}"
     owner: "{{ zookeeper_user }}"
     group: "{{ zookeeper_user }}"
+    copy: no
   when: packaging == "tarball"
 
 - name: remove zookeeper-package
