@@ -1,5 +1,5 @@
-setting up quick exp env for NN-HA
-==================================
+setting up quick exp env for NN-HA and RM-HA
+============================================
 
 ````
 $ cd ~/srcs
@@ -67,9 +67,18 @@ $ docker exec hadoop02 /hadoop/bin/hdfs --daemon start namenode
 $ docker exec hadoop02 /hadoop/bin/hdfs --daemon start zkfc
 
 $ docker exec hadoop03 /hadoop/bin/hdfs namenode -bootstrapStandby -force -nonInteractive
-$ docker exec hadoop03 /hadoop/bin/hdfs --daemon start namenodefor NN-HA and RM-HA 
+$ docker exec hadoop03 /hadoop/bin/hdfs --daemon start namenode
+$ docker exec hadoop03 /hadoop/bin/hdfs --daemon start zkfc
 
 $ docker exec hadoop01 /hadoop/bin/hdfs --daemon start datanode
 $ docker exec hadoop02 /hadoop/bin/hdfs --daemon start datanode
 $ docker exec hadoop03 /hadoop/bin/hdfs --daemon start datanode
+
+$ docker exec hadoop01 /hadoop/bin/yarn --daemon start resourcemanager
+$ docker exec hadoop02 /hadoop/bin/yarn --daemon start resourcemanager
+$ docker exec hadoop03 /hadoop/bin/yarn --daemon start resourcemanager
+
+$ docker exec hadoop01 /hadoop/bin/yarn --daemon start nodemanager
+$ docker exec hadoop02 /hadoop/bin/yarn --daemon start nodemanager
+$ docker exec hadoop03 /hadoop/bin/yarn --daemon start nodemanager
 ```

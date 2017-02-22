@@ -36,7 +36,7 @@
   </property>
   <property>
     <name>yarn.resourcemanager.ha.automatic-failover.enabled</name>
-    <value>false</value>
+    <value>true</value>
   </property>
   <property>
     <name>yarn.resourcemanager.cluster-id</name>
@@ -58,68 +58,17 @@
     <name>yarn.resourcemanager.hostname.rm3</name>
     <value>172.18.0.13</value>
   </property>
-
-  <property>
-    <name>yarn.resourcemanager.scheduler.address.rm1</name>
-    <value>0.0.0.0:8130</value>
-  </property>
-  <property>
-    <name>yarn.resourcemanager.resource-tracker.address.rm1</name>
-    <value>0.0.0.0:8131</value>
-  </property>
-  <property>
-    <name>yarn.resourcemanager.address.rm1</name>
-    <value>0.0.0.0:8132</value>
-  </property>
-  <property>
-    <name>yarn.resourcemanager.admin.address.rm1</name>
-    <value>0.0.0.0:8133</value>
-  </property>
   <property>
     <name>yarn.resourcemanager.webapp.address.rm1</name>
-    <value>0.0.0.0:8188</value>
-  </property>
-
-  <property>
-    <name>yarn.resourcemanager.scheduler.address.rm2</name>
-    <value>0.0.0.0:8230</value>
-  </property>
-  <property>
-    <name>yarn.resourcemanager.resource-tracker.address.rm2</name>
-    <value>0.0.0.0:8231</value>
-  </property>
-  <property>
-    <name>yarn.resourcemanager.address.rm2</name>
-    <value>0.0.0.0:8232</value>
-  </property>
-  <property>
-    <name>yarn.resourcemanager.admin.address.rm2</name>
-    <value>0.0.0.0:8233</value>
+    <value>0.0.0.0:8088</value>
   </property>
   <property>
     <name>yarn.resourcemanager.webapp.address.rm2</name>
-    <value>0.0.0.0:8288</value>
-  </property>
-
-  <property>
-    <name>yarn.resourcemanager.scheduler.address.rm3</name>
-    <value>0.0.0.0:8230</value>
-  </property>
-  <property>
-    <name>yarn.resourcemanager.resource-tracker.address.rm3</name>
-    <value>0.0.0.0:8231</value>
-  </property>
-  <property>
-    <name>yarn.resourcemanager.address.rm3</name>
-    <value>0.0.0.0:8232</value>
-  </property>
-  <property>
-    <name>yarn.resourcemanager.admin.address.rm3</name>
-    <value>0.0.0.0:8233</value>
+    <value>0.0.0.0:8088</value>
   </property>
   <property>
     <name>yarn.resourcemanager.webapp.address.rm3</name>
-    <value>0.0.0.0:8288</value>
+    <value>0.0.0.0:8088</value>
   </property>
 
   <property>
