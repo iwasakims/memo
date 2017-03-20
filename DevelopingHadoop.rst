@@ -152,7 +152,7 @@ hashcodeをチェック::
 ワンライナーを利用して適当に合わせる。::
 
   $ cat hadoop-2.7.2-RC2-src.tar.gz.mds | perl -00pe 's/\n[ ]+/ /g' - > 1.mds
-  $ gpg --print-mds hadoop-2.7.2-RC2-src.tar.gz.mds | perl -00pe 's/\n[ ]+/ /g' - > 2.mds
+  $ gpg --print-mds hadoop-2.7.2-RC2-src.tar.gz | perl -00pe 's/\n[ ]+/ /g' - > 2.mds
   $ diff 1.mds 2.mds
 
 

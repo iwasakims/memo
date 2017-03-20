@@ -29,6 +29,10 @@
     <name>yarn.log-aggregation-enable</name>
     <value>true</value>
   </property>
+  <property>
+    <name>yarn.nodemanager.vmem-check-enabled</name>
+    <value>false</value>
+  </property>
 
   <property>
     <name>yarn.resourcemanager.ha.enabled</name>
