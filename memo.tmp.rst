@@ -652,23 +652,16 @@ CMS
 EC2
 ===
 
-インスタンス起動時にとりあえずでsshのlisten portを追加するためのuser data。::
+インスタンス起動時にとりあえずでsshのlisten portに443を追加するためのuser data。
+再起動してSELinuxがenforcingで上がってくると、
+sshdが443をlistenできなくて起動失敗し、ログインできなくなる::
 
   #!/bin/bash
   setenforce 0
+  sed -i 's/SELINUX=enforcing/SELINUX=disabled/' /etc/sysconfig/selinux
+  sed -i 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config
   service iptables stop
   echo "" >> /etc/ssh/sshd_config
   echo "Port 22" >> /etc/ssh/sshd_config
   echo "Port 443" >> /etc/ssh/sshd_config
   service sshd reload
-
-あるいは::
-
-  #cloud-config
-  runcmd:
-   - setenforce 0
-   - service iptables stop
-   - [ sh, -c, '/bin/echo "" >> /etc/ssh/sshd_config' ]
-   - [ sh, -c, '/bin/echo "Port 22" >> /etc/ssh/sshd_config' ]
-   - [ sh, -c, '/bin/echo "Port 443" >> /etc/ssh/sshd_config' ]
-   - service sshd reload
