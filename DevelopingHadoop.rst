@@ -478,43 +478,36 @@ Bigtop
 tarballからhadoopのrpmをビルドしてsmoke-testを流してみる
 --------------------------------------------------------
 
-1度source tarballからビルドしてlocal repositoryにパッケージをインストールする。::
-
-  $ tar zxf hadoop-2.7.3-RC0-src.tar.gz
-  $ cd hadoop-2.7.3-src
-  $ mvn clean install -DskipTests
-
-bigtop.bomを編集して、自ノードからsource tarballをダウンロードしてビルドするような設定に修正する。::
+bigtopのソースツリーをダウンロードする。::
 
   $ git clone https://github.com/apache/bigtop
   $ cd bigtop 
-  $ vi bigtop.bom
-  $ git diff
+
+
+bigtop.bomを修正し、source tarballのdownload URLを差し替える。::
+
+  $ git diff .
   diff --git a/bigtop.bom b/bigtop.bom
-  index 1b0a96b..ab7f0bf 100644
+  index ff6d4e1..d4ce521 100644
   --- a/bigtop.bom
   +++ b/bigtop.bom
-  @@ -122,12 +122,12 @@ bigtop {
+  @@ -144,12 +144,12 @@ bigtop {
        'hadoop' {
          name    = 'hadoop'
          relNotes = 'Apache Hadoop'
-  -      version { base = '2.7.2'; pkg = base; release = 1 }
-  +      version { base = '2.7.3'; pkg = base; release = 1 }
+  -      version { base = '2.7.3'; pkg = base; release = 1 }
+  +      version { base = '2.7.4'; pkg = base; release = 1 }
          tarball { destination = "${name}-${version.base}.tar.gz"
-                   source      = "${name}-${version.base}-src.tar.gz" }
-  -      url     { download_path = "/$name/common/$name-${version.base}"
+  -                source      = "${name}-${version.base}-src.tar.gz" }
+  +                source      = "${name}-${version.base}-RC0-src.tar.gz" }
+         url     { download_path = "/$name/common/$name-${version.base}"
   -                site = "${apache.APACHE_MIRROR}/${download_path}"
   -                archive = "${apache.APACHE_ARCHIVE}/${download_path}" }
-  +      url     { download_path = ""
-  +                site = "http://localhost/iwasakims"
+  +                site = "http://home.apache.org/~shv/hadoop-2.7.4-RC0/"
   +                archive = "" }
        }
        'ignite-hadoop' {
          name    = 'ignite-hadoop'
-
-source tarballをlocalに配置する。tarballのファイル名がpackage-x.y.z-srcとなっているような暗黙の想定があるので、適当にrenameする。::
-
-  $ cp hadoop-2.7.3-RC0-src.tar.gz /var/www/html/iwasakims/hadoop-2.7.3-src.tar.gz
 
 必要なrpmをビルドする。::
 
@@ -525,30 +518,37 @@ source tarballをlocalに配置する。tarballのファイル名がpackage-x.y.
   $ gradle bigtop-utils-rpm
   $ gradle hadoop-rpm
 
-できたrpmをyumリポジトリに配置する。::
+ビルドしたrpmでyum repositoryを作る。(./outputにそのままリポジトリが作成される。)::
 
-  $ mv output/* /var/www/html/bigtop
-  $ createrepo --update /var/www/html/bigtop
+  $ gradle yum
 
-起動するcontainerの設定と、自分で作ったyumリポジトリの場所を設定ファイルに記述する。::
+Dockerを使ってクラスタをデプロイする。
+config.yamlを修正し、上記で作成したyumリポジトリを使ってパッケージインストールを行う設定に変更する。::
 
-  $ bigtop-deploy/vm/vagrant-puppet-docker/
-  $ vi myconfig.yaml
-  $ cat myconfig.yaml
-  docker:
-    memory_size: "4096"
-    image: "bigtop/deploy:centos-6"
-  repo: "http://192.168.122.1/bigtop"
-  distro: centos
-  components: [zookeeper, hadoop, yarn]
-  namenode_ui_port: "50070"
-  yarn_ui_port: "8088"
-  hbase_ui_port: "60010"
-  enable_local_repo: false
-  smoke_test_components: [hdfs, mapreduce, yarn]
-  jdk: "java-1.7.0-openjdk-devel.x86_64"
+  $ cd provisioner/docker
+  $ vi config.yaml
+  $ git diff .
+  diff --git a/provisioner/docker/config_centos-7.yaml b/provisioner/docker/config_centos-7.yaml
+  index 6cdd7cf..342f860 100644
+  --- a/provisioner/docker/config_centos-7.yaml
+  +++ b/provisioner/docker/config_centos-7.yaml
+  @@ -20,5 +20,5 @@ docker:
+   repo: "http://bigtop-repos.s3.amazonaws.com/releases/1.2.0/centos/7/x86_64"
+   distro: centos
+   components: [hdfs, yarn, mapreduce]
+  -enable_local_repo: false
+  +enable_local_repo: true
+   smoke_test_components: [hdfs, yarn, mapreduce]
 
-docker-hadoop.shを実行し、containerを起動してsmoke-testsを実行する。-c 3は3ノード起動するという意味。::
+以下の例では3ノードのクラスタがデプロイされる。::
+  
+  $ ./docker-hadoop.sh --create 3
+  
+  $ ./docker-hadoop.sh --exec 1 rpm -q hadoop
+  WARNING: The DOCKER_IMAGE variable is not set. Defaulting to a blank string.
+  WARNING: The MEM_LIMIT variable is not set. Defaulting to a blank string.
+  hadoop-2.7.4-1.el7.centos.x86_64
 
-  $ ./docker-hadoop.sh -C myconfig.yaml -c 3 --smoke-tests
+smoke testを実行する。::
 
+  ./docker-hadoop.sh --smoke-tests
