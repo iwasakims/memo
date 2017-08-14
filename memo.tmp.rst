@@ -661,6 +661,7 @@ sshdが443をlistenできなくて起動失敗し、ログインできなくな�
   sed -i 's/SELINUX=enforcing/SELINUX=disabled/' /etc/sysconfig/selinux
   sed -i 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config
   service iptables stop
+  chkconfig iptables off
   echo "" >> /etc/ssh/sshd_config
   echo "Port 22" >> /etc/ssh/sshd_config
   echo "Port 443" >> /etc/ssh/sshd_config
