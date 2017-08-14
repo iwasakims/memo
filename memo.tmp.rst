@@ -658,7 +658,7 @@ sshdが443をlistenできなくて起動失敗し、ログインできなくな�
 
   #!/bin/bash
   setenforce 0
-  sed -i 's/SELINUX=targeted/SELINUX=disabled/' /etc/sysconfig/selinux
+  sed -i 's/SELINUX=enforcing/SELINUX=disabled/' /etc/sysconfig/selinux
   sed -i 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config
   service iptables stop
   echo "" >> /etc/ssh/sshd_config
