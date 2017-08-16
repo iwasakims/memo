@@ -234,6 +234,123 @@ security
         }
 
 
+Kerberos authN on CentOS7
+-------------------------
+
+setting up and starting krb5-server::
+
+  sudo yum install krb5-server krb5-libs krb5-workstation
+  sudo vi /etc/krb5.conf
+  sudo vi /var/kerberos/krb5kdc/kdc.conf
+  sudo kdb5_util create -s
+  sudo kadmin.local -q "addprinc centos/admin"
+  sudo systemctl start krb5kdc.service
+  sudo systemctl start kadmin.service
+  
+  sudo mkdir /etc/security/keytab
+
+adding principals and writing keytab file by kadmin::
+
+  addprinc -randkey nn/localhost@EXAMPLE.COM
+  addprinc -randkey dn/localhost@EXAMPLE.COM
+  addprinc -randkey rm/localhost@EXAMPLE.COM
+  addprinc -randkey nm/localhost@EXAMPLE.COM
+  addprinc -randkey http/localhost@EXAMPLE.COM
+  ktadd -k /etc/security/keytab/nn.service.keytab nn/localhost@EXAMPLE.COM
+  ktadd -k /etc/security/keytab/nn.service.keytab http/localhost@EXAMPLE.COM
+  ktadd -k /etc/security/keytab/dn.service.keytab dn/localhost@EXAMPLE.COM
+  ktadd -k /etc/security/keytab/dn.service.keytab http/localhost@EXAMPLE.COM
+  ktadd -k /etc/security/keytab/rm.service.keytab rm/localhost@EXAMPLE.COM
+  ktadd -k /etc/security/keytab/rm.service.keytab http/localhost@EXAMPLE.COM
+  ktadd -k /etc/security/keytab/nm.service.keytab nm/localhost@EXAMPLE.COM
+  ktadd -k /etc/security/keytab/nm.service.keytab http/localhost@EXAMPLE.COM
+
+editing core-site.xml::
+
+  <property>
+    <name>hadoop.security.authentication</name>
+    <value>kerberos</value>
+  </property>
+  <property>
+    <name>hadoop.security.auth_to_local</name>
+    <value>
+      RULE:[2:$1@$0](nn/.*@.*REALM.TLD)s/.*/hdfs/
+      RULE:[2:$1@$0](jn/.*@.*REALM.TLD)s/.*/hdfs/
+      RULE:[2:$1@$0](dn/.*@.*REALM.TLD)s/.*/hdfs/
+      RULE:[2:$1@$0](nm/.*@.*REALM.TLD)s/.*/yarn/
+      RULE:[2:$1@$0](rm/.*@.*REALM.TLD)s/.*/yarn/
+      RULE:[2:$1@$0](jhs/.*@.*REALM.TLD)s/.*/mapred/
+      DEFAULT
+    </value>
+  </property>
+
+editing hdfs-site.xml::
+
+  <property>
+    <name>dfs.block.access.token.enable</name>
+    <value>true</value>
+  </property>
+  <property>
+    <name>dfs.namenode.keytab.file</name>
+    <value>/etc/security/keytab/nn.service.keytab</value>
+  </property>
+  <property>
+    <name>dfs.namenode.kerberos.principal</name>
+    <value>nn/localhost@EXAMPLE.COM</value>
+  </property>
+  <property>
+    <name>dfs.namenode.kerberos.internal.spnego.principal</name>
+    <value>http/localhost@EXAMPLE.COM</value>
+  </property>
+  
+  <property>
+    <name>dfs.data.transfer.protection</name>
+    <value>authentication</value>
+  </property>
+  <property>
+    <name>dfs.datanode.keytab.file</name>
+    <value>/etc/security/keytab/dn.service.keytab</value>
+  </property>
+  <property>
+    <name>dfs.datanode.kerberos.principal</name>
+    <value>dn/localhost@EXAMPLE.COM</value>
+  </property>
+  
+  <property>
+    <name>dfs.http.policy</name>
+    <value>HTTPS_ONLY</value>
+  </property>
+  <property>
+    <name>dfs.web.authentication.kerberos.keytab</name>
+    <value>/etc/security/keytab/nn.service.keytab</value>
+  </property>
+  <property>
+    <name>dfs.web.authentication.kerberos.principal</name>
+    <value>http/localdomain@EXAMPLE.COM</value>
+  </property>
+
+setting up keystore::
+
+  sudo keytool -keystore /var/lib/keystores/.keystore -genkey -alias http -keyalg RSA
+
+editing ssl-server.xml::
+
+  <property>
+    <name>ssl.server.keystore.location</name>
+    <value>/var/lib/keystores/.keystore</value>
+  </property>
+  <property>
+    <name>ssl.server.keystore.password</name>
+    <value>serverfoo</value>
+    <description>Must be specified.
+    </description>
+  </property>
+  <property>
+    <name>ssl.server.keystore.keypassword</name>
+    <value>serverbar</value>
+  </property>
+
+
 ZKFC
 ====
 
