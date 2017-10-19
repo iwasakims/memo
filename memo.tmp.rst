@@ -234,8 +234,8 @@ security
         }
 
 
-Kerberos authN on CentOS7
-=========================
+Kerberos authN on CentOS7 and HDP2.6.2
+======================================
 
 setting up and starting krb5-server
 -----------------------------------
@@ -359,6 +359,45 @@ editing yarn-site.xml::
     <name>yarn.nodemanager.keytab</name>
     <value>/etc/security/keytab/nm.service.keytab</value>
   </property>
+  <property>
+    <name>yarn.nodemanager.container-executor.class</name>
+    <value>org.apache.hadoop.yarn.server.nodemanager.LinuxContainerExecutor</value>
+  </property>
+  <property>
+    <name>yarn.nodemanager.linux-container-executor.group</name>
+    <value>hadoop</value>
+  </property>
+  <property>
+    <name>yarn.nodemanager.linux-container-executor.path</name>
+    <value>/usr/hdp/2.6.2.0-205/hadoop-yarn/bin/container-executor</value>
+  </property>
+
+editing mapred-site.xml::
+
+  <property>
+    <name>mapreduce.application.classpath</name>
+    <value>/usr/hdp/current/hadoop-mapreduce-client/../hadoop-mapreduce/*,
+      /usr/hdp/current/hadoop-mapreduce-client/../hadoop-mappreduce/lib/*,
+      /usr/hdp/current/hadoop-mapreduce-client/../hadoop/*,
+      /usr/hdp/current/hadoop-mapreduce-client/../hadoop/lib/*,
+      /usr/hdp/current/hadoop-mapreduce-client/../hadoop-yarn/*,
+      /usr/hdp/current/hadoop-mapreduce-client/../hadoop-yarn/lib/*,
+      /usr/hdp/current/hadoop-mapreduce-client/../hadoop-hdfs/*,
+      /usr/hdp/current/hadoop-mapreduce-client/../hadoop-hdfs/lib/*,
+    </value>
+  </property>
+  
+editing container-executor.cfg::
+
+  yarn.nodemanager.linux-container-executor.group=hadoop
+  banned.users=hdfs,yarn
+  min.user.id=1000
+  allowed.system.users=none
+
+changing the owner of container-executor along with the config.::
+
+  sudo chown root:hadoop /usr/hdp/current/hadoop-yarn-nodemanager/bin/container-executor
+  sudo chmod 6050 /usr/hdp/current/hadoop-yarn-nodemanager/bin/container-executor
 
 setting up keystore::
 
