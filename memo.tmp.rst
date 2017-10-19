@@ -274,8 +274,8 @@ adding principals and writing keytab file by kadmin::
   ktadd -k /etc/security/keytab/nm.service.keytab http/localhost@EXAMPLE.COM
 
 
-  setting up Hadoop
--------------------
+setting up Hadoop
+-----------------
 
 editing core-site.xml::
 
@@ -339,6 +339,25 @@ editing hdfs-site.xml::
   <property>
     <name>dfs.web.authentication.kerberos.principal</name>
     <value>http/localdomain@EXAMPLE.COM</value>
+  </property>
+
+editing yarn-site.xml::
+
+  <property>
+    <name>yarn.resourcemanager.principal</name>
+    <value>rm/localhost@EXAMPLE.COM</value>
+  </property>
+  <property>
+    <name>yarn.resourcemanager.keytab</name>
+    <value>/etc/security/keytab/rm.service.keytab</value>
+  </property>
+  <property>
+    <name>yarn.nodemanager.principal</name>
+    <value>nm/localhost@EXAMPLE.COM</value>
+  </property>
+  <property>
+    <name>yarn.nodemanager.keytab</name>
+    <value>/etc/security/keytab/nm.service.keytab</value>
   </property>
 
 setting up keystore::
