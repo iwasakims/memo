@@ -235,9 +235,12 @@ security
 
 
 Kerberos authN on CentOS7
--------------------------
+=========================
 
-setting up and starting krb5-server::
+setting up and starting krb5-server
+-----------------------------------
+
+::
 
   sudo yum install krb5-server krb5-libs krb5-workstation
   sudo vi /etc/krb5.conf
@@ -248,6 +251,11 @@ setting up and starting krb5-server::
   sudo systemctl start kadmin.service
   
   sudo mkdir /etc/security/keytab
+
+The line below must be commented out in /etc/krb5.conf
+otherwise hadoop client library can not find cached credential.::
+
+  default_ccache_name = KEYRING:persistent:%{uid}
 
 adding principals and writing keytab file by kadmin::
 
@@ -265,6 +273,10 @@ adding principals and writing keytab file by kadmin::
   ktadd -k /etc/security/keytab/nm.service.keytab nm/localhost@EXAMPLE.COM
   ktadd -k /etc/security/keytab/nm.service.keytab http/localhost@EXAMPLE.COM
 
+
+  setting up Hadoop
+-------------------
+
 editing core-site.xml::
 
   <property>
@@ -274,12 +286,12 @@ editing core-site.xml::
   <property>
     <name>hadoop.security.auth_to_local</name>
     <value>
-      RULE:[2:$1@$0](nn/.*@.*REALM.TLD)s/.*/hdfs/
-      RULE:[2:$1@$0](jn/.*@.*REALM.TLD)s/.*/hdfs/
-      RULE:[2:$1@$0](dn/.*@.*REALM.TLD)s/.*/hdfs/
-      RULE:[2:$1@$0](nm/.*@.*REALM.TLD)s/.*/yarn/
-      RULE:[2:$1@$0](rm/.*@.*REALM.TLD)s/.*/yarn/
-      RULE:[2:$1@$0](jhs/.*@.*REALM.TLD)s/.*/mapred/
+      RULE:[2:$1](nn)s/^.*$/hdfs/
+      RULE:[2:$1](jn)s/^.*$/hdfs/
+      RULE:[2:$1](dn)s/^.*$/hdfs/
+      RULE:[2:$1](nm)s/^.*$/yarn/
+      RULE:[2:$1](rm)s/^.*$/yarn/
+      RULE:[2:$1](jhs)s/^.*$/mapred/
       DEFAULT
     </value>
   </property>
