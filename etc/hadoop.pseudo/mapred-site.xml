@@ -17,24 +17,24 @@
 <!-- Put site-specific property overrides in this file. -->
 
 <configuration>
- <property>
-  <name>fs.default.name</name>
-  <value>hdfs://centos7:9000</value>
- </property>
- <property>
-   <name>mapreduce.framework.name</name>
-   <value>yarn</value>
- </property>
- <property>
-  <name>mapred.child.java.opts</name>
-  <value>-Xmx1G</value>
- </property>
- <property>
-   <name>mapreduce.jobhistory.address</name>
-   <value>centos7:10020</value>
- </property>
- <property>
-   <name>mapreduce.jobhistory.webapp.address</name>
-   <value>centos7:19888</value>
- </property>
+  <property>
+    <name>fs.default.name</name>
+    <value>hdfs://centos7:9000</value>
+  </property>
+  <property>
+    <name>mapreduce.framework.name</name>
+    <value>yarn</value>
+  </property>
+  <property>
+    <name>mapred.child.java.opts</name>
+    <value>-Xmx1G</value>
+  </property>
+  <property>
+    <name>mapreduce.jobhistory.address</name>
+    <value>centos7:10020</value>
+  </property>
+  <property>
+    <name>mapreduce.jobhistory.webapp.address</name>
+    <value>centos7:19888</value>
+  </property>
 </configuration>

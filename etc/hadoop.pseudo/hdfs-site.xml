@@ -17,20 +17,20 @@
 <!-- Put site-specific property overrides in this file. -->
 
 <configuration>
- <property>
-  <name>dfs.namenode.name.dir</name>
-  <value>/home/iwasakims/hdfs/name</value>
- </property>
- <property>
-  <name>dfs.namenode.checkpoint.dir</name>
-  <value>/home/iwasakims/hdfs/namesecondary</value>
- </property>
- <property>
-  <name>dfs.datanode.data.dir</name>
-  <value>/home/iwasakims/hdfs/data</value>
- </property>
- <property>
-  <name>dfs.replication</name>
-  <value>1</value>        
- </property>
+  <property>
+    <name>dfs.namenode.name.dir</name>
+    <value>/home/iwasakims/hdfs/name</value>
+  </property>
+  <property>
+    <name>dfs.namenode.checkpoint.dir</name>
+    <value>/home/iwasakims/hdfs/namesecondary</value>
+  </property>
+  <property>
+    <name>dfs.datanode.data.dir</name>
+    <value>/home/iwasakims/hdfs/data</value>
+  </property>
+  <property>
+    <name>dfs.replication</name>
+    <value>1</value>                
+  </property>
 </configuration>
