@@ -552,3 +552,171 @@ config.yamlを修正し、上記で作成したyumリポジトリを使ってパ
 smoke testを実行する。::
 
   ./docker-hadoop.sh --smoke-tests
+
+
+
+testing security on single node (branch-2)
+==========================================
+
+minimal settings to make kms work
+---------------------------------
+
+create keystore file and password file.::
+
+  $ mkdir /home/centos/keystores
+  $ keytool -keystore /home/centos/keystores/kms.keystore -genkey -alias kms -keyalg RSA
+  $ echo password >> $HADOOP_HOME/share/hadoop/kms/tomcat/lib/kms.keystore.password
+  $ chmod 600 $HADOOP_HOME/share/hadoop/kms/tomcat/lib/kms.keystore.password
+
+edit kms-site.xml.::
+
+  <property>
+    <name>hadoop.kms.key.provider.uri</name>
+    <value>jceks://file@/home/centos/keystores/kms.keystore</value>
+    <description>
+      URI of the backing KeyProvider for the KMS.
+    </description>
+  </property>
+
+  <property>
+    <name>hadoop.security.keystore.java-keystore-provider.password-file</name>
+    <value>kms.keystore.password</value>
+    <description>
+      If using the JavaKeyStoreProvider, the file name for the keystore password.
+    </description>
+  </property>
+
+
+minimal settings to enable security auth on CentOS7
+---------------------------------------------------
+
+install and start krb5-server::
+
+  sudo yum install krb5-server krb5-libs krb5-workstation
+  sudo vi /etc/krb5.conf
+  sudo vi /var/kerberos/krb5kdc/kdc.conf
+  sudo kdb5_util create -s
+  sudo kadmin.local -q "addprinc centos/admin"
+  sudo systemctl start krb5kdc.service
+  sudo systemctl start kadmin.service
+  
+The default_ccache_name in /etc/krb5.conf should the default value otherwise hadoop client library can not find cached credential.::
+
+  # default_ccache_name = KEYRING:persistent:%{uid}
+
+creating keytab file for services::
+
+  $ mkdir /home/centos/keytab
+
+adding principal and dump keytab file by kadmin::
+
+  addprinc -randkey centos/localhost@EXAMPLE.COM
+  ktadd -k /home/centos/keytab/centos.keytab centos/localhost@EXAMPLE.COM
+
+edit core-site.xml::
+
+  <property>
+    <name>hadoop.security.authentication</name>
+    <value>kerberos</value>
+  </property>
+  <property>
+    <name>hadoop.security.auth_to_local</name>
+    <value>
+      RULE:[2:$1](centos)s/^.*$/centos/
+      DEFAULT
+    </value>
+  </property>
+
+edit hdfs-site.xml::
+
+  <property>
+    <name>dfs.block.access.token.enable</name>
+    <value>true</value>
+  </property>
+  <property>
+    <name>dfs.namenode.keytab.file</name>
+    <value>/home/centos/keytab/centos.keytab</value>
+  </property>
+  <property>
+    <name>dfs.namenode.kerberos.principal</name>
+    <value>centos/localhost@EXAMPLE.COM</value>
+  </property>
+  <property>
+    <name>dfs.namenode.kerberos.internal.spnego.principal</name>
+    <value>centos/localhost@EXAMPLE.COM</value>
+  </property>
+  <property>
+    <name>dfs.data.transfer.protection</name>
+    <value>authentication</value>
+  </property>
+  <property>
+    <name>dfs.datanode.keytab.file</name>
+    <value>/home/centos/keytab/centos.keytab</value>
+  </property>
+  <property>
+    <name>dfs.datanode.kerberos.principal</name>
+    <value>centos/localhost@EXAMPLE.COM</value>
+  </property>
+  <property>
+    <name>dfs.http.policy</name>
+    <value>HTTPS_ONLY</value>
+  </property>
+  <property>
+    <name>dfs.web.authentication.kerberos.keytab</name>
+    <value>/home/centos/keytab/centos.keytab</value>
+  </property>
+  <property>
+    <name>dfs.web.authentication.kerberos.principal</name>
+    <value>centos/localdomain@EXAMPLE.COM</value>
+  </property>
+
+edit yarn-site.xml::
+
+  <property>
+    <name>yarn.resourcemanager.principal</name>
+    <value>centos/localhost@EXAMPLE.COM</value>
+  </property>
+  <property>
+    <name>yarn.resourcemanager.keytab</name>
+    <value>/home/centos/keytab/centos.keytab</value>
+  </property>
+  <property>
+    <name>yarn.nodemanager.principal</name>
+    <value>centos/localhost@EXAMPLE.COM</value>
+  </property>
+  <property>
+    <name>yarn.nodemanager.keytab</name>
+    <value>/home/centos/keytab/centos.keytab</value>
+  </property>
+  <property>
+    <name>yarn.nodemanager.container-executor.class</name>
+    <value>org.apache.hadoop.yarn.server.nodemanager.LinuxContainerExecutor</value>
+  </property>
+  <property>
+    <name>yarn.nodemanager.linux-container-executor.group</name>
+    <value>centos</value>
+  </property>
+  <property>
+    <name>yarn.nodemanager.linux-container-executor.path</name>
+    <value>/path/to/container-executor</value>
+  </property>
+
+creating keystore for ssl::
+
+  $ mkdir /home/centos/keystores
+  $ keytool -keystore /home/centos/keystores/http.keystore -genkey -alias http -keyalg RSA
+
+edit ssl-site.xml::
+
+  <property>
+    <name>ssl.server.keystore.location</name>
+    <value>/home/centos/http.keystore</value>
+  </property>
+  <property>
+    <name>ssl.server.keystore.password</name>
+    <value>password</value>
+  </property>
+  <property>
+    <name>ssl.server.keystore.keypassword</name>
+    <value>password</value>
+  </property>
