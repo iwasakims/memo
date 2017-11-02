@@ -406,6 +406,52 @@ Setup
   Cellが提供するメソッドが推奨され、古いKeyValueのメソッドはdeprecatedに。
 
 
+KMS
+---
+
+ZKSignerSecretProviderとZKDelegationTokenSecretManagerは、
+内部でcurator(zk client)のインスタンスを共用している。
+前者のZK接続用の設定あれば、後者に要らないというか、設定が使われない。
+現実的なケースではないが、ZKSignerSecretProviderを使わない
+(hadoop.kms.authentication.signer.secret.provider=random or string)
+にもかかわらず、ZKDelegationTokenSecretManagerを使う
+(hadoop.kms.authentication.zk-dt-secret-manager.enable=true)
+という場合には、
+hadoop.kms.authentication.zk-dt-secret-manager.*にZK接続用設定を書かないと、
+機能しない。
+ちなみに、前者と後者のZK接続用設定のプロパティ名には統一感がない。::
+
+  <property>
+    <name>hadoop.kms.authentication.signer.secret.provider</name>
+    <value>zookeeper</value>
+  </property>
+  <property>
+    <name>hadoop.kms.authentication.signer.secret.provider.zookeeper.path</name>
+    <value>/hadoop-kms/hadoop-auth-signature-secret</value>
+  </property>
+  <property>
+    <name>hadoop.kms.authentication.signer.secret.provider.zookeeper.connection.string</name>
+    <value>localhost:2181</value>
+  </property>
+  <property>
+    <name>hadoop.kms.authentication.signer.secret.provider.zookeeper.auth.type</name>
+    <value>none</value>
+  </property>
+
+  <property>
+    <name>hadoop.kms.authentication.zk-dt-secret-manager.enable</name>
+    <value>true</value>
+  </property>
+  <property>
+    <name>hadoop.kms.authentication.zk-dt-secret-manager.zkConnectionString</name>
+    <value>localhost:2181</value>
+  </property>
+  <property>
+    <name>hadoop.kms.authentication.zk-dt-secret-manager.zkAuthType</name>
+    <value>none</value>
+  </property>
+
+
 htrace
 ======
 
