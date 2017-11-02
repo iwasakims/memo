@@ -698,9 +698,23 @@ edit yarn-site.xml::
   </property>
   <property>
     <name>yarn.nodemanager.linux-container-executor.path</name>
-    <value>/path/to/container-executor</value>
+    <value>/usr/local/bin/container-executor</value>
   </property>
 
+put container-executor binary and conf.::
+
+  $ sudo cp container-executor /usr/local/bin/
+  $ sudo chown root:centos /usr/local/bin/container-executor
+  $ sudo chmod 6050 /usr/local/bin/container-executor
+  $ sudo mkdir /usr/local/etc/hadoop
+  $ sudo vim /usr/local/etc/hadoop/container-executor.cfg
+  
+  $ cat /usr/local/etc/hadoop/container-executor.cfg
+  yarn.nodemanager.linux-container-executor.group=centos
+  banned.users=hdfs,yarn,mapred
+  allowed.system.users=foo,bar
+  min.user.id=500
+  
 creating keystore for ssl::
 
   $ mkdir /home/centos/keystores
