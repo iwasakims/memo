@@ -780,3 +780,15 @@ edit ssl-site.xml::
     <name>ssl.server.keystore.keypassword</name>
     <value>password</value>
   </property>
+
+
+Ambari
+======
+
+Setting up single Ambari cluster on CentOS 7.::
+
+  sudo curl -L -o /etc/yum.repos.d/ambari.repo  http://public-repo-1.hortonworks.com/ambari/centos7/2.x/updates/2.6.0.0/ambari.repo
+  sudo yum -y install java-1.8.0-openjdk-devel ambari-server ambari-agent
+  sudo ambari-server setup -j /usr/lib/jvm/java-1.8.0-openjdk --silent
+  sudo service ambari-server start
+  sudo service ambari-agent start
