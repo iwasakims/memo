@@ -19,15 +19,15 @@
 <configuration>
  <property>
   <name>dfs.namenode.name.dir</name>
-  <value>/home/iwasakims/hdfs-b2/name</value>
+  <value>/tmp/hdfs-branch-2/name</value>
  </property>
  <property>
   <name>dfs.namenode.checkpoint.dir</name>
-  <value>/home/iwasakims/hdfs-b2/namesecondary</value>
+  <value>/tmp/hdfs-branch-2/namesecondary</value>
  </property>
  <property>
   <name>dfs.datanode.data.dir</name>
-  <value>/home/iwasakims/hdfs-b2/data</value>
+  <value>/tmp/hdfs-branch-2/data</value>
  </property>
  <property>
   <name>dfs.replication</name>

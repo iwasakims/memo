@@ -19,6 +19,6 @@
 <configuration>
   <property>
     <name>fs.default.name</name>
-    <value>hdfs://centos7:9000/</value>
+    <value>hdfs://localhost:9000/</value>
   </property>
 </configuration>
