@@ -253,13 +253,13 @@ golangはpygmentsで処理されるはずなのだが、なぜかexuberant-ctags
 diff
 ----
 
-side by sideで差分を表示::
+side by sideで差分を表示。--no-promptだとファイルの境目が分かりにくいので、yesで。::
 
-  $ git difftool -y -x "diff -y -W 240" | less
+  $ yes | git difftool -x "diff -y -W 240" | less
 
 EPELからcolordiffをインストールして使うと、より見やすい。::
 
-  $ git difftool -y -x "colordiff -y -W 240" | less -R
+  $ yes | git difftool -y -x "colordiff -y -W 240" | less -R
 
 
 jdb
