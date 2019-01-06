@@ -76,6 +76,17 @@ HBase Reference Manualのビルド。事前に一度siteをビルドして、Jav
   mvn docbkx:generate-html
 
 
+サブツリーでビルド
+------------------
+
+サブプロジェクトには
+hadoop-main -> hadoop-project -> hadoop-common
+のような親子関係があるため、サブツリーにcdしてビルドを実行するには、
+一度ソースツリーのトップでhadoop-mainやhadoop-projectをinstallしておく必要がある。::
+
+  mvn install -pl :hadoop-main -pl :hadoop-project -DskipTests
+
+
 checkstyleの実行
 ----------------
 
@@ -125,15 +136,38 @@ libhdfsなどのnativeモジュールのテストだけ実行したい場合に�
 
   $ mvn test -Dmaven.test.failure.ignore=true
 
-サブツリーでビルド
-------------------
 
-サブプロジェクトには
-hadoop-main -> hadoop-project -> hadoop-common
-のような親子関係があるため、サブツリーにcdしてビルドを実行するには、
-一度ソースツリーのトップでhadoop-mainやhadoop-projectをinstallしておく必要がある。::
+filesystem contract test
+------------------------
 
-  mvn install -pl :hadoop-main -pl :hadoop-project -DskipTests
+https://hadoop.apache.org/docs/r3.1.0/hadoop-project-dist/hadoop-common/filesystem/testing.html
+
+Filesystem contract testが実行するかどうかは、
+confでfs.contract.test.fs.%sが設定されているかどうかによる。
+contract test用の設定は
+src/test/resources/contract-test-options.xml に書けばロードされるが、
+このふぁいるの存在自体は必須ではない。
+
+逆に、認証が必要なタイプのhadoop-awsやhadoop-openstackのtestは、
+src/test/resources/auth-keys.xmlというファイルが存在しないと実行されない。
+この制御はpom.xmlで定義でされている。::
+
+  <profiles>
+    <profile>
+      <id>tests-off</id>
+      <activation>
+        <file>
+          <missing>src/test/resources/auth-keys.xml</missing>
+        </file>
+      </activation>
+      <properties>
+        <maven.test.skip>true</maven.test.skip>
+      </properties>
+    </profile>
+　　...
+
+auth-keys.xmlはsrc/test/recources/core-site.xmlの中でincludeされている。
+これをロードコードがソース中にあるわけではない。
 
 
 リリース関連
@@ -259,7 +293,7 @@ side by sideで差分を表示。--no-promptだとファイルの境目が分か
 
 EPELからcolordiffをインストールして使うと、より見やすい。::
 
-  $ yes | git difftool -y -x "colordiff -y -W 240" | less -R
+  $ yes | git difftool -x "colordiff -y -W 240" | less -R
 
 
 jdb
