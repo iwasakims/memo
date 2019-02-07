@@ -853,3 +853,59 @@ sshdが443をlistenできなくて起動失敗し、ログインできなくな�
   echo "Port 22" >> /etc/ssh/sshd_config
   echo "Port 443" >> /etc/ssh/sshd_config
   service sshd reload
+
+
+Swift
+=====
+
+curlでSwift APIを叩く
+---------------------
+
+::
+
+  curl https://identity.api.rackspacecloud.com/v2.0/tokens \
+   -X POST \
+   -d '{"auth":{"RAX-KSKEY:apiKeyCredentials":{"username":"foobar","apiKey":"ffffffffffffffffffffffffffffffff"}}}' \
+   -H "Content-type: application/json" | jq -r .access.token.id > ~/token.swift
+  
+  curl https://storage101.iad3.clouddrive.com/v1/MossoCloudFS_1035245/testfs/test \
+   -i \
+   -X HEAD \
+   -H "Host: storage.clouddrive.com" \
+   -H "X-Newest: true" \
+   -H "X-Auth-Token: `cat ~/token.swift`"
+
+
+example configuration for contract test
+---------------------------------------
+
+src/test/resources/auth-keys.xml::
+
+  <?xml version="1.0"?>
+  <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+  <configuration>
+    <property>
+      <name>fs.contract.test.fs.swift</name>
+      <value>swift://testfs.rackspace/</value>
+    </property>
+    <property>
+      <name>fs.swift.service.rackspace.auth.url</name>
+      <value>https://auth.api.rackspacecloud.com/v2.0/tokens</value>
+    </property>
+    <property>
+      <name>fs.swift.service.rackspace.username</name>
+      <value>foobar</value>
+    </property>
+    <property>
+      <name>fs.swift.service.rackspace.region</name>
+      <value>IAD</value>
+    </property>
+    <property>
+      <name>fs.swift.service.rackspace.apikey</name>
+      <value>ffffffffffffffffffffffffffffffff</value>
+    </property>
+    <property>
+      <name>fs.swift.service.rackspace.public</name>
+      <value>true</value>
+    </property>
+  </configuration>
