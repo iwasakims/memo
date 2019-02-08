@@ -909,3 +909,19 @@ src/test/resources/auth-keys.xml::
       <value>true</value>
     </property>
   </configuration>
+
+
+fluentd
+=======
+
+テストの実行
+------------
+
+::
+
+  $ bundle install
+  $ bundle exec rake test
+
+特定のテストファイルを実行する場合::
+
+  $ bundle exec rake test TEST=test/plugin/test_output_as_buffered.rb
