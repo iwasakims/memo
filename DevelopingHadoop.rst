@@ -826,3 +826,16 @@ Setting up single Ambari cluster on CentOS 7.::
   sudo ambari-server setup -j /usr/lib/jvm/java-1.8.0-openjdk --silent
   sudo service ambari-server start
   sudo service ambari-agent start
+
+OpenSSLのバージョンによっては、
+/etc/ambari-agent/conf/ambari-agent.iniの[security]セクションに、
+以下を記述しないとambari-agentがambari-serverに接続できない。::
+
+  force_https_protocol=PROTOCOL_TLSv1_2
+
+HDP 2.6.1だと、以下を実行しないと、HiveMetastoreやHiveServer2が起動できない。::
+
+  $ sudo yum install mysql-connector-java*
+  $ ls -al /usr/share/java/mysql-connector-java.jar
+  $ cd /var/lib/ambari-server/resources/
+  $ ln -s /usr/share/java/mysql-connector-java.jar mysql-connector-java.jar
