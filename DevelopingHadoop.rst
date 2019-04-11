@@ -308,7 +308,7 @@ EPELからcolordiffをインストールして使うと、より見やすい。:
 ``git show`` のように特定のcommitのdiffをside by sideで見るためのスクリプトは、以下のような感じ。::
   
   $ cat ~/bin/git-showtool
-  yes | git difftool -x 'colordiff -y -W250' $1~1 $1 | less -
+  yes | git difftool -x 'colordiff -y -W250' $1~1 $1 | less -R
 
   
 
