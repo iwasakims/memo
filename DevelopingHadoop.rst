@@ -295,6 +295,22 @@ EPELからcolordiffをインストールして使うと、より見やすい。:
 
   $ yes | git difftool -x "colordiff -y -W 240" | less -R
 
+上記をより簡単に使うには、PATHの通った場所に、git-sidediffという名前のスクリプトを作っておく。
+これを ``git sidediff`` というコマンドで呼び出すことができる。::
+  
+  $ cat > ~/bin/git-sidediff <<EOF
+  yes | git difftool -x 'colordiff -y -W250' "\$@"| less -R
+  EOF
+  
+  $ chmod +x ~/bin/git-sidediff
+  $ git sidediff arg1 arg2 ...
+
+``git show`` のように特定のcommitのdiffをside by sideで見るためのスクリプトは、以下のような感じ。::
+  
+  $ cat ~/bin/git-showtool
+  yes | git difftool -x 'colordiff -y -W250' $1~1 $1 | less -
+
+  
 
 jdb
 ---
