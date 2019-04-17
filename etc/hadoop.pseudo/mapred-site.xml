@@ -18,10 +18,6 @@
 
 <configuration>
   <property>
-    <name>fs.default.name</name>
-    <value>hdfs://centos7:9000</value>
-  </property>
-  <property>
     <name>mapreduce.framework.name</name>
     <value>yarn</value>
   </property>
@@ -31,10 +27,10 @@
   </property>
   <property>
     <name>mapreduce.jobhistory.address</name>
-    <value>centos7:10020</value>
+    <value>localhost:10020</value>
   </property>
   <property>
     <name>mapreduce.jobhistory.webapp.address</name>
-    <value>centos7:19888</value>
+    <value>localhost:19888</value>
   </property>
 </configuration>
