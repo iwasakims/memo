@@ -19,9 +19,8 @@
 <configuration>
   <property>
     <name>fs.default.name</name>
-    <value>hdfs://centos6:9000/</value>
+    <value>hdfs://localhost:8020/</value>
   </property>
-
   <property>
     <name>hadoop.security.authentication</name>
     <value>kerberos</value>

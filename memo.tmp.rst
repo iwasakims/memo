@@ -925,3 +925,8 @@ fluentd
 特定のテストファイルを実行する場合::
 
   $ bundle exec rake test TEST=test/plugin/test_output_as_buffered.rb
+
+特定のテストケースを実行::
+
+  $ bundle exec rake test TEST=test/plugin/test_output_as_buffered.rb TESTOPTS="-t'/buffered output feature with timekey and range/'"
+

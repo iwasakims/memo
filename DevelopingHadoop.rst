@@ -124,9 +124,15 @@ libhdfsなどのnativeモジュールのテストだけ実行したい場合に�
 
   $ mvn test -Pnative -Dtest=hoge
 
+`Parameterized tests <https://github.com/junit-team/junit4/wiki/parameterized-tests>`_ の場合、
+メソッド名ずばりではマッチしないが、後ろにアスタリスクをつけるとマッチする。
+コマンドラインからパラメータを指定することができるのかは不明。::
+
+  $ mvn test '-Dtest=TestWebHdfsTimeouts#testConnectTimeout*'
+
 テスト連打::
 
-   for i in `seq 100` ; do echo $i && mvn test -Dtest=TestGangliaMetrics || break  ; done
+  $ for i in `seq 100` ; do echo $i && mvn test -Dtest=TestGangliaMetrics || break  ; done
 
 テストを複数プロセスで並列実行。これでポートやファイルについてのraceによる問題を再現できる場合がある。::
 
