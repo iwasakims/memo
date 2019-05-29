@@ -148,13 +148,13 @@ filesystem contract test
 
 https://hadoop.apache.org/docs/r3.1.0/hadoop-project-dist/hadoop-common/filesystem/testing.html
 
-Filesystem contract testが実行するかどうかは、
+Filesystem contract testが実行されるかどうかは、
 confでfs.contract.test.fs.%sが設定されているかどうかによる。
 contract test用の設定は
 src/test/resources/contract-test-options.xml に書けばロードされるが、
-このふぁいるの存在自体は必須ではない。
+このファイルの存在自体は必須ではない。
 
-逆に、認証が必要なタイプのhadoop-awsやhadoop-openstackのtestは、
+逆に、認証が必要なhadoop-awsやhadoop-openstackのtestは、
 src/test/resources/auth-keys.xmlというファイルが存在しないと実行されない。
 この制御はpom.xmlで定義でされている。::
 
@@ -173,7 +173,10 @@ src/test/resources/auth-keys.xmlというファイルが存在しないと実行
 　　...
 
 auth-keys.xmlはsrc/test/recources/core-site.xmlの中でincludeされている。
-これをロードコードがソース中にあるわけではない。
+これをロードするコードがソース中にあるわけではない。
+
+また、hadoop-azureモジュールはauth-keys.xmlではなくazure-auth-keys.xmlというファイル名を想定している。
+pom.xmlでの制御もしていない。このあたりの一貫性はいまいち。
 
 
 リリース関連
