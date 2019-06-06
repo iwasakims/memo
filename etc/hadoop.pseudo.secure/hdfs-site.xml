@@ -18,68 +18,72 @@
 
 <configuration>
   <property>
-    <name>dfs.namenode.name.dir</name>
-    <value>/home/iwasakims/hdfs/name</value>
-  </property>
-  <property>
-    <name>dfs.datanode.data.dir</name>
-    <value>/home/iwasakims/hdfs/data</value>
-  </property>
-  <property>
     <name>dfs.replication</name>
     <value>1</value>
   </property>
+  <property>
+    <name>dfs.namenode.name.dir</name>
+    <value>${user.home}/hdfs/name</value>
+  </property>
+  <property>
+    <name>dfs.namenode.checkpoint.dir</name>
+    <value>${user.home}/hdfs/namesecondary</value>
+  </property>
+  <property>
+    <name>dfs.datanode.data.dir</name>
+    <value>${user.home}/hdfs/data</value>
+  </property>
 
   <property>
+    <name>dfs.block.access.token.enable</name>
+    <value>true</value>
+  </property>
+  <property>
+    <name>dfs.http.policy</name>
+    <value>HTTPS_ONLY</value>
+  </property>
+  <property>
+    <name>dfs.data.transfer.protection</name>
+    <value>privacy</value>
+  </property>
+  <property>
     <name>dfs.namenode.keytab.file</name>
-    <value>/home/iwasakims/hdfs.keytab</value>
+    <value>${user.home}/keytab/hdfs.keytab</value>
   </property>
   <property>
     <name>dfs.namenode.kerberos.principal</name>
-    <value>hdfs/localdomain@EXAMPLE.COM</value>
+    <value>hdfs/localhost@EXAMPLE.COM</value>
   </property>
   <property>
     <name>dfs.namenode.kerberos.internal.spnego.principal</name>
-    <value>host/localdomain@EXAMPLE.COM</value>
+    <value>http/localhost@EXAMPLE.COM</value>
   </property>
-
   <property>
     <name>dfs.secondary.namenode.keytab.file</name>
-    <value>/home/iwasakims/hdfs.keytab</value>
+    <value>${user.home}/keytab/hdfs.keytab</value>
   </property>
   <property>
     <name>dfs.secondary.namenode.kerberos.principal</name>
-    <value>hdfs/localdomain@EXAMPLE.COM</value>
+    <value>hdfs/localhost@EXAMPLE.COM</value>
   </property>
   <property>
     <name>dfs.secondary.namenode.kerberos.internal.spnego.principal</name>
-    <value>host/localdomain@EXAMPLE.COM</value>
+    <value>http/localhost@EXAMPLE.COM</value>
   </property>
-
   <property>
     <name>dfs.datanode.keytab.file</name>
-    <value>/home/iwasakims/hdfs.keytab</value>
+    <value>${user.home}/keytab/hdfs.keytab</value>
   </property>
   <property>
     <name>dfs.datanode.kerberos.principal</name>
-    <value>hdfs/localdomain@EXAMPLE.COM</value>
+    <value>hdfs/localhost@EXAMPLE.COM</value>
   </property>
-  <property>
-    <name>dfs.datanode.address</name>
-    <value>0.0.0.0:1004</value>
-  </property>
-  <property>
-    <name>dfs.datanode.http.address</name>
-    <value>0.0.0.0:1006</value>
-  </property>
-
-
   <property>
     <name>dfs.web.authentication.kerberos.keytab</name>
-    <value>/home/iwasakims/hdfs.keytab</value>
+    <value>${user.home}/keytab/hdfs.keytab</value>
   </property>
   <property>
     <name>dfs.web.authentication.kerberos.principal</name>
-    <value>hdfs/localdomain@EXAMPLE.COM</value>
+    <value>http/localhost@EXAMPLE.COM</value>
   </property>
 </configuration>

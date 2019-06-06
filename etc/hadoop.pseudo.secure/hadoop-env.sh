@@ -50,7 +50,7 @@
 # such as in /etc/profile.d
 
 # The java implementation to use.
-export JAVA_HOME=/usr/lib/jvm/java-1.7.0-openjdk.x86_64
+export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk
 export JAVA_HOME=${JAVA_HOME:-"hadoop-env.sh is not configured"}
 
 # Location of Hadoop's configuration information.  i.e., where this
@@ -211,7 +211,7 @@ esac
 # that bind to privileged ports to provide authentication of data transfer
 # protocol.  Jsvc is not required if SASL is configured for authentication of
 # data transfer protocol using non-privileged ports.
-export JSVC_HOME=/usr/lib/bigtop-utils
+# export JSVC_HOME=/usr/bin
 
 #
 # This directory contains pids for secure and privileged processes.
@@ -272,7 +272,7 @@ export JSVC_HOME=/usr/lib/bigtop-utils
 # to provide authentication of data transfer protocol.  This **MUST NOT** be
 # defined if SASL is configured for authentication of data transfer protocol
 # using non-privileged ports.
-export HADOOP_SECURE_DN_USER=iwasakims
+# export HADOOP_SECURE_DN_USER=hdfs
 
 # Supplemental options for secure datanodes
 # By default, we use jsvc which needs to know to launch a
@@ -353,3 +353,6 @@ export HADOOP_SECURE_DN_USER=iwasakims
 # via this special env var:
 # HADOOP_ENABLE_BUILD_PATHS="true"
 
+#HADOOP_OPTIONAL_TOOLS=hadoop-aws,hadoop-azure,hadoop-azure-datalake
+
+export HADOOP_JAAS_DEBUG=true

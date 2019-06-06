@@ -22,11 +22,28 @@
     <value>hdfs://localhost:8020/</value>
   </property>
   <property>
+    <name>hadoop.security.key.provider.path</name>
+    <value>kms://http@localhost:9600/kms</value>
+  </property>
+
+  <property>
     <name>hadoop.security.authentication</name>
     <value>kerberos</value>
   </property>
   <property>
     <name>hadoop.security.authorization</name>
-    <value>true</value>
+    <value>false</value>
+  </property>
+  <property>
+    <name>hadoop.rpc.protection</name>
+    <value>privacy</value>
+  </property>
+  <property>
+    <name>hadoop.security.auth_to_local</name>
+    <value>
+      RULE:[2:$1](hdfs)s/^.*$/${user.name}/
+      RULE:[2:$1](yarn)s/^.*$/${user.name}/
+      DEFAULT
+    </value>
   </property>
 </configuration>

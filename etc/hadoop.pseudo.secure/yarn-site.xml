@@ -41,4 +41,33 @@
     <name>yarn.nodemanager.disk-health-checker.max-disk-utilization-per-disk-percentage</name>
     <value>100.0</value>
   </property>
+
+  <property>
+    <name>yarn.resourcemanager.principal</name>
+    <value>yarn/localhost@EXAMPLE.COM</value>
+  </property>
+  <property>
+    <name>yarn.resourcemanager.keytab</name>
+    <value>${user.home}/keytab/yarn.keytab</value>
+  </property>
+  <property>
+    <name>yarn.nodemanager.principal</name>
+    <value>yarn/localhost@EXAMPLE.COM</value>
+  </property>
+  <property>
+    <name>yarn.nodemanager.keytab</name>
+    <value>${user.home}/keytab/yarn.keytab</value>
+  </property>
+  <property>
+    <name>yarn.nodemanager.container-executor.class</name>
+    <value>org.apache.hadoop.yarn.server.nodemanager.LinuxContainerExecutor</value>
+  </property>
+  <property>
+    <name>yarn.nodemanager.linux-container-executor.group</name>
+    <value>yarn</value>
+  </property>
+  <property>
+    <name>yarn.nodemanager.linux-container-executor.path</name>
+    <value>/usr/local/bin/container-executor</value>
+  </property>
 </configuration>
