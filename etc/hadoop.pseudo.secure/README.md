@@ -28,9 +28,6 @@ kadmin ktadd -k ${HOME}/keytab/yarn.keytab yarn/localhost@EXAMPLE.COM
 kadmin ktadd -k ${HOME}/keytab/yarn.keytab http/localhost@EXAMPLE.COM
 ```
 
-```
-keytool -keystore ${HOME}/http.keystore -genkey -alias http -keyalg RSA
-```
 
 ```
 cd ${HADOOP_HOME}
@@ -42,8 +39,15 @@ sudo chmod 6050 /usr/local/bin/container-executor
 
 sudo mkdir -p /usr/local/etc/hadoop
 sudo ln ${PWD}/etc/hadoop/container-executor.cfg /usr/local/etc/hadoop/
+sudo chown root:${USER} /usr/local/etc/hadoop/container-executor.cfg
 sudo chmod 644 /usr/local/etc/hadoop/container-executor.cfg 
 ```
+
+```
+keytool -keystore ${HOME}/http.keystore -genkey -alias http -keyalg RSA
+vi etc/hadoop/ssl-server.xml
+```
+
 
 
 https via curl
@@ -74,6 +78,7 @@ curl -L -b "oraclelicense=a" -O http://download.oracle.com/otn-pub/java/jce/8/jc
 ```
 
 ```
+bin/hadoop --daemon stop kms
 bin/yarn --daemon stop nodemanager
 bin/yarn --daemon stop resourcemanager
 bin/hdfs --daemon stop datanode
@@ -83,4 +88,5 @@ bin/hdfs --daemon start namenode
 bin/hdfs --daemon start datanode
 bin/yarn --daemon start resourcemanager
 bin/yarn --daemon start nodemanager
+bin/hadoop --daemon start kms
 ```
