@@ -90,3 +90,8 @@ bin/yarn --daemon start resourcemanager
 bin/yarn --daemon start nodemanager
 bin/hadoop --daemon start kms
 ```
+
+```
+bin/hadoop dtutil get hdfs://localhost:8020/ ./dt.dat
+bin/hdfs dfs -tokenCacheFile ./dt.dat -ls /
+```
