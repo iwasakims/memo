@@ -70,28 +70,62 @@ bin/hadoop key create hoge
 ```
 
 
-misc
+stop and start
+--------------
+
+    bin/hadoop --daemon stop kms
+    bin/yarn --daemon stop nodemanager
+    bin/yarn --daemon stop resourcemanager
+    bin/hdfs --daemon stop datanode
+    bin/hdfs --daemon stop namenode
+    
+    bin/hdfs --daemon start namenode
+    bin/hdfs --daemon start datanode
+    bin/yarn --daemon start resourcemanager
+    bin/yarn --daemon start nodemanager
+    bin/hadoop --daemon start kms
+
+
+downloading JCE policy
+----------------------
+
+    curl -L -b "oraclelicense=a" -O http://download.oracle.com/otn-pub/java/jce/8/jce_policy-8.zip
+
+
+memo
 ----
 
-```
-curl -L -b "oraclelicense=a" -O http://download.oracle.com/otn-pub/java/jce/8/jce_policy-8.zip 
-```
+Token files can be specifiled by `hadoop.token.files` which is system property or configuration property.
+https://github.com/apache/hadoop/blob/rel/release-3.2.0/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/security/UserGroupInformation.java#L721-L739
 
-```
-bin/hadoop --daemon stop kms
-bin/yarn --daemon stop nodemanager
-bin/yarn --daemon stop resourcemanager
-bin/hdfs --daemon stop datanode
-bin/hdfs --daemon stop namenode
+    $ HADOOP_OPTS='-Dhadoop.token.files=./dt.dat' bin/hadoop org.apache.hadoop.security.UserGroupInformation
+    Getting UGI for current user
+    2019-06-28 17:24:25,987 DEBUG security.SecurityUtil: Setting hadoop.security.token.service.use_ip to true
+    2019-06-28 17:24:26,120 DEBUG security.Groups:  Creating new Groups object
+    2019-06-28 17:24:26,124 DEBUG security.JniBasedUnixGroupsMapping: Using JniBasedUnixGroupsMapping for Group resolution
+    2019-06-28 17:24:26,124 DEBUG security.JniBasedUnixGroupsMappingWithFallback: Group mapping impl=org.apache.hadoop.security.JniBasedUnixGroupsMapping
+    2019-06-28 17:24:26,267 DEBUG security.Groups: Group mapping impl=org.apache.hadoop.security.JniBasedUnixGroupsMappingWithFallback; cacheTimeout=300000; warningDeltaMs=5000
+    2019-06-28 17:24:26,291 DEBUG security.UserGroupInformation: hadoop login
+    2019-06-28 17:24:26,294 DEBUG security.UserGroupInformation: hadoop login commit
+    2019-06-28 17:24:26,295 DEBUG security.UserGroupInformation: using kerberos user:iwasakims@EXAMPLE.COM
+    2019-06-28 17:24:26,295 DEBUG security.UserGroupInformation: Using user: "iwasakims@EXAMPLE.COM" with name iwasakims@EXAMPLE.COM
+    2019-06-28 17:24:26,296 DEBUG security.UserGroupInformation: User entry: "iwasakims@EXAMPLE.COM"
+    2019-06-28 17:24:26,298 DEBUG security.UserGroupInformation: Reading credentials from location /home/iwasakims/dist/hadoop-3.3.0-SNAPSHOT/dt.dat
+    2019-06-28 17:24:26,370 DEBUG security.UserGroupInformation: Loaded 1 tokens from /home/iwasakims/dist/hadoop-3.3.0-SNAPSHOT/dt.dat
+    2019-06-28 17:24:26,370 DEBUG security.UserGroupInformation: UGI loginUser:iwasakims@EXAMPLE.COM (auth:KERBEROS)
+    User: iwasakims@EXAMPLE.COM
+    Group Ids:
+    2019-06-28 17:24:26,378 DEBUG security.UserGroupInformation: Current time is 1561710266378
+    2019-06-28 17:24:26,378 DEBUG security.UserGroupInformation: Next refresh is 1561769251000
+    2019-06-28 17:24:26,387 DEBUG security.Groups: GroupCacheLoader - load.
+    Groups: docker iwasakims
+    UGI: iwasakims@EXAMPLE.COM (auth:KERBEROS)
+    Auth method KERBEROS
+    Keytab false
+    ============================================================
 
-bin/hdfs --daemon start namenode
-bin/hdfs --daemon start datanode
-bin/yarn --daemon start resourcemanager
-bin/yarn --daemon start nodemanager
-bin/hadoop --daemon start kms
-```
+Recent GenericOptionsParser provides generic option `-tokenCacheFile` .
+https://github.com/apache/hadoop/blob/rel/release-3.2.0/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/util/GenericOptionsParser.java#L341-L356
 
-```
-bin/hadoop dtutil get hdfs://localhost:8020/ ./dt.dat
-bin/hdfs dfs -tokenCacheFile ./dt.dat -ls /
-```
+    bin/hadoop dtutil get hdfs://localhost:8020/ ./dt.dat
+    bin/hdfs dfs -tokenCacheFile ./dt.dat -ls /

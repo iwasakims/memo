@@ -233,6 +233,17 @@ security
           ProxyUsers.authorize(user, this.getHostAddress());
         }
 
+- 認証方法がTOKENかKERBEROSかはSaslRpcClientとServerとのネゴシエーションの過程で決まる。
+  ServerをnewするときにDelegationTokenSecretManagerが与えられていると、
+  Server#getAuthMethodsはTOKENとKERBEROSの両方を含むListを返す。
+  これは、RpcResponseHeaderProto.authsとして、ネゴシエーションの際にクライアントに送られる。
+  クライアント側のUserGroupInformationsのCredentialsに対応するtokenがロード済みであれば、
+  SaslClient#createSaslClientはこれを元に、SaslClientCallbackHandlerを仕込む。
+
+- ジョブ実行のためのdelegation tokenは、
+  AMを起動するためのAMのContainerLaunchContextの一部として、
+  submitApplicationするときにResourceManagerに渡される。
+
 
 Kerberos authN on CentOS7 and HDP2.6.2
 ======================================
