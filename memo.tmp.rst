@@ -1,4 +1,4 @@
-.. contents::
+[>.. contents::
 
 
 build & test
@@ -941,3 +941,32 @@ fluentd
 
   $ bundle exec rake test TEST=test/plugin/test_output_as_buffered.rb TESTOPTS="-t'/buffered output feature with timekey and range/'"
 
+
+testing httpfs
+==============
+
+http
+----
+
+::
+
+  $ curl -i -c cookiejar -X PUT 'http://172.32.1.195:14000/webhdfs/v1/tmp/README.txt?user.name=iwasakims&op=CREATE&replication=1'
+  $ curl -i -X PUT -b cookiejar \
+      --header "Content-Type:application/octet-stream" \
+      --data-binary @README.txt \
+      'http://172.32.1.195:14000/webhdfs/v1/tmp/README.txt?op=CREATE&replication=1&user.name=iwasakims&data=true'
+  $ curl -i -L -X GET 'http://172.32.1.195:14000/webhdfs/v1/tmp/README.txt?user.name=iwasakims&op=OPEN'
+  
+
+https
+-----
+
+::
+
+  $ keytool -importkeystore -srckeystore ~/.keystore -destkeystore ~/.keystore.p12 -deststoretype pkcs12
+  $ pk12util -i ~/.keystore.p12 -d ~/nss
+  $ certutil -L -d ~/nss
+
+  $ SSL_DIR=~/nss curl -k --cert tomcat:hogemoge -i -c cookiejar -X PUT 'https://172.32.1.195:14000/webhdfs/v1/tmp/README.txt?user.name=iwasakims&op=CREATE&replication=1'
+  $ SSL_DIR=~/nss curl -k --cert tomcat:hogemoge -i -X PUT --header "Content-Type:application/octet-stream" --data-binary @README.txt -b cookiejar 'https://172.32.1.195:14000/webhdfs/v1/tmp/README.txt?op=CREATE&replication=1&user.name=iwasakims&data=true'
+  $ SSL_DIR=~/nss curl -k --cert tomcat:hogemoge -i -L -X GET 'https://172.32.1.195:14000/webhdfs/v1/tmp/README.txt?user.name=iwasakims&op=OPEN'
