@@ -53,6 +53,10 @@ vi etc/hadoop/ssl-server.xml
 vi etc/hadoop/ssl-client.xml
 ```
 
+webapp of httpfs requires ssl-client.xml on the classpath for https access to kms.
+```
+cp ${PWD}/etc/hadoop/ssl-client.xml share/hadoop/httpfs/tomcat/webapps/webhdfs/WEB-INF/classes/
+```
 
 
 https via curl

@@ -55,8 +55,17 @@
     <value>
       RULE:[2:$1](hdfs)s/^.*$/${user.name}/
       RULE:[2:$1](yarn)s/^.*$/${user.name}/
+      RULE:[2:$1](http)s/^.*$/http/
       DEFAULT
     </value>
+  </property>
+  <property>
+    <name>hadoop.kms.proxyuser.http.hosts</name>
+    <value>*</value>
+  </property>
+  <property>
+    <name>hadoop.kms.proxyuser.http.groups</name>
+    <value>*</value>
   </property>
   <property>
     <name>hadoop.kms.authentication.signer.secret.provider</name>
