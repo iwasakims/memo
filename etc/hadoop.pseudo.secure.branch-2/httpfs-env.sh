@@ -38,7 +38,7 @@
 
 # The hostname HttpFS server runs on
 #
-# export HTTPFS_HTTP_HOSTNAME=`hostname -f`
+export HTTPFS_HTTP_HOSTNAME=localhost
 
 # Indicates if HttpFS is using SSL
 #

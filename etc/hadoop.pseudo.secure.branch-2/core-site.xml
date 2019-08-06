@@ -43,16 +43,20 @@
     <value>
       RULE:[2:$1](hdfs)s/^.*$/${user.name}/
       RULE:[2:$1](yarn)s/^.*$/${user.name}/
-      RULE:[2:$1](http)s/^.*$/${user.name}/
+      RULE:[2:$1](http)s/^.*$/http/
       DEFAULT
     </value>
   </property>
   <property>
-    <name>hadoop.proxyuser.iwasakims.hosts</name>
+    <name>hadoop.proxyuser.http.hosts</name>
     <value>*</value>
   </property>
   <property>
-    <name>hadoop.proxyuser.iwasakims.groups</name>
+    <name>hadoop.proxyuser.http.groups</name>
     <value>*</value>
+  </property>
+  <property>
+    <name>hadoop.ssl.hostname.verifier</name>
+    <value>ALLOW_ALL</value>
   </property>
 </configuration>
