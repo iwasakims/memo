@@ -320,7 +320,6 @@ EPELからcolordiffをインストールして使うと、より見やすい。:
   yes | git difftool -x 'colordiff -y -W250' $1~1 $1 | less -R
 
   
-
 jdb
 ---
 
@@ -345,6 +344,14 @@ Emacsと組み合わせると意外といける。
 - findコマンドでまとめて指定する試み::
 
     jdb -attach localhost:8765 -sourcepath .`find . -wholename '*/src/main/java' -type d -print0 | sed -e 's/\./\:\./g'`
+
+
+spark-shell
+-----------
+
+試行錯誤用の便利な対話環境として、bin-without-hadoopなSparkのtarballをダウンロードし、spark-shellを利用する。::
+
+    $ SPARK_DIST_CLASSPATH=$(../hadoop-3.3.0-SNAPSHOT/bin/hadoop classpath) bin/spark-shell
 
 
 Setup
