@@ -66,6 +66,13 @@ hadoopのsiteドキュメントのビルド。各サブプロジェクトのデ�
 
   mvn site site:stage -DstagingDirectory=/var/www/html/hadoop-site
 
+branch-2のdistビルドにはJDK 7を使う必要があるが、
+Maven Centralが?TLS 1.0, 1.1をサポートしなくなったことに起因して、
+システムプロパティでTLS 1.2を明示的に指定する。
+compileはJDK 8でも通るが、Javadoc warningsに起因してdistビルドは失敗する。::
+
+  mvn clean package -Dhttps.protocols=TLSv1.2 -DskipTests -DskipShade -Pdist -Pnative
+
 HBaseビルド時のHadoopのバージョン指定方法。::
 
   mvn package -Phadoop-2.0 -Dhadoop-two.version=2.5.0-SNAPSHOT -DskipTests
