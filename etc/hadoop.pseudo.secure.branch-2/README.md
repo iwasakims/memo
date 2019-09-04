@@ -53,6 +53,14 @@ vi etc/hadoop/ssl-server.xml
 vi etc/hadoop/ssl-client.xml
 ```
 
+using SSLEnabled connector of Tomcat for kms and https.
+```
+mv share/hadoop/kms/tomcat/conf/server.xml share/hadoop/kms/tomcat/conf/server.xml.org
+cp share/hadoop/kms/tomcat/conf/ssl-server.xml share/hadoop/kms/tomcat/conf/server.xml
+mv share/hadoop/httpfs/tomcat/conf/server.xml share/hadoop/httpfs/tomcat/conf/server.xml.org
+cp share/hadoop/httpfs/tomcat/conf/ssl-server.xml share/hadoop/httpfs/tomcat/conf/server.xml
+```
+
 webapp of httpfs requires ssl-client.xml on the classpath for https access to kms.
 ```
 cp ${PWD}/etc/hadoop/ssl-client.xml share/hadoop/httpfs/tomcat/webapps/webhdfs/WEB-INF/classes/
@@ -73,9 +81,8 @@ KMS
 
 ```
 cd ${HADOOP_HOME}
-echo hogemoge > etc/hadoop/kms.keystore.password
+# echo hogemoge > etc/hadoop/kms.keystore.password
 sbin/kms.sh start
-bin/hadoop key create hoge
 ```
 
 
@@ -105,15 +112,14 @@ downloading JCE policy
 curl -L -b "oraclelicense=a" -O http://download.oracle.com/otn-pub/java/jce/8/jce_policy-8.zip
 ```
 
-testing httpfs
---------------
+testing kms and httpfs
+----------------------
 
 ```
-$ curl -i -k --negotiate -u : 'https://localhost:14000/webhdfs/v1/tmp?op=LISTSTATUS'
-
-$ curl -i -k --negotiate -u : -c cookiejar -X PUT 'https://localhost:14000/webhdfs/v1/tmp/README.txt?op=CREATE&replication=1'
-
-$ curl -i -k --negotiate -u : -b cookiejar -X PUT --header "Content-Type:application/octet-stream" --data-binary @README.txt 'https://localhost:14000/webhdfs/v1/tmp/README.txt?op=CREATE&replication=1&data=true'
-
-$ curl -i -k --negotiate -u : 'https://localhost:14000/webhdfs/v1/tmp/README.txt?op=OPEN'
+bin/hadoop key create hoge
+bin/hdfs dfs -mkdir /encrypted
+bin/hdfs crypto -createZone -keyName hoge -path /encrypted
+curl -i -k --negotiate -u : -c cookiejar -X PUT 'https://localhost:14000/webhdfs/v1/encrypted/README.txt?op=CREATE&replication=1'
+curl -i -k --negotiate -u : -b cookiejar -X PUT --header "Content-Type:application/octet-stream" --data-binary @README.txt 'https://localhost:14000/webhdfs/v1/encrypted/README.txt?op=CREATE&replication=1&data=true'
+curl -i -k --negotiate -u : 'https://localhost:14000/webhdfs/v1/encrypted/README.txt?op=OPEN'
 ```
