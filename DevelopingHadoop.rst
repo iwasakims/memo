@@ -82,6 +82,9 @@ HBase Reference Manualのビルド。事前に一度siteをビルドして、Jav
   mvn site
   mvn docbkx:generate-html
 
+Maven CentralがTLS 1.0, 1.1を許容しなくなったため、Java 7でのビルド実行時には、https.protocolsの指定が必要になった。::
+
+  mvn -Dhttps.protocols=TLSv1.2 install
 
 サブツリーでビルド
 ------------------
