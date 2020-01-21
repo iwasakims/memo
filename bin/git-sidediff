@@ -1,0 +1,1 @@
+yes | git difftool -x 'colordiff -y -W250' "$@"| less -R -i
