@@ -697,6 +697,16 @@ Debugging init script without systemctl redirect
   $ sudo /bin/bash -x -c 'export SHELLOPTS && SYSTEMCTL_SKIP_REDIRECT=true /etc/init.d/hadoop-httpfs start'
 
 
+Disabling dh_strip_nondeterminism
+---------------------------------
+
+dh_strip_nondeterminism takes quite long time on hadoop-deb packaging.
+adding blank override_dh_strip_nondeterminism section to
+bigtop-packages/src/deb/hadoop/rules makes it skipped::
+
+  override_dh_strip_nondeterminism:
+
+
 testing security on single node (branch-2)
 ==========================================
 
