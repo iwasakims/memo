@@ -676,6 +676,26 @@ smoke testを実行する。::
   ./docker-hadoop.sh --smoke-tests
 
 
+Debugging dpkg
+--------------
+
+dpkg-buildpackage takes options from environment variable DEB_BUILD_OPTIONS.
+For Bigtop, dpkg-buildpackage is called in the following part of packages.gradle::
+
+    exec {
+      workingDir DEB_BLD_DIR
+      commandLine "dpkg-buildpackage -uc -us -sa -S".split(' ')
+      environment "DEB_BUILD_OPTIONS", "nostrip noopt debug"
+    }
+
+
+Debugging init script without systemctl redirect
+------------------------------------------------
+
+::
+
+  $ sudo /bin/bash -x -c 'export SHELLOPTS && SYSTEMCTL_SKIP_REDIRECT=true /etc/init.d/hadoop-httpfs start'
+
 
 testing security on single node (branch-2)
 ==========================================
