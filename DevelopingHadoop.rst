@@ -679,13 +679,13 @@ smoke testを実行する。::
 Debugging dpkg
 --------------
 
-dpkg-buildpackage takes options from environment variable DEB_BUILD_OPTIONS.
+Setting environment variable DH_VERBOSE to non null makes dpkg-buildpackage more verbose.
 For Bigtop, dpkg-buildpackage is called in the following part of packages.gradle::
 
     exec {
       workingDir DEB_BLD_DIR
       commandLine "dpkg-buildpackage -uc -us -sa -S".split(' ')
-      environment "DEB_BUILD_OPTIONS", "nostrip noopt debug"
+      environment "DH_VERBOSE", "1
     }
 
 
