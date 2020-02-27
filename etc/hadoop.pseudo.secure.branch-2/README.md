@@ -81,7 +81,7 @@ KMS
 
 ```
 cd ${HADOOP_HOME}
-# echo hogemoge > etc/hadoop/kms.keystore.password
+echo "export HADOOP_KEYSTORE_PASSWORD=hogemoge" >> etc/hadoop/kms-env.sh
 sbin/kms.sh start
 ```
 
