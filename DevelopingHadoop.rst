@@ -756,6 +756,10 @@ The default_ccache_name in /etc/krb5.conf should the default value otherwise had
 
   # default_ccache_name = KEYRING:persistent:%{uid}
 
+The line setting renew_lifetime in /etc/krb5.conf should be commented out due to https://bugs.openjdk.java.net/browse/JDK-8131051.
+
+  #  renew_lifetime = 7d
+
 creating keytab file for services::
 
   $ mkdir /home/centos/keytab
