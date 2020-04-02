@@ -7,6 +7,8 @@ sudo yum install krb5-server krb5-libs krb5-workstation
 
 Edit realm settings and comment out the line `default_ccache_name = KEYRING:persistent:%{uid}`
 wise hadoop client library can not find cached credential.
+On CentOS 8, /etc/krb5.conf.d/kcm_default_ccache should be edited too
+since it has default_ccache_name entry.
 In addition, the line `renew_lifetime = 7d` must be commented out
 due to [JDK-8131051](https://bugs.openjdk.java.net/browse/JDK-8131051) .
 ```

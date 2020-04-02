@@ -24,4 +24,25 @@
     <name>hadoop.security.keystore.java-keystore-provider.password-file</name>
     <value>kms.keystore.password</value>
   </property>
+  <property>
+    <name>hadoop.kms.authentication.type</name>
+    <value>kerberos</value>
+  </property>
+  <property>
+    <name>hadoop.kms.authentication.kerberos.keytab</name>
+    <value>${user.home}/keytab/hdfs.keytab</value>
+  </property>
+  <property>
+    <name>hadoop.kms.authentication.kerberos.principal</name>
+    <value>HTTP/localhost@EXAMPLE.COM</value>
+  </property>
+  <property>
+    <name>hadoop.kms.authentication.kerberos.name.rules</name>
+    <value>
+      RULE:[2:$1](hdfs)s/^.*$/${user.name}/
+      RULE:[2:$1](yarn)s/^.*$/${user.name}/
+      RULE:[2:$1](http)s/^.*$/${user.name}/
+      DEFAULT
+    </value>
+  </property>
 </configuration>
