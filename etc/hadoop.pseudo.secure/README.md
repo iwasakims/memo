@@ -76,7 +76,6 @@ KMS
 
 ```
 cd ${HADOOP_HOME}
-echo hogemoge > etc/hadoop/kms.keystore.password
 bin/hadoop --daemon start kms
 bin/hadoop key create hoge
 ```
