@@ -55,10 +55,6 @@
     <value>hdfs/localhost@EXAMPLE.COM</value>
   </property>
   <property>
-    <name>dfs.namenode.kerberos.internal.spnego.principal</name>
-    <value>http/localhost@EXAMPLE.COM</value>
-  </property>
-  <property>
     <name>dfs.secondary.namenode.keytab.file</name>
     <value>${user.home}/keytab/hdfs.keytab</value>
   </property>
@@ -67,23 +63,11 @@
     <value>hdfs/localhost@EXAMPLE.COM</value>
   </property>
   <property>
-    <name>dfs.secondary.namenode.kerberos.internal.spnego.principal</name>
-    <value>http/localhost@EXAMPLE.COM</value>
-  </property>
-  <property>
     <name>dfs.datanode.keytab.file</name>
     <value>${user.home}/keytab/hdfs.keytab</value>
   </property>
   <property>
     <name>dfs.datanode.kerberos.principal</name>
     <value>hdfs/localhost@EXAMPLE.COM</value>
-  </property>
-  <property>
-    <name>dfs.web.authentication.kerberos.keytab</name>
-    <value>${user.home}/keytab/hdfs.keytab</value>
-  </property>
-  <property>
-    <name>dfs.web.authentication.kerberos.principal</name>
-    <value>http/localhost@EXAMPLE.COM</value>
   </property>
 </configuration>

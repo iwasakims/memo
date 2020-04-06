@@ -30,7 +30,7 @@
   </property>
   <property>
     <name>hadoop.kms.authentication.kerberos.keytab</name>
-    <value>${user.home}/keytab/hdfs.keytab</value>
+    <value>${user.home}/keytab/http.keytab</value>
   </property>
   <property>
     <name>hadoop.kms.authentication.kerberos.principal</name>
@@ -41,8 +41,23 @@
     <value>
       RULE:[2:$1](hdfs)s/^.*$/${user.name}/
       RULE:[2:$1](yarn)s/^.*$/${user.name}/
-      RULE:[2:$1](http)s/^.*$/${user.name}/
       DEFAULT
     </value>
+  </property>
+  <property>
+    <name>hadoop.kms.ssl.enabled</name>
+    <value>true</value>
+  </property>
+  <property>
+    <name>ssl.server.keystore.location</name>
+    <value>${user.home}/http.keystore</value>
+  </property>
+  <property>
+    <name>ssl.server.keystore.password</name>
+    <value>hogemoge</value>
+  </property>
+  <property>
+    <name>ssl.server.keystore.keypassword</name>
+    <value>hogemoge</value>
   </property>
 </configuration>
