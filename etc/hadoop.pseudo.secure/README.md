@@ -60,7 +60,6 @@ vi etc/hadoop/ssl-client.xml
 ```
 
 
-
 https via curl
 --------------
 
@@ -75,8 +74,14 @@ KMS
 
 ```
 cd ${HADOOP_HOME}
+kinit
 bin/hadoop --daemon start kms
-bin/hadoop key create hoge
+bin/hadoop key create key1
+bin/hdfs dfs -mkdir /zone1
+bin/hdfs crypto -createZone -path /zone1 -keyName key1
+bin/hdfs dfs -put README.txt /zone1/
+curl --negotiate -u : -k "https://localhost:9871/webhdfs/v1/zone1?op=LISTSTATUS"
+bin/hadoop fs -cat swebhdfs://localhost:9871/zone1/README.txt
 ```
 
 
