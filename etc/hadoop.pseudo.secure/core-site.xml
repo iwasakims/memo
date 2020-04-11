@@ -45,6 +45,16 @@
       DEFAULT
     </value>
   </property>
+<!--
+  KMS uses web.xml for setting filters.
+  Setting hadoop.http.filter.initializers conflicts with it.
+  Commenting out here for testing on pseudo-distributed environment.
+  WebHDFS works even without this since HADOOP-16354 added AuthFilter by default.
+  <property>
+    <name>hadoop.http.filter.initializers</name>
+    <value>org.apache.hadoop.security.AuthenticationFilterInitializer</value>
+  </property>
+-->
   <property>
     <name>hadoop.http.authentication.type</name>
     <value>kerberos</value>
