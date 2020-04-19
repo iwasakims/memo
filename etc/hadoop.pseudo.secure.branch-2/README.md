@@ -22,13 +22,12 @@ sudo systemctl start kadmin.service
 mkdir ${HOME}/keytab
 kadmin addprinc -randkey hdfs/localhost@EXAMPLE.COM
 kadmin addprinc -randkey yarn/localhost@EXAMPLE.COM
-kadmin addprinc -randkey http/localhost@EXAMPLE.COM
 kadmin addprinc -randkey HTTP/localhost@EXAMPLE.COM
 kadmin ktadd -k ${HOME}/keytab/hdfs.keytab hdfs/localhost@EXAMPLE.COM
-kadmin ktadd -k ${HOME}/keytab/hdfs.keytab http/localhost@EXAMPLE.COM
 kadmin ktadd -k ${HOME}/keytab/hdfs.keytab HTTP/localhost@EXAMPLE.COM
 kadmin ktadd -k ${HOME}/keytab/yarn.keytab yarn/localhost@EXAMPLE.COM
-kadmin ktadd -k ${HOME}/keytab/yarn.keytab http/localhost@EXAMPLE.COM
+kadmin ktadd -k ${HOME}/keytab/http.keytab HTTP/localhost@EXAMPLE.COM
+kadmin ktadd -k ${HOME}/keytab/http.keytab HTTP/localhost@EXAMPLE.COM
 ```
 
 container-exucutor and container-exucutor.cfg can not be placed under /home
@@ -81,7 +80,6 @@ KMS
 
 ```
 cd ${HADOOP_HOME}
-echo "export HADOOP_KEYSTORE_PASSWORD=hogemoge" >> etc/hadoop/kms-env.sh
 sbin/kms.sh start
 ```
 
