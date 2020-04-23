@@ -915,3 +915,23 @@ HDP 2.6.1だと、以下を実行しないと、HiveMetastoreやHiveServer2が�
   $ ls -al /usr/share/java/mysql-connector-java.jar
   $ cd /var/lib/ambari-server/resources/
   $ ln -s /usr/share/java/mysql-connector-java.jar mysql-connector-java.jar
+
+
+aarm64
+======
+
+installing protobuf 2.5.0
+-------------------------
+
+```
+$ git clone https://github.com/protocolbuffers/protobuf
+$ cd protobuf
+$ git checkout v2.5.0
+$ git cherry-pick -x f0b6a5cfeb5f6347c34975446bda08e0c20c9902
+$ git cherry-pick -x 2ca19bd8066821a56f193e7fca47139b25c617ad
+$ autoreconf -i
+$ ./configure --prefix=/usr/local
+$ make
+$ sudo make install
+$ sudo ldconfig
+```
