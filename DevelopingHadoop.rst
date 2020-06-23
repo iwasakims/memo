@@ -949,3 +949,116 @@ $ make
 $ sudo make install
 $ sudo ldconfig
 ```
+
+
+HBase
+=====
+
+HBase multi pseudo-distributed clusters on localhost
+----------------------------------------------------
+
+::
+
+  $ cd $HBASE_HOME
+  $ cp -Rp conf conf1
+  $ cp -Rp conf conf2
+  $ vi conf1/hbase-env.sh
+  $ vi conf1/hbase-site.xml
+  $ vi conf2/hbase-env.sh
+  $ vi conf2/hbase-site.xml
+    
+  $ HBASE_CONF_DIR=./conf1 bin/hbase-daemon.sh start master
+  $ HBASE_CONF_DIR=./conf1 bin/hbase-daemon.sh start regionserver
+  $ HBASE_CONF_DIR=./conf2 bin/hbase-daemon.sh start master
+  $ HBASE_CONF_DIR=./conf2 bin/hbase-daemon.sh start regionserver
+  
+  $ HBASE_CONF_DIR=./conf2 bin/hbase shell
+  > create 'test', 'f'
+  
+  $ HBASE_CONF_DIR=./conf1 bin/hbase shell
+  > create 'test', 'f'
+  > add_peer 'hbase2', 'localhost:2181:/hbase2'
+  > enable_table_replication 'test'
+  > put 'test', 'r1', 'f:', 'v1'
+
+conf1/hase-env.sh::
+
+  export HBASE_IDENT_STRING=hbase1
+
+conf2/hase-env.sh::
+
+  export HBASE_IDENT_STRING=hbase2
+
+conf1/hbase-site.xml::
+
+  <configuration>
+    <property>
+      <name>hbase.cluster.distributed</name>
+      <value>true</value>
+    </property>
+    <property>
+      <name>hbase.rootdir</name>
+      <value>hdfs://localhost:8020/hbase1</value>
+    </property>
+    <property>
+      <name>hbase.zookeeper.quorum</name>
+      <value>localhost</value>
+    </property>
+    <property>
+      <name>zookeeper.znode.parent</name>
+      <value>/hbase1</value>
+    </property>
+    <property>
+      <name>hbase.master.port</name>
+      <value>60001</value>
+    </property>
+    <property>
+      <name>hbase.master.info.port</name>
+      <value>60011</value>
+    </property>
+    <property>
+      <name>hbase.regionserver.port</name>
+      <value>60021</value>
+    </property>
+    <property>
+      <name>hbase.regionserver.info.port</name>
+      <value>60031</value>
+    </property>
+  </configuration>
+
+conf2/hbase-site.xml::
+
+  <configuration>
+    <property>
+      <name>hbase.cluster.distributed</name>
+      <value>true</value>
+    </property>
+    <property>
+      <name>hbase.rootdir</name>
+      <value>hdfs://localhost:8020/hbase2</value>
+    </property>
+    <property>
+      <name>hbase.zookeeper.quorum</name>
+      <value>localhost</value>
+    </property>
+    <property>
+      <name>zookeeper.znode.parent</name>
+      <value>/hbase2</value>
+    </property>
+    <property>
+      <name>hbase.master.port</name>
+      <value>60002</value>
+    </property>
+    <property>
+      <name>hbase.master.info.port</name>
+      <value>60012</value>
+    </property>
+    <property>
+      <name>hbase.regionserver.port</name>
+      <value>60022</value>
+    </property>
+    <property>
+      <name>hbase.regionserver.info.port</name>
+      <value>60032</value>
+    </property>
+  </configuration>
