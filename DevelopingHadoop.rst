@@ -1,3 +1,5 @@
+.. toctree::
+
 リンク
 ======
 
@@ -28,6 +30,7 @@
 - Apacheコミュニティについて
   https://community.apache.org/
 
+
 ビルド
 ======
 
@@ -48,6 +51,23 @@ protobuf、maven、findbugsは別途手動でインストール。::
   
   export FINDBUGS_HOME=/opt/findbugs
   export PATH=$PATH:$FINDBUGS_HOME/bin
+
+
+installing protobuf 2.5.0 on aarm64
+-----------------------------------
+
+::
+
+  $ git clone https://github.com/protocolbuffers/protobuf
+  $ cd protobuf
+  $ git checkout v2.5.0
+  $ git cherry-pick -x f0b6a5cfeb5f6347c34975446bda08e0c20c9902
+  $ git cherry-pick -x 2ca19bd8066821a56f193e7fca47139b25c617ad
+  $ autoreconf -i
+  $ ./configure --prefix=/usr/local
+  $ make
+  $ sudo make install
+  $ sudo ldconfig
 
 
 ビルドオプション
@@ -86,6 +106,7 @@ Maven CentralがTLS 1.0, 1.1を許容しなくなったため、Java 7でのビ�
 
   mvn -Dhttps.protocols=TLSv1.2 install
 
+
 サブツリーでビルド
 ------------------
 
@@ -97,8 +118,8 @@ hadoop-main -> hadoop-project -> hadoop-common
   mvn install -pl :hadoop-main -pl :hadoop-project -DskipTests
 
 
-checkstyleの実行
-----------------
+checkstyle
+----------
 
 ``target/test/checkstyle-errors.xml`` に結果が出力されるが、
 ``-Dcheckstyle.consoleOutput=true`` を付けるとコンソールにもテキストで出力される。
@@ -107,8 +128,8 @@ XMLと比較して見やすいかというとそれほどでもない。::
   mvn compile checkstyle:checkstyle -Dcheckstyle.consoleOutput=true
 
 
-findbugsの実行
---------------
+findbugs
+--------
 
 target/findbugsXml.xmlに結果が出力される。
 普通の人間に読むことは難しいため、convertXmlToTextコマンドを利用するとよい。::
@@ -117,8 +138,8 @@ target/findbugsXml.xmlに結果が出力される。
   $ /opt/findbugs-3.0.0/bin/convertXmlToText target/findbugsXml.xml
 
 
-deprecation warningsの確認
---------------------------
+deprecation warnings
+--------------------
 
 ::
 
@@ -370,44 +391,31 @@ Emacsと組み合わせると意外といける。
     jdb -attach localhost:8765 -sourcepath .`find . -wholename '*/src/main/java' -type d -print0 | sed -e 's/\./\:\./g'`
 
 
-spark-shell
------------
+debugging by spark-shell
+========================
 
 試行錯誤用の便利な対話環境として、bin-without-hadoopなSparkのtarballをダウンロードし、spark-shellを利用する。::
 
     $ SPARK_DIST_CLASSPATH=$(../hadoop-3.3.0-SNAPSHOT/bin/hadoop classpath) bin/spark-shell
 
+デバッグ用のオプションや、libhadoop.soをロードするためのオプションを追加する例。::
 
-Setup
-=====
-
-- ユーザの作成::
-
-    ansible all -i ./hosts -u root -m user -a 'name=iwasakims'
-
-- authorized_keysの更新::
-
-    ansible all -i ./hosts -u root -m authorized_key -a 'user=iwasakims key="{{ lookup("file", "/home/iwasakims/.ssh/id_rsa.pub") }}"'
-
-- インストールと実行::
-
-    $ ls ~/files/
-    hadoop-2.6.2.tar.gz zookeeper-3.4.6.tar.gz
-    
-    $ ansible-playbook -i hosts setup.yml
-    $ ansible-playbook -i hosts format.yml
-    $ ansible-playbook -i hosts start-daemons.yml
-    
-    $ ansible master1 -i hosts -u iwasakims -a '/home/iwasakims/hadoop-2.6.2/bin/yarn jar /home/iwasakims/hadoop-2.6.2/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.6.2.jar pi 9 1000000'
-    
-    $ ansible-playbook -i hosts stop-daemons.yml
+    $ SPARK_SUBMIT_OPTS='-agentlib:jdwp=transport=dt_socket,address=0.0.0.0:8765,server=y,suspend=y -Djava.library.path=/home/iwasakims/dist/hadoop-2.10.1-SNAPSHOT/lib/native' \
+        SPARK_DIST_CLASSPATH=$(../hadoop-2.10.1-SNAPSHOT/bin/hadoop classpath) \
+        bin/spark-shell \
+        --conf spark.executor.heartbeatInterval=600
 
 
-メモ
-====
+debugging shell scripts
+=======================
 
-シェルスクリプト
-----------------
+- 再帰的にset -xが有効になるようにして、hoge.shをデバッグする。::
+
+    $ sudo /bin/sh -x -c 'export SHELLOPTS && hoge.sh'
+
+
+confdir
+=======
 
 - 開発中にコマンドを実行するときは ``--config path/to/confdir`` オプションで、
   confディレクトリを指定すると便利。::
@@ -419,306 +427,35 @@ Setup
 
     HADOOP_CONF_DIR=~/etc/hadoop.rmha sbin/start-dfs.sh 
 
-- yarn-site.xmlやmapred-site.xmlの内容は、NameNodeやDataNodeにもロードされてしまう。
-  org.apache.hadoop.util.ReflectionUtils.setConfが呼ばれると、
-  JobConfが無条件にロードされることが原因。
-  HADOOP-1230によると、coreがmapredにconpile時に依存しないようにするため、
-  こうなっているらしい。
-  (JobConf初期化時に呼ばれるConfigUtil#loadResourcesメソッドが、
-  ConfigurationにstaticにYARN/MapReduceの設定ファイルを読み込む。)::
-    
-      public static void loadResources() {
-        addDeprecatedKeys();
-        Configuration.addDefaultResource("mapred-default.xml");
-        Configuration.addDefaultResource("mapred-site.xml");
-        Configuration.addDefaultResource("yarn-default.xml");
-        Configuration.addDefaultResource("yarn-site.xml");
-      }
 
-  - 直接JobConfを使っていないクラスでも、
-    ReflectionUtils#setConf(から呼ばれるReflectionUtils#setJobConf)によって、
-    上記のコードが呼ばれてしまうことになる。
-    UserToGroupsMappingをロードする家庭でReflectionUtilsが使われるので、
-    広範囲に影響する::
+testing httpfs
+==============
 
-	at org.apache.hadoop.conf.Configuration.addDefaultResource(Configuration.java:752)
-	at org.apache.hadoop.mapreduce.util.ConfigUtil.loadResources(ConfigUtil.java:43)
-	at org.apache.hadoop.mapred.JobConf.<clinit>(JobConf.java:124)
-	at java.lang.Class.forName0(Native Method)
-	at java.lang.Class.forName(Class.java:278)
-	at org.apache.hadoop.conf.Configuration.getClassByNameOrNull(Configuration.java:2200)
-	at org.apache.hadoop.util.ReflectionUtils.setJobConf(ReflectionUtils.java:95)
-	at org.apache.hadoop.util.ReflectionUtils.setConf(ReflectionUtils.java:78)
-	at org.apache.hadoop.util.ReflectionUtils.newInstance(ReflectionUtils.java:136)
-	at org.apache.hadoop.security.Groups.<init>(Groups.java:81)
-	at org.apache.hadoop.security.Groups.<init>(Groups.java:76)
-	at org.apache.hadoop.security.Groups.getUserToGroupsMappingService(Groups.java:318)
-	at org.apache.hadoop.security.UserGroupInformation.initialize(UserGroupInformation.java:298)
-	at org.apache.hadoop.security.UserGroupInformation.setConfiguration(UserGroupInformation.java:326)
-	at org.apache.hadoop.hdfs.server.datanode.DataNode.instantiateDataNode(DataNode.java:2460)
-	at org.apache.hadoop.hdfs.server.datanode.DataNode.createDataNode(DataNode.java:2510)
-	at org.apache.hadoop.hdfs.server.datanode.DataNode.secureMain(DataNode.java:2690)
-	at org.apache.hadoop.hdfs.server.datanode.DataNode.main(DataNode.java:2714)
-
-- 再帰的にset -xが有効になるようにして、hoge.shをデバッグする。::
-
-    $ sudo /bin/sh -x -c 'export SHELLOPTS && hoge.sh'
-
-
-
-バージョン
-----------
-
-- zookeeper-3.4.6はCLIに互換性を壊す変更が入ったので、HBaseで問題がある。
-  3.4.7で修正が入る。
-
-
-バイト列の操作
---------------
-
-- Writableからbyte[]を取り出すために
-  org.apache.hadoop.hbase.util.Writablesというユーティリティが用意されている。
-  そこで使われているorg.apache.hadoop.io.WritableUtilsの中身をみると、
-  オブジェクトを複数まとめて一つのバイト列にする場合の
-  ByteArrayOutputBuffeの使い方として参考になる。
-
-- WritableUtilsはorg.apache.hadoop.io.DataOutputBufferという独自定義のDataOutputを利用している。
-  DataOutputBuffが内部で利用しているBufferはByteArrayOutputStreamの拡張で、
-  byte[]をコピーせずに返せるようgetDataメソッドが追加されている。
-  ただし、getDataで返ってくるバイト列は後ろの方にゴミが入っているので、
-  getLengthメソッドでどこまでが正しいデータなのかを判断しなければならない。::
-
-    private static class Buffer extends ByteArrayOutputStream {
-      public byte[] getData() { return buf; }
-      public int getLength() { return count; }
-
-- KeyValueはCellというインタフェースの実装になった。
-  Cellが提供するメソッドが推奨され、古いKeyValueのメソッドはdeprecatedに。
-
-
-KMS
----
-
-ZKSignerSecretProviderとZKDelegationTokenSecretManagerは、
-内部でcurator(zk client)のインスタンスを共用している。
-前者のZK接続用の設定あれば、後者に要らないというか、設定が使われない。
-現実的なケースではないが、ZKSignerSecretProviderを使わない
-(hadoop.kms.authentication.signer.secret.provider=random or string)
-にもかかわらず、ZKDelegationTokenSecretManagerを使う
-(hadoop.kms.authentication.zk-dt-secret-manager.enable=true)
-という場合には、
-hadoop.kms.authentication.zk-dt-secret-manager.*にZK接続用設定を書かないと、
-機能しない。
-ちなみに、前者と後者のZK接続用設定のプロパティ名には統一感がない。::
-
-  <property>
-    <name>hadoop.kms.authentication.signer.secret.provider</name>
-    <value>zookeeper</value>
-  </property>
-  <property>
-    <name>hadoop.kms.authentication.signer.secret.provider.zookeeper.path</name>
-    <value>/hadoop-kms/hadoop-auth-signature-secret</value>
-  </property>
-  <property>
-    <name>hadoop.kms.authentication.signer.secret.provider.zookeeper.connection.string</name>
-    <value>localhost:2181</value>
-  </property>
-  <property>
-    <name>hadoop.kms.authentication.signer.secret.provider.zookeeper.auth.type</name>
-    <value>none</value>
-  </property>
-
-  <property>
-    <name>hadoop.kms.authentication.zk-dt-secret-manager.enable</name>
-    <value>true</value>
-  </property>
-  <property>
-    <name>hadoop.kms.authentication.zk-dt-secret-manager.zkConnectionString</name>
-    <value>localhost:2181</value>
-  </property>
-  <property>
-    <name>hadoop.kms.authentication.zk-dt-secret-manager.zkAuthType</name>
-    <value>none</value>
-  </property>
-
-
-htrace
-======
-
-htracedのREST APIをcurlコマンドでたたく。::
-
-  curl http://localhost:9095/query -G -d 'query={"pred":[],"lim":11}:'
-
-libhtraceとlibhdfsを使ったコードのコンパイル::
-
-  gcc -I/home/iwasakims/srcs/htrace/htrace-c/target/install/include \
-      -L/home/iwasakims/srcs/htrace/htrace-c/target/install/lib \
-      -I$HADOOP_HOME/include -L$HADOOP_HOME/lib/native \
-  -lhtrace -lhdfs -o test_libhdfs_write test_libhdfs_write.c
-
-実行::
-
-  export CLASSPATH=`$HADOOP_HOME/bin/hdfs classpath --glob`
-  export LD_LIBRARY_PATH=$HADOOP_HOME/lib/native:/home/iwasakims/srcs/htrace/htrace-c/target/install/lib 
-  ./test_libhdfs_write /tmp/test04.txt 2048 2048
-
-htracedの特定のテストを実行::
-
-  cd htrace-htraced/go
-  export GOPATH=/home/iwasakims/srcs/htrace/htrace-htraced/go:/home/iwasakims/srcs/htrace/htrace-htraced/go/build
-  go test ./src/org/apache/htrace/htraced -run Client -v
-
-テスト用のspanをロード::
-
-  htraceTool load '{"a":"b9f2a1e07b6e4f16b0c2b27303b20e79",
-    "b":1424736225037,"e":1424736225901,
-    "d":"ClientNamenodeProtocol#getFileInfo",
-    "r":"FsShell",
-    "p":["3afebdc0a13f4feb811cc5c0e42d30b1"]}'
-
-htracd用設定::
-
-  <property>
-    <name>hadoop.htrace.span.receiver.classes</name>
-    <value>org.apache.htrace.impl.HTracedSpanReceiver</value>
-  </property>
-  <property>
-    <name>hadoop.htrace.htraced.receiver.address</name>
-    <value>centos7:9075</value>
-  </property>
-
-FsShellからtracing::
-
-  hdfs dfs -Dfs.shell.htrace.sampler.classes=AlwaysSampler -put test.dat /tmp/
-
-
-htrace-hbase
-------------
-
-HBaseSpanReceiverを利用するためには、以下のjarも必要。
-(htrace-core-3.1.0は、hbase-clientが使う。
-hbase-clientとしてのtracing設定がoffだとしても、
-htrace関連クラスのロードは実行されるので、
-無いとjava.lang.NoClassDefFoundError。)
-
-- hbase-annotation
-- hbase-client
-- hbase-common
-- hbase-protocol
-- htrace-core-3.1.0
-
-
-Bigtop
-======
-
-tarballからhadoopのrpmをビルドしてsmoke-testを流してみる
---------------------------------------------------------
-
-bigtopのソースツリーをダウンロードする。::
-
-  $ git clone https://github.com/apache/bigtop
-  $ cd bigtop 
-
-
-bigtop.bomを修正し、source tarballのdownload URLを差し替える。::
-
-  $ git diff .
-  diff --git a/bigtop.bom b/bigtop.bom
-  index ff6d4e1..d4ce521 100644
-  --- a/bigtop.bom
-  +++ b/bigtop.bom
-  @@ -144,12 +144,12 @@ bigtop {
-       'hadoop' {
-         name    = 'hadoop'
-         relNotes = 'Apache Hadoop'
-  -      version { base = '2.7.3'; pkg = base; release = 1 }
-  +      version { base = '2.7.4'; pkg = base; release = 1 }
-         tarball { destination = "${name}-${version.base}.tar.gz"
-  -                source      = "${name}-${version.base}-src.tar.gz" }
-  +                source      = "${name}-${version.base}-RC0-src.tar.gz" }
-         url     { download_path = "/$name/common/$name-${version.base}"
-  -                site = "${apache.APACHE_MIRROR}/${download_path}"
-  -                archive = "${apache.APACHE_ARCHIVE}/${download_path}" }
-  +                site = "http://home.apache.org/~shv/hadoop-2.7.4-RC0/"
-  +                archive = "" }
-       }
-       'ignite-hadoop' {
-         name    = 'ignite-hadoop'
-
-必要なrpmをビルドする。::
-
-  $ gradle bigtop-groovy-rpm
-  $ gradle bigtop-groovy-rpm
-  $ gradle bigtop-jsvc-rpm
-  $ gradle bigtop-tomcat-rpm
-  $ gradle bigtop-utils-rpm
-  $ gradle hadoop-rpm
-
-ビルドしたrpmでyum repositoryを作る。(./outputにそのままリポジトリが作成される。)::
-
-  $ gradle yum
-
-Dockerを使ってクラスタをデプロイする。
-config.yamlを修正し、上記で作成したyumリポジトリを使ってパッケージインストールを行う設定に変更する。::
-
-  $ cd provisioner/docker
-  $ vi config.yaml
-  $ git diff .
-  diff --git a/provisioner/docker/config_centos-7.yaml b/provisioner/docker/config_centos-7.yaml
-  index 6cdd7cf..342f860 100644
-  --- a/provisioner/docker/config_centos-7.yaml
-  +++ b/provisioner/docker/config_centos-7.yaml
-  @@ -20,5 +20,5 @@ docker:
-   repo: "http://bigtop-repos.s3.amazonaws.com/releases/1.2.0/centos/7/x86_64"
-   distro: centos
-   components: [hdfs, yarn, mapreduce]
-  -enable_local_repo: false
-  +enable_local_repo: true
-   smoke_test_components: [hdfs, yarn, mapreduce]
-
-以下の例では3ノードのクラスタがデプロイされる。::
-  
-  $ ./docker-hadoop.sh --create 3
-  
-  $ ./docker-hadoop.sh --exec 1 rpm -q hadoop
-  WARNING: The DOCKER_IMAGE variable is not set. Defaulting to a blank string.
-  WARNING: The MEM_LIMIT variable is not set. Defaulting to a blank string.
-  hadoop-2.7.4-1.el7.centos.x86_64
-
-smoke testを実行する。::
-
-  ./docker-hadoop.sh --smoke-tests
-
-
-Debugging dpkg
---------------
-
-Setting environment variable DH_VERBOSE to non null makes dpkg-buildpackage more verbose.
-For Bigtop, dpkg-buildpackage is called in the following part of packages.gradle::
-
-    exec {
-      workingDir DEB_BLD_DIR
-      commandLine "dpkg-buildpackage -uc -us -sa -S".split(' ')
-      environment "DH_VERBOSE", "1
-    }
-
-
-Debugging init script without systemctl redirect
-------------------------------------------------
+http
+----
 
 ::
 
-  $ sudo /bin/bash -x -c 'export SHELLOPTS && SYSTEMCTL_SKIP_REDIRECT=true /etc/init.d/hadoop-httpfs start'
+  $ curl -i -c cookiejar -X PUT 'http://172.32.1.195:14000/webhdfs/v1/tmp/README.txt?user.name=iwasakims&op=CREATE&replication=1'
+  $ curl -i -X PUT -b cookiejar \
+      --header "Content-Type:application/octet-stream" \
+      --data-binary @README.txt \
+      'http://172.32.1.195:14000/webhdfs/v1/tmp/README.txt?op=CREATE&replication=1&user.name=iwasakims&data=true'
+  $ curl -i -L -X GET 'http://172.32.1.195:14000/webhdfs/v1/tmp/README.txt?user.name=iwasakims&op=OPEN'
+  
 
+https
+-----
 
-Disabling dh_strip_nondeterminism
----------------------------------
+::
 
-dh_strip_nondeterminism takes quite long time on hadoop-deb packaging.
-adding blank override_dh_strip_nondeterminism section to
-bigtop-packages/src/deb/hadoop/rules makes it skipped::
+  $ keytool -importkeystore -srckeystore ~/.keystore -destkeystore ~/.keystore.p12 -deststoretype pkcs12
+  $ pk12util -i ~/.keystore.p12 -d ~/nss
+  $ certutil -L -d ~/nss
 
-  override_dh_strip_nondeterminism:
+  $ SSL_DIR=~/nss curl -k --cert tomcat:hogemoge -i -c cookiejar -X PUT 'https://172.32.1.195:14000/webhdfs/v1/tmp/README.txt?user.name=iwasakims&op=CREATE&replication=1'
+  $ SSL_DIR=~/nss curl -k --cert tomcat:hogemoge -i -X PUT --header "Content-Type:application/octet-stream" --data-binary @README.txt -b cookiejar 'https://172.32.1.195:14000/webhdfs/v1/tmp/README.txt?op=CREATE&replication=1&user.name=iwasakims&data=true'
+  $ SSL_DIR=~/nss curl -k --cert tomcat:hogemoge -i -L -X GET 'https://172.32.1.195:14000/webhdfs/v1/tmp/README.txt?user.name=iwasakims&op=OPEN'
 
 
 testing security on single node (branch-2)
@@ -904,161 +641,3 @@ edit ssl-site.xml::
     <name>ssl.server.keystore.keypassword</name>
     <value>password</value>
   </property>
-
-
-Ambari
-======
-
-Setting up single Ambari cluster on CentOS 7.::
-
-  sudo curl -L -o /etc/yum.repos.d/ambari.repo  http://public-repo-1.hortonworks.com/ambari/centos7/2.x/updates/2.6.0.0/ambari.repo
-  sudo yum -y install java-1.8.0-openjdk-devel ambari-server ambari-agent
-  sudo ambari-server setup -j /usr/lib/jvm/java-1.8.0-openjdk --silent
-  sudo service ambari-server start
-  sudo service ambari-agent start
-
-OpenSSLのバージョンによっては、
-/etc/ambari-agent/conf/ambari-agent.iniの[security]セクションに、
-以下を記述しないとambari-agentがambari-serverに接続できない。::
-
-  force_https_protocol=PROTOCOL_TLSv1_2
-
-HDP 2.6.1だと、以下を実行しないと、HiveMetastoreやHiveServer2が起動できない。::
-
-  $ sudo yum install mysql-connector-java*
-  $ ls -al /usr/share/java/mysql-connector-java.jar
-  $ cd /var/lib/ambari-server/resources/
-  $ ln -s /usr/share/java/mysql-connector-java.jar mysql-connector-java.jar
-
-
-aarm64
-======
-
-installing protobuf 2.5.0
--------------------------
-
-```
-$ git clone https://github.com/protocolbuffers/protobuf
-$ cd protobuf
-$ git checkout v2.5.0
-$ git cherry-pick -x f0b6a5cfeb5f6347c34975446bda08e0c20c9902
-$ git cherry-pick -x 2ca19bd8066821a56f193e7fca47139b25c617ad
-$ autoreconf -i
-$ ./configure --prefix=/usr/local
-$ make
-$ sudo make install
-$ sudo ldconfig
-```
-
-
-HBase
-=====
-
-HBase multi pseudo-distributed clusters on localhost
-----------------------------------------------------
-
-::
-
-  $ cd $HBASE_HOME
-  $ cp -Rp conf conf1
-  $ cp -Rp conf conf2
-  $ vi conf1/hbase-env.sh
-  $ vi conf1/hbase-site.xml
-  $ vi conf2/hbase-env.sh
-  $ vi conf2/hbase-site.xml
-    
-  $ HBASE_CONF_DIR=./conf1 bin/hbase-daemon.sh start master
-  $ HBASE_CONF_DIR=./conf1 bin/hbase-daemon.sh start regionserver
-  $ HBASE_CONF_DIR=./conf2 bin/hbase-daemon.sh start master
-  $ HBASE_CONF_DIR=./conf2 bin/hbase-daemon.sh start regionserver
-  
-  $ HBASE_CONF_DIR=./conf2 bin/hbase shell
-  > create 'test', 'f'
-  
-  $ HBASE_CONF_DIR=./conf1 bin/hbase shell
-  > create 'test', 'f'
-  > add_peer 'hbase2', 'localhost:2181:/hbase2'
-  > enable_table_replication 'test'
-  > put 'test', 'r1', 'f:', 'v1'
-
-conf1/hase-env.sh::
-
-  export HBASE_IDENT_STRING=hbase1
-
-conf2/hase-env.sh::
-
-  export HBASE_IDENT_STRING=hbase2
-
-conf1/hbase-site.xml::
-
-  <configuration>
-    <property>
-      <name>hbase.cluster.distributed</name>
-      <value>true</value>
-    </property>
-    <property>
-      <name>hbase.rootdir</name>
-      <value>hdfs://localhost:8020/hbase1</value>
-    </property>
-    <property>
-      <name>hbase.zookeeper.quorum</name>
-      <value>localhost</value>
-    </property>
-    <property>
-      <name>zookeeper.znode.parent</name>
-      <value>/hbase1</value>
-    </property>
-    <property>
-      <name>hbase.master.port</name>
-      <value>60001</value>
-    </property>
-    <property>
-      <name>hbase.master.info.port</name>
-      <value>60011</value>
-    </property>
-    <property>
-      <name>hbase.regionserver.port</name>
-      <value>60021</value>
-    </property>
-    <property>
-      <name>hbase.regionserver.info.port</name>
-      <value>60031</value>
-    </property>
-  </configuration>
-
-conf2/hbase-site.xml::
-
-  <configuration>
-    <property>
-      <name>hbase.cluster.distributed</name>
-      <value>true</value>
-    </property>
-    <property>
-      <name>hbase.rootdir</name>
-      <value>hdfs://localhost:8020/hbase2</value>
-    </property>
-    <property>
-      <name>hbase.zookeeper.quorum</name>
-      <value>localhost</value>
-    </property>
-    <property>
-      <name>zookeeper.znode.parent</name>
-      <value>/hbase2</value>
-    </property>
-    <property>
-      <name>hbase.master.port</name>
-      <value>60002</value>
-    </property>
-    <property>
-      <name>hbase.master.info.port</name>
-      <value>60012</value>
-    </property>
-    <property>
-      <name>hbase.regionserver.port</name>
-      <value>60022</value>
-    </property>
-    <property>
-      <name>hbase.regionserver.info.port</name>
-      <value>60032</value>
-    </property>
-  </configuration>
