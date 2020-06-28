@@ -1,4 +1,5 @@
-.. toctree::
+.. contents::
+
 
 リンク
 ======

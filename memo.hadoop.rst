@@ -1,4 +1,4 @@
-.. toctree::
+.. contents::
 
 
 assembly
