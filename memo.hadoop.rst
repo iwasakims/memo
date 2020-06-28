@@ -174,8 +174,6 @@ configuration & scripts
       public byte[] getData() { return buf; }
       public int getLength() { return count; }
 
-- KeyValueはCellというインタフェースの実装になった。
-  Cellが提供するメソッドが推奨され、古いKeyValueのメソッドはdeprecatedに。
 
 
 RPC
@@ -415,12 +413,30 @@ BlockManager
       neededReplications.remove(block, priority);
 
 
-webhdfs/httpsfs
----------------
+short circuit local read
+------------------------
 
-- httpfsとwebhdfsのパーツはあまり共通化されていない
+DataTransferProtocol#requestShortCircuitShmが呼ばれると、
+/dev/shm/HadoopShortCircuitShm_DFSClient_NONMAPREDUCE_893981988_1_1350490027
+みたいな名前の共有メモリ領域(ShortCircuitShm)を(まだなければ)つくる。
+ファイルサイズは8kiBで、64バイトのスロット128個分に相当する。
+1つのスロットが1ブロックに関するやりとりに使る。
+スロットには、このブロックが健在か、mlockされているか(i.e. mmap経由のzero-copy read可能か)、参照カウント、このスロットのメモリアドレス、ブロックID(ExtendedBlockId)が格納されている。
+クライアント側は、この共有メモリセグメントのファイルディスクリプタを、
+(DataTransferProtocol#requestShortCircuitShmの場合と同じ要領で)ドメインソケット経由で受け取る。
 
-- PrincipalはStringを返すgetName()だけ定義している
+DataNode内で動くDomainSocketWatherはこの共有メモリ領域のFDをpollし、対向が落ちたらメモリ領域をクリアする。
+DomainSocketWatherはDFSClient内にもいて、同じことをやっている。
+
+mmap経由のzero-copy readはHasEnhancedByteBufferAccessというinterfaceで規定されている。
+zero-copy readできるのは、DataNode側でmlockされているブロックを、チェックサムなしで読むときのみ。
+クライアントはmlockされているかどうかを、上記のShortCircuitShmを使って判断する。
+クライアントがzero-copy readを始める際に共有メモリセグメントを更新し、read中はDataNodeがそのブロックをmunlockしないようにする。
+zero-copy可能な場合はMappedByteBufferを返すが、そうでないときはByteBufferPoolを利用してallocateしたByteBufferを返すモードにfall backする。
+HBaseはこの機能は使っていない。ブロックキャッシュに載せるためにバイト列コピーするから? see also HBASE-21879.
+
+short circuit read用のFielInputStreamとMappedByteBufferは、
+DFSClient内で、複数のスレッドから共用できるようにするため、ShortCircuitCacheで管理される。
 
 
 MapReduce
