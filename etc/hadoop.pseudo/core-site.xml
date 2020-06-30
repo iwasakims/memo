@@ -25,4 +25,12 @@
     <name>hadoop.security.key.provider.path</name>
     <value>kms://http@localhost:9600/kms</value>
   </property>
+  <property>
+    <name>hadoop.http.filter.initializers</name>
+    <value>org.apache.hadoop.security.HttpCrossOriginFilterInitializer</value>
+  </property>
+  <property>
+    <name>hadoop.http.cross-origin.enabled</name>
+    <value>true</value>
+  </property>
 </configuration>
