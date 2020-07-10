@@ -31,9 +31,11 @@ docker build -t centos7-openjdk8 .
 
 docker network create --subnet=172.18.0.0/16 hadoop
 
-docker run -d -i -t --name hadoop01 --net hadoop --ip 172.18.0.11 -v ~/dist/hadoop-3.3.0-SNAPSHOT:/hadoop -v ~/dist/zookeeper-3.4.14:/zookeeper centos7-openjdk8 /bin/bash
-docker run -d -i -t --name hadoop02 --net hadoop --ip 172.18.0.12 -v ~/dist/hadoop-3.3.0-SNAPSHOT:/hadoop -v ~/dist/zookeeper-3.4.14:/zookeeper centos7-openjdk8 /bin/bash
-docker run -d -i -t --name hadoop03 --net hadoop --ip 172.18.0.13 -v ~/dist/hadoop-3.3.0-SNAPSHOT:/hadoop -v ~/dist/zookeeper-3.4.14:/zookeeper centos7-openjdk8 /bin/bash
+cd ~/dist/
+mkdir -p logs
+docker run -d -i -t --name hadoop01 --net hadoop --ip 172.18.0.11 -v ~/dist/hadoop-3.3.0-SNAPSHOT:/hadoop -v ~/dist/zookeeper-3.4.14:/zookeeper -v ~/dist/logs:/logs centos7-openjdk8 /bin/bash
+docker run -d -i -t --name hadoop02 --net hadoop --ip 172.18.0.12 -v ~/dist/hadoop-3.3.0-SNAPSHOT:/hadoop -v ~/dist/zookeeper-3.4.14:/zookeeper -v ~/dist/logs:/logs centos7-openjdk8 /bin/bash
+docker run -d -i -t --name hadoop03 --net hadoop --ip 172.18.0.13 -v ~/dist/hadoop-3.3.0-SNAPSHOT:/hadoop -v ~/dist/zookeeper-3.4.14:/zookeeper -v ~/dist/logs:/logs centos7-openjdk8 /bin/bash
 ```
 
 ### starting daemons
