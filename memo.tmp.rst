@@ -502,3 +502,16 @@ sshdが443をlistenできなくて起動失敗し、ログインできなくな�
   echo "Port 22" >> /etc/ssh/sshd_config
   echo "Port 443" >> /etc/ssh/sshd_config
   service sshd reload
+
+
+firewalld
+=========
+
+opening ports for zone.::
+
+  $ sudo firewall-cmd --permanent --zone=public --add-port=1024-65535/tcp
+  $ sudo firewall-cmd --reload
+
+showing all settings of nftables.::
+
+  $ sudo nft -a list ruleset | less
