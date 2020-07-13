@@ -1,4 +1,4 @@
-setting up quick exp env for NN-HA and RM-HA
+Setting up quick exp env for NN-HA and RM-HA
 ============================================
 
 for hadoop-3
@@ -27,15 +27,16 @@ cp ~/srcs/memo/docker/etc/zookeeper/zoo.cfg ~/dist/zookeeper-3.4.14/conf/
 
 ```
 cd mydockerbuild
-docker build -t centos7-openjdk8 .
+docker build -t centos7-openjdk8 -f Dockerfile.centos7 .
+docker build -t centos8-openjdk8 -f Dockerfile.centos8 .
 
 docker network create --subnet=172.18.0.0/16 hadoop
 
 cd ~/dist/
 mkdir -p logs
-docker run -d -i -t --name hadoop01 --net hadoop --ip 172.18.0.11 -v ~/dist/hadoop-3.3.0-SNAPSHOT:/hadoop -v ~/dist/zookeeper-3.4.14:/zookeeper -v ~/dist/logs:/logs centos7-openjdk8 /bin/bash
-docker run -d -i -t --name hadoop02 --net hadoop --ip 172.18.0.12 -v ~/dist/hadoop-3.3.0-SNAPSHOT:/hadoop -v ~/dist/zookeeper-3.4.14:/zookeeper -v ~/dist/logs:/logs centos7-openjdk8 /bin/bash
-docker run -d -i -t --name hadoop03 --net hadoop --ip 172.18.0.13 -v ~/dist/hadoop-3.3.0-SNAPSHOT:/hadoop -v ~/dist/zookeeper-3.4.14:/zookeeper -v ~/dist/logs:/logs centos7-openjdk8 /bin/bash
+docker run -d -i -t --name hadoop01 --net hadoop --ip 172.18.0.11 -v ~/dist/hadoop-3.3.0-SNAPSHOT:/hadoop -v ~/dist/zookeeper-3.4.14:/zookeeper -v ~/dist/logs:/logs centos8-openjdk8 /bin/bash
+docker run -d -i -t --name hadoop02 --net hadoop --ip 172.18.0.12 -v ~/dist/hadoop-3.3.0-SNAPSHOT:/hadoop -v ~/dist/zookeeper-3.4.14:/zookeeper -v ~/dist/logs:/logs centos8-openjdk8 /bin/bash
+docker run -d -i -t --name hadoop03 --net hadoop --ip 172.18.0.13 -v ~/dist/hadoop-3.3.0-SNAPSHOT:/hadoop -v ~/dist/zookeeper-3.4.14:/zookeeper -v ~/dist/logs:/logs centos8-openjdk8 /bin/bash
 ```
 
 ### starting daemons
@@ -148,3 +149,60 @@ docker exec hadoop01 /hadoop/sbin/yarn-daemon.sh start nodemanager
 docker exec hadoop02 /hadoop/sbin/yarn-daemon.sh start nodemanager
 docker exec hadoop03 /hadoop/sbin/yarn-daemon.sh start nodemanager
 ````
+
+
+Network settings on Docker host
+===============================
+
+firewalld rules on CentOS 8
+---------------------------
+
+On CentOS 8, nftables rules activated by firewalld drops inter-container packets.
+
+`nft` command shows the rules.::
+
+    $ sudo nft -a list ruleset | less
+
+We can not use `trusted` zone here because masquerade are enabled.::
+
+    $ sudo firewall-cmd --info-zone=trusted
+    trusted
+      target: ACCEPT
+      icmp-block-inversion: no
+      interfaces: 
+      sources: 
+      services: 
+      ports: 
+      protocols: 
+      masquerade: yes
+      forward-ports: 
+      source-ports: 
+      icmp-blocks: 
+      rich rules: 
+    
+    $ sudo nft -a list chain nat_POST_trusted_allow
+    
+            chain nat_POST_trusted_allow { # handle 39
+                    oifname != "lo" masquerade # handle 46
+            }
+  
+Adding new zone targeted to ACCEPT and assign docker interfaces to it should work.::
+
+    $ sudo firewall-cmd --permanent --new-zone=docker
+    $ sudo firewall-cmd --permanent --zone=docker --set-target=ACCEPT
+    $ sudo firewall-cmd --permanent --zone=docker --add-interface=docker0
+    $ sudo firewall-cmd --permanent --zone=docker --add-interface=br-ab1b9c795ab1
+    $ sudo firewall-cmd --reload
+    $ sudo firewall-cmd --info-zone=docker
+    docker (active)
+      target: ACCEPT
+      icmp-block-inversion: no
+      interfaces: br-ab1b9c795ab1 docker0
+      sources: 
+      services: 
+      ports: 
+      protocols: 
+      masquerade: no
+      forward-ports: 
+      source-ports: 
+      icmp-blocks: 
