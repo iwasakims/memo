@@ -19,7 +19,7 @@ sudo vi /etc/krb5.conf
 sudo vi /var/kerberos/krb5kdc/kdc.conf
 ```
 
-First component of principal name for KMS must be HTTP.
+First component of principal name for HttpServer must be HTTP (in upper case).
 ```
 sudo kdb5_util create -s
 sudo kadmin.local -q "addprinc ${USER}/admin"
@@ -31,9 +31,7 @@ kadmin addprinc -randkey hdfs/localhost@EXAMPLE.COM
 kadmin addprinc -randkey yarn/localhost@EXAMPLE.COM
 kadmin addprinc -randkey HTTP/localhost@EXAMPLE.COM
 kadmin ktadd -k ${HOME}/keytab/hdfs.keytab hdfs/localhost@EXAMPLE.COM
-kadmin ktadd -k ${HOME}/keytab/hdfs.keytab HTTP/localhost@EXAMPLE.COM
 kadmin ktadd -k ${HOME}/keytab/yarn.keytab yarn/localhost@EXAMPLE.COM
-kadmin ktadd -k ${HOME}/keytab/yarn.keytab HTTP/localhost@EXAMPLE.COM
 kadmin ktadd -k ${HOME}/keytab/http.keytab HTTP/localhost@EXAMPLE.COM
 ```
 
@@ -54,7 +52,7 @@ sudo chmod 644 /usr/local/etc/hadoop/container-executor.cfg
 
 "first and last name" (CN) must be hostname of server.
 ```
-keytool -keystore ${HOME}/http.keystore -genkey -alias http -keyalg RSA
+keytool -keystore ${HOME}/http.keystore -genkey -alias http -keyalg RSA -dname "CN=localhost, OU=Unknown, O=Unknown, L=Unknown, ST=Unknown, C=Unknown"
 vi etc/hadoop/ssl-server.xml
 vi etc/hadoop/ssl-client.xml
 ```
@@ -64,7 +62,7 @@ https via curl
 --------------
 
 ```
-kinit -t ~/keytab/hdfs.keytab hdfs/localhost@EXAMPLE.COM
+kinit -kt ~/keytab/hdfs.keytab hdfs/localhost@EXAMPLE.COM
 curl --negotiate -u : -k https://localhost:9871/conf
 ```
 
