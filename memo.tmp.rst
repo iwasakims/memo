@@ -485,6 +485,16 @@ bigtop-packages/src/deb/hadoop/rules makes it skipped::
   override_dh_strip_nondeterminism:
 
 
+local apt repository
+--------------------
+
+adding local repository create by `./gradlew repo`::
+
+  $ sudo bash -c 'echo "deb [trusted=yes] file:///home/admin/srcs/bigtop/output/apt bigtop contrib" > /etc/apt/sources.list.d/bigtop-home_output.list'
+  $ sudo apt update
+
+
+
 EC2
 ===
 
@@ -515,3 +525,4 @@ opening ports for zone.::
 showing all settings of nftables.::
 
   $ sudo nft -a list ruleset | less
+
