@@ -375,6 +375,27 @@ HDP 2.6.1だと、以下を実行しないと、HiveMetastoreやHiveServer2が�
 Bigtop
 ======
 
+Setting up build environment on CentOS 7/CentOS 8
+-------------------------------------------------
+
+::
+
+  sudo yum groupinstall 'Development Tools'
+  git clone https://github.com/apache/bigtop
+  cd bigtop
+  sudo bigtop_toolchain/bin/puppetize.sh
+  ./gradlew toolchain-puppetmodules
+  ./gradlew toolchain
+
+Docker for testing deployment and smoke-tests.::
+
+  sudo yum install -y yum-utils
+  sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+  sudo yum install docker-ce docker-ce-cli containerd.io
+  sudo usermod -G docker centos
+  sudo systemctl start docker
+
+
 tarballからhadoopのrpmをビルドしてsmoke-testを流してみる
 --------------------------------------------------------
 
