@@ -516,10 +516,48 @@ adding local repository create by `./gradlew repo`::
 
 
 
+Ranger
+======
+
+setup.sh on CentOS 8
+--------------------
+
+Python 3 is not supported. Python 2 must be on the path as `python`.::
+
+  $ sudo alternatives --set python /usr/bin/python2
+
+Since MariaDB is not supported, MySQL should be used.::
+
+  $ sudo dnf install mysql-server
+  $ sudo yum install https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-8.0.21-1.el8.noarch.rpm
+  $ sudo systemctl start mysqld
+
+`CREATE FUNCTION` is not allowed without setting `log_bin_trust_function_creators`.::
+
+  $ mysql -u root
+  > SET GLOBAL log_bin_trust_function_creators = 1;
+
+passwords must be set in install.properties.::
+
+  # DB UserId used for the Ranger schema
+  #
+  db_name=ranger
+  db_user=rangeradmin
+  db_password=###PASSWORD HERE###
+  
+  # change password. Password for below mentioned users can be changed only once using this property.
+  #PLEASE NOTE :: Password should be minimum 8 characters with min one alphabet and one numeric.
+  rangerAdmin_password=###PASSWORD HERE###
+  rangerTagsync_password=###PASSWORD HERE###
+  rangerUsersync_password=###PASSWORD HERE###
+  keyadmin_password=###PASSWORD HERE###
+
+
+
 EC2
 ===
 
-インスタンス起動時にとりあえずでsshのlisten portに443を追加するためのuser data。
+インスタンス起動時にとりあえずでsshのlisten portに443を追加するためのuser data for CentOS 6 and CentOS 7。
 再起動してSELinuxがenforcingで上がってくると、
 sshdが443をlistenできなくて起動失敗し、ログインできなくなる::
 
