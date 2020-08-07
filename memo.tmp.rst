@@ -553,6 +553,15 @@ passwords must be set in install.properties.::
   keyadmin_password=###PASSWORD HERE###
 
 
+cache
+-----
+
+Policies fetched from ranger-admin are cached in the directory specified by `ranger.plugin.hbase.policy.cache.dir`.::
+
+  2020-08-07 15:01:16,435 INFO  [centos8:44025.activeMasterManager] provider.AuditProviderFactory: AUDIT PROPERTY: ranger.plugin.hbase.policy.cache.dir=/etc/ranger/hbase/policycache
+
+Cached policies are loaded if ranger-admin is not available on the startup.
+
 
 EC2
 ===
