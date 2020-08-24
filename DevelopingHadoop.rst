@@ -150,11 +150,15 @@ deprecation warnings
 test
 ----
 
-libhdfsなどのnativeモジュールのテストだけ実行したい場合には、 
-``-Dtest`` の値にJavaのテストクラス名にマッチしない文字列を指定する。
-もっとちゃんとしたやり方があるかもしれない。::
+特定のテストクラスを実行したい場合は、testプロパティの値としてクラス名を指定する。
+テストクラスが含まれているプロジェクトのディレクトリに移動した方が、時間節約になる。::
 
-  $ mvn test -Pnative -Dtest=hoge
+  $ cd hadoop-common-project/hadoop-common/
+  $ mvn test -Dtest=TestConfiguration
+
+`-Dtest=クラス名#メソッド名` という指定で、特定のテストケースだけを実行することもできる。::
+  
+  $ mvn test -Dtest=TestConfiguration#testVariableSubstitution
 
 `Parameterized tests <https://github.com/junit-team/junit4/wiki/parameterized-tests>`_ の場合、
 メソッド名ずばりではマッチしないが、後ろにアスタリスクをつけるとマッチする。
@@ -162,9 +166,12 @@ libhdfsなどのnativeモジュールのテストだけ実行したい場合に�
 
   $ mvn test '-Dtest=TestWebHdfsTimeouts#testConnectTimeout*'
 
-テスト連打::
 
-  $ for i in `seq 100` ; do echo $i && mvn test -Dtest=TestGangliaMetrics || break  ; done
+テストコード中で出力されるログは、
+target/surefire-reportsディレクトリ下のファイルに出力される。::
+
+  $ less target/surefire-reports/org.apache.hadoop.conf.TestConfiguration-output.txt
+
 
 テストを複数プロセスで並列実行。これでポートやファイルについてのraceによる問題を再現できる場合がある。::
 
@@ -173,6 +180,16 @@ libhdfsなどのnativeモジュールのテストだけ実行したい場合に�
 失敗するテストがあっても、全部流す。::
 
   $ mvn test -Dmaven.test.failure.ignore=true
+
+flaky testでエラーを再現するためにテストを繰り返し実行する場合の例。::
+
+  $ for i in `seq 100` ; do echo $i && mvn test -Dtest=TestGangliaMetrics || break  ; done
+
+
+cmakeでnativeモジュールのテストを実行したい場合には、 
+``-Dtest`` の値に ``allNative`` を指定する。::
+
+  $ mvn test -Pnative -Dtest=allNative
 
 
 filesystem contract test
