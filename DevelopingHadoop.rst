@@ -136,7 +136,7 @@ target/findbugsXml.xmlに結果が出力される。
 普通の人間に読むことは難しいため、convertXmlToTextコマンドを利用するとよい。::
 
   $ mvn compile findbugs:findbugs
-  $ /opt/findbugs-3.0.0/bin/convertXmlToText target/findbugsXml.xml
+  $ /opt/findbugs-3.0.0/bin/convertXmlToText -longBugCodes target/findbugsXml.xml
 
 
 deprecation warnings
