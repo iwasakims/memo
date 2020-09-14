@@ -43,16 +43,16 @@
     <value>
       RULE:[2:$1](hdfs)s/^.*$/${user.name}/
       RULE:[2:$1](yarn)s/^.*$/${user.name}/
-      RULE:[2:$1](http)s/^.*$/http/
+      RULE:[2:$1](HTTP)s/^.*$/HTTP/
       DEFAULT
     </value>
   </property>
   <property>
-    <name>hadoop.proxyuser.http.hosts</name>
+    <name>hadoop.proxyuser.HTTP.hosts</name>
     <value>*</value>
   </property>
   <property>
-    <name>hadoop.proxyuser.http.groups</name>
+    <name>hadoop.proxyuser.HTTP.groups</name>
     <value>*</value>
   </property>
   <property>

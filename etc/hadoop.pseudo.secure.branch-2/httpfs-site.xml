@@ -19,7 +19,7 @@
   </property>
   <property>
     <name>httpfs.authentication.kerberos.keytab</name>
-    <value>${user.home}/keytab/hdfs.keytab</value>
+    <value>${user.home}/keytab/http.keytab</value>
   </property>
   <property>
     <name>httpfs.authentication.kerberos.principal</name>
@@ -36,10 +36,10 @@
   </property>
   <property>
     <name>httpfs.hadoop.authentication.kerberos.keytab</name>
-    <value>${user.home}/keytab/hdfs.keytab</value>
+    <value>${user.home}/keytab/http.keytab</value>
   </property>
   <property>
     <name>httpfs.hadoop.authentication.kerberos.principal</name>
-    <value>http/localhost@EXAMPLE.COM</value>
+    <value>HTTP/localhost@EXAMPLE.COM</value>
   </property>
 </configuration>

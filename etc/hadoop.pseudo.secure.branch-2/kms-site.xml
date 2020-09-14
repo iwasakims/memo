@@ -59,11 +59,11 @@
     </value>
   </property>
   <property>
-    <name>hadoop.kms.proxyuser.http.hosts</name>
+    <name>hadoop.kms.proxyuser.HTTP.hosts</name>
     <value>*</value>
   </property>
   <property>
-    <name>hadoop.kms.proxyuser.http.groups</name>
+    <name>hadoop.kms.proxyuser.HTTP.groups</name>
     <value>*</value>
   </property>
   <property>
