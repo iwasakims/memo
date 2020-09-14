@@ -13,16 +13,28 @@
   limitations under the License. See accompanying LICENSE file.
 -->
 <configuration>
- <property>
-  <name>yarn.nodemanager.aux-services</name>
-  <value>mapreduce_shuffle</value>
- </property>
- <property>
-  <name>yarn.nodemanager.aux-services.mapreduce_shuffle.class</name>
-  <value>org.apache.hadoop.mapred.ShuffleHandler</value>
- </property>
- <property>
-  <name>yarn.log-aggregation-enable</name>
-  <value>true</value>
- </property>
+  <property>
+    <name>yarn.nodemanager.aux-services</name>
+    <value>mapreduce_shuffle</value>
+  </property>
+  <property>
+    <name>yarn.nodemanager.aux-services.mapreduce_shuffle.class</name>
+    <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+  </property>
+  <property>
+    <name>yarn.log-aggregation-enable</name>
+    <value>true</value>
+  </property>
+  <property>
+    <name>yarn.nodemanager.pmem-check-enabled</name>
+    <value>false</value>
+  </property>
+  <property>
+    <name>yarn.nodemanager.vmem-check-enabled</name>
+    <value>false</value>
+  </property>
+  <property>
+    <name>yarn.nodemanager.disk-health-checker.max-disk-utilization-per-disk-percentage</name>
+    <value>100.0</value>
+  </property>
 </configuration>
