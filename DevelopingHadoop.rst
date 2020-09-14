@@ -231,6 +231,8 @@ pom.xmlでの制御もしていない。このあたりの一貫性はいまい�
 リリース関連
 ============
 
+RCのチェック
+------------
 
 signatureをチェック::
 
@@ -250,6 +252,28 @@ hashcodeをチェック::
   $ cat hadoop-2.7.2-RC2-src.tar.gz.mds | perl -00pe 's/\n[ ]+/ /g' - > 1.mds
   $ gpg --print-mds hadoop-2.7.2-RC2-src.tar.gz | perl -00pe 's/\n[ ]+/ /g' - > 2.mds
   $ diff 1.mds 2.mds
+
+
+RCをつくる
+----------
+
+https://cwiki.apache.org/confluence/display/HADOOP2/HowToRelease
+の手順の補足
+
+Nexusが使っているkeyserverにpublic keyを送る。::
+
+  gpg --keyserver pool.sks-keyservers.net --send-key E206BB0D
+  gpg --keyserver keyserver.ubuntu.com --send-key E206BB0D
+
+https://infra.apache.org/release-signing.html#openpgp-ascii-detach-sig
+の手順でOpenPGP compatible ASCII armored detached signatureを作る。
+それに加えて、
+https://infra.apache.org/release-signing.html#sha-checksum
+の手順でsha512のチェックサムファイルを作る。::
+
+  cd target/artifacts
+  for f in `find . -type f` ; do gpg --armor --output $f.asc --detach-sig $f && gpg --print-md SHA512 $f > $f.sha512 ; done
+
 
 
 たまに使う
