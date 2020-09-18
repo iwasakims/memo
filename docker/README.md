@@ -86,6 +86,14 @@ docker exec hadoop02 /hadoop/bin/yarn --daemon start nodemanager
 docker exec hadoop03 /hadoop/bin/yarn --daemon start nodemanager
 ```
 
+### removing containers
+
+```
+docker kill hadoop01 hadoop02 hadoop03
+docker rm hadoop01 hadoop02 hadoop03
+```
+
+
 for hadoop-2
 ------------
 
@@ -94,19 +102,19 @@ for hadoop-2
 branch-2 does not support multi standby NN and --daemon option.
 
 ````
-cd ~/srcs/hadoop-2.8.0
+cd ~/srcs/hadoop-2.10.1
 mvn package -Pdist -Pnative -DskipTests
-mv hadoop-dist/target/hadoop-2.8.0 ~/dist/
-cp ~/srcs/memo/docker/etc/hadoop.ha.branch-2/* ~/dist/hadoop-2.8.0/etc/hadoop/
+mv hadoop-dist/target/hadoop-2.10.1 ~/dist/
+cp ~/srcs/memo/docker/etc/hadoop.ha.branch-2/* ~/dist/hadoop-2.10.1/etc/hadoop/
 ...
 ````
 
 
 ````
 ...
-docker run -d -i -t --name hadoop01 --net hadoop --ip 172.18.0.11 -v ~/dist/hadoop-2.8.0:/hadoop -v ~/dist/zookeeper-3.4.9:/zookeeper centos7-openjdk8 /bin/bash
-docker run -d -i -t --name hadoop02 --net hadoop --ip 172.18.0.12 -v ~/dist/hadoop-2.8.0:/hadoop -v ~/dist/zookeeper-3.4.9:/zookeeper centos7-openjdk8 /bin/bash
-docker run -d -i -t --name hadoop03 --net hadoop --ip 172.18.0.13 -v ~/dist/hadoop-2.8.0:/hadoop -v ~/dist/zookeeper-3.4.9:/zookeeper centos7-openjdk8 /bin/bash
+docker run -d -i -t --name hadoop01 --net hadoop --ip 172.18.0.11 -v ~/dist/hadoop-2.10.1:/hadoop -v ~/dist/zookeeper-3.4.14:/zookeeper centos8-openjdk8 /bin/bash
+docker run -d -i -t --name hadoop02 --net hadoop --ip 172.18.0.12 -v ~/dist/hadoop-2.10.1:/hadoop -v ~/dist/zookeeper-3.4.14:/zookeeper centos8-openjdk8 /bin/bash
+docker run -d -i -t --name hadoop03 --net hadoop --ip 172.18.0.13 -v ~/dist/hadoop-2.10.1:/hadoop -v ~/dist/zookeeper-3.4.14:/zookeeper centos8-openjdk8 /bin/bash
 ````
 
 ````
@@ -136,6 +144,10 @@ docker exec hadoop01 /hadoop/sbin/hadoop-daemon.sh start zkfc
 docker exec hadoop02 /hadoop/bin/hdfs namenode -bootstrapStandby -force -nonInteractive
 docker exec hadoop02 /hadoop/sbin/hadoop-daemon.sh start namenode
 docker exec hadoop02 /hadoop/sbin/hadoop-daemon.sh start zkfc
+
+docker exec hadoop03 /hadoop/bin/hdfs namenode -bootstrapStandby -force -nonInteractive
+docker exec hadoop03 /hadoop/sbin/hadoop-daemon.sh start namenode
+docker exec hadoop03 /hadoop/sbin/hadoop-daemon.sh start zkfc
 
 docker exec hadoop01 /hadoop/sbin/hadoop-daemon.sh start datanode
 docker exec hadoop02 /hadoop/sbin/hadoop-daemon.sh start datanode
