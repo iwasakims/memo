@@ -183,8 +183,7 @@ target/surefire-reportsディレクトリ下のファイルに出力される。
 
 flaky testでエラーを再現するためにテストを繰り返し実行する場合の例。::
 
-  $ for i in `seq 100` ; do echo $i && mvn test -Dtest=TestGangliaMetrics || break  ; done
-
+  $ for i in `seq 100` ; do echo $i && mvn test -Dtest=TestBPOfferService -DignoreTestFailure=false || break ; done
 
 cmakeでnativeモジュールのテストを実行したい場合には、 
 ``-Dtest`` の値に ``allNative`` を指定する。::
