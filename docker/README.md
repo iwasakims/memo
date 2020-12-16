@@ -17,7 +17,7 @@ mvn package -Pdist -Pnative -DskipTests
 mv hadoop-dist/target/hadoop-3.3.0-SNAPSHOT ~/dist/
 cp ~/srcs/memo/docker/etc/hadoop.ha/* ~/dist/hadoop-3.3.0-SNAPSHOT/etc/hadoop/
 
-wget http://ftp.riken.jp/net/apache/zookeeper/zookeeper-3.4.14/zookeeper-3.4.14.tar.gz
+wget https://archive.apache.org/dist/zookeeper/zookeeper-3.4.14/zookeeper-3.4.14.tar.gz
 tar zxf zookeeper-3.4.14.tar.gz
 mv zookeeper-3.4.14 ~/dist/
 cp ~/srcs/memo/docker/etc/zookeeper/zoo.cfg ~/dist/zookeeper-3.4.14/conf/
