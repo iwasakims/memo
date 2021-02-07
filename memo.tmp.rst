@@ -475,6 +475,21 @@ smoke testを実行する。::
   ./docker-hadoop.sh --smoke-tests
 
 
+docker provisioner from command line
+------------------------------------
+
+without editing config.yaml.::
+
+  $ cd provisioner/docker
+  $ ./docker-hadoop.sh \
+      --create 1 \
+      --image bigtop/puppet:trunk-centos-8 \
+      --memory 16g \
+      --stack hdfs,yarn,mapreduce \
+      --repo file:///bigtop-home/output \
+      --disable-gpg-check
+
+
 Debugging dpkg
 --------------
 
