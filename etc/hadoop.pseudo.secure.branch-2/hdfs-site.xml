@@ -56,7 +56,7 @@
   </property>
   <property>
     <name>dfs.namenode.kerberos.internal.spnego.principal</name>
-    <value>http/localhost@EXAMPLE.COM</value>
+    <value>HTTP/localhost@EXAMPLE.COM</value>
   </property>
   <property>
     <name>dfs.secondary.namenode.keytab.file</name>
@@ -68,7 +68,7 @@
   </property>
   <property>
     <name>dfs.secondary.namenode.kerberos.internal.spnego.principal</name>
-    <value>http/localhost@EXAMPLE.COM</value>
+    <value>HTTP/localhost@EXAMPLE.COM</value>
   </property>
   <property>
     <name>dfs.datanode.keytab.file</name>
@@ -80,7 +80,7 @@
   </property>
   <property>
     <name>dfs.web.authentication.kerberos.keytab</name>
-    <value>${user.home}/keytab/hdfs.keytab</value>
+    <value>${user.home}/keytab/http.keytab</value>
   </property>
   <property>
     <name>dfs.web.authentication.kerberos.principal</name>
