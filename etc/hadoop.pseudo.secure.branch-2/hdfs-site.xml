@@ -86,4 +86,9 @@
     <name>dfs.web.authentication.kerberos.principal</name>
     <value>HTTP/localhost@EXAMPLE.COM</value>
   </property>
+
+  <property>
+    <name>dfs.encryption.key.provider.uri</name>
+    <value>kms://https@localhost:16000/kms</value>
+  </property>
 </configuration>
