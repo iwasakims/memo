@@ -82,6 +82,11 @@
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.md.vm\\'" . markdown-mode))
 
+;; C# - https://github.com/emacs-csharp/csharp-mode
+;(setq load-path (cons "~/srcs/csharp-mode" load-path))
+;(require 'csharp-mode)
+;(add-hook 'csharp-mode-hook '(lambda () (gtags-mode 1)))
+
 
 ;;
 (cond 
@@ -105,3 +110,21 @@
   (add-to-list 'default-frame-alist '(alpha . 80))
   (setq default-input-method "MacOSX")
   ))
+
+
+;; Windows
+;(global-set-key "\C-\\" nil)
+;
+; for rgrep and find-dired on Windows
+; assuming Git for Windows installed to C:/opt/Git
+;
+;(add-to-list 'exec-path "C:/opt/Git/mingw64/bin")
+;(add-to-list 'exec-path "C:/opt/Git/usr/bin")
+;(setenv "PATH"
+;	(concat
+;	 "C:\\opt\\Git\\mingw64\\bin;C:\\opt\\Git\\usr\\bin"
+;	 (getenv "PATH")))
+;(setq find-program "C:/opt/Git/usr/bin/find.exe")
+;(setq grep-program "C:/opt/Git/usr/bin/grep.exe")
+;(custom-set-variables
+; '(find-ls-option '("-ls" . "-dilsb")))
