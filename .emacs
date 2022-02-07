@@ -57,14 +57,15 @@
 ;(add-hook 'scala-mode-hook '(lambda () (gtags-mode 1)))
 
 ;; Erlang
-(setq load-path (cons "/usr/lib/erlang/lib/tools-2.6.7/emacs " load-path))
-(setq erlang-root-dir "/usr/lib/erlang")
-(require 'erlang-start)
-(add-hook 'erlang-mode-hook '(lambda () (gtags-mode 1)))
+;(setq load-path (cons "/usr/lib/erlang/lib/tools-2.6.7/emacs " load-path))
+;(setq erlang-root-dir "/usr/lib/erlang")
+;(require 'erlang-start)
+;(add-hook 'erlang-mode-hook '(lambda () (gtags-mode 1)))
 
 ;; golang
-(setq load-path (cons "/home/iwasakims/srcs/go-mode.el" load-path))
-(require 'go-mode-autoloads)
+(setq load-path (cons "~/srcs/go-mode.el" load-path))
+(autoload 'go-mode "go-mode" nil t)
+(add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
 (add-hook 'go-mode-hook '(lambda () (gtags-mode 1)))
 
 ;; reStructuredText
