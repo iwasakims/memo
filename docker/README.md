@@ -17,26 +17,28 @@ mvn package -Pdist -Pnative -DskipTests
 mv hadoop-dist/target/hadoop-3.3.0-SNAPSHOT ~/dist/
 cp ~/srcs/memo/docker/etc/hadoop.ha/* ~/dist/hadoop-3.3.0-SNAPSHOT/etc/hadoop/
 
-wget https://archive.apache.org/dist/zookeeper/zookeeper-3.4.14/zookeeper-3.4.14.tar.gz
-tar zxf zookeeper-3.4.14.tar.gz
-mv zookeeper-3.4.14 ~/dist/
-cp ~/srcs/memo/docker/etc/zookeeper/zoo.cfg ~/dist/zookeeper-3.4.14/conf/
+wget https://dlcdn.apache.org/zookeeper/zookeeper-3.5.9/apache-zookeeper-3.5.9-bin.tar.gz
+tar zxf apache-zookeeper-3.5.9-bin.tar.gz
+mv apache-zookeeper-3.5.9-bin zookeeper-3.5.9
+mv zookeeper-3.5.9 ~/dist/
+cp ~/srcs/memo/docker/etc/zookeeper/zoo.cfg ~/dist/zookeeper-3.5.9/conf/
 ````
 
 ### setting up docker env
 
 ```
 cd mydockerbuild
-docker build -t centos7-openjdk8 -f Dockerfile.centos7 .
-docker build -t centos8-openjdk8 -f Dockerfile.centos8 .
+# docker build -t centos7-openjdk8 -f Dockerfile.centos7 .
+# docker build -t centos8-openjdk8 -f Dockerfile.centos8 .
+docker build -t rockylinux8-openjdk8 -f Dockerfile.rockylinux8 .
 
 docker network create --subnet=172.18.0.0/16 hadoop
 
 cd ~/dist/
 mkdir -p logs
-docker run -d -i -t --name hadoop01 --net hadoop --ip 172.18.0.11 -v ~/dist/hadoop-3.3.0-SNAPSHOT:/hadoop -v ~/dist/zookeeper-3.4.14:/zookeeper -v ~/dist/logs:/logs centos8-openjdk8 /bin/bash
-docker run -d -i -t --name hadoop02 --net hadoop --ip 172.18.0.12 -v ~/dist/hadoop-3.3.0-SNAPSHOT:/hadoop -v ~/dist/zookeeper-3.4.14:/zookeeper -v ~/dist/logs:/logs centos8-openjdk8 /bin/bash
-docker run -d -i -t --name hadoop03 --net hadoop --ip 172.18.0.13 -v ~/dist/hadoop-3.3.0-SNAPSHOT:/hadoop -v ~/dist/zookeeper-3.4.14:/zookeeper -v ~/dist/logs:/logs centos8-openjdk8 /bin/bash
+docker run -d -i -t --name hadoop01 --net hadoop --ip 172.18.0.11 -v ~/dist/hadoop-3.3.0-SNAPSHOT:/hadoop -v ~/dist/zookeeper-3.5.9:/zookeeper -v ~/dist/logs:/logs rockylinux8-openjdk8 /bin/bash
+docker run -d -i -t --name hadoop02 --net hadoop --ip 172.18.0.12 -v ~/dist/hadoop-3.3.0-SNAPSHOT:/hadoop -v ~/dist/zookeeper-3.5.9:/zookeeper -v ~/dist/logs:/logs rockylinux8-openjdk8 /bin/bash
+docker run -d -i -t --name hadoop03 --net hadoop --ip 172.18.0.13 -v ~/dist/hadoop-3.3.0-SNAPSHOT:/hadoop -v ~/dist/zookeeper-3.5.9:/zookeeper -v ~/dist/logs:/logs rockylinux8-openjdk8 /bin/bash
 ```
 
 ### starting daemons
