@@ -5,18 +5,26 @@ single node conf with secure mode
 sudo yum install krb5-server krb5-libs krb5-workstation
 ```
 
-Edit realm settings and comment out the line `default_ccache_name = KEYRING:persistent:%{uid}`
-wise hadoop client library can not find cached credential.
-On CentOS 8, /etc/krb5.conf.d/kcm_default_ccache should be edited too
-since it has default_ccache_name entry.
-In addition, the line `renew_lifetime = 7d` must be commented out
-due to [JDK-8131051](https://bugs.openjdk.java.net/browse/JDK-8131051) .
+Edit krb5.conf.
+* update realm settings.
+* comment out the line `default_ccache_name = KEYRING:persistent:%{uid}` which breaks cached credential lookup of hadoop client library.
+* comment out the line `renew_lifetime = 7d` in order to address [JDK-8131051](https://bugs.openjdk.java.net/browse/JDK-8131051).
+
 ```
 sudo vi /etc/krb5.conf
 ```
 
+Edit realm settings of kdc.conf.
+
 ```
 sudo vi /var/kerberos/krb5kdc/kdc.conf
+```
+
+On CentOS 8, /etc/krb5.conf.d/kcm_default_ccache should be edited too
+since it has default_ccache_name entry.
+
+```
+sudo vi /etc/krb5.conf.d/kcm_default_ccache
 ```
 
 First component of principal name for HttpServer must be HTTP (in upper case).
@@ -37,6 +45,7 @@ kadmin ktadd -k ${HOME}/keytab/http.keytab HTTP/localhost@EXAMPLE.COM
 
 container-exucutor and container-exucutor.cfg can not be placed under /home
 since permission of parents are checked recursively.
+
 ```
 cd ${HADOOP_HOME}
 
@@ -48,6 +57,7 @@ sudo mkdir -p /usr/local/etc/hadoop
 sudo ln ${PWD}/etc/hadoop/container-executor.cfg /usr/local/etc/hadoop/
 sudo chown root:${USER} /usr/local/etc/hadoop/container-executor.cfg
 sudo chmod 644 /usr/local/etc/hadoop/container-executor.cfg 
+sudo vi /usr/local/etc/hadoop/container-executor.cfg
 ```
 
 "first and last name" (CN) must be hostname of server.
