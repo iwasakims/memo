@@ -96,17 +96,17 @@ bin/hadoop fs -cat swebhdfs://localhost:9871/zone1/README.txt
 stop and start
 --------------
 
-    bin/hadoop --daemon stop kms
     bin/yarn --daemon stop nodemanager
     bin/yarn --daemon stop resourcemanager
     bin/hdfs --daemon stop datanode
     bin/hdfs --daemon stop namenode
+    bin/hadoop --daemon stop kms
     
+    bin/hadoop --daemon start kms
     bin/hdfs --daemon start namenode
     bin/hdfs --daemon start datanode
     bin/yarn --daemon start resourcemanager
     bin/yarn --daemon start nodemanager
-    bin/hadoop --daemon start kms
 
 
 downloading JCE policy
