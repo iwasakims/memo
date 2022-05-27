@@ -51,8 +51,8 @@
 ;;(require 'paredit)
 ;;(add-hook 'clojure-mode-hook '(lambda () (paredit-mode 1)))
 
-;; Scala
-;(setq load-path (cons "/usr/local/src/scala-tool-support-2.10.0/scala-emacs-mode" load-path))
+; Scala
+;(setq load-path (cons "~/srcs/scala-tool-support/tool-support/emacs" load-path))
 ;(require 'scala-mode-auto)
 ;(add-hook 'scala-mode-hook '(lambda () (gtags-mode 1)))
 
@@ -63,10 +63,10 @@
 ;(add-hook 'erlang-mode-hook '(lambda () (gtags-mode 1)))
 
 ;; golang
-(setq load-path (cons "~/srcs/go-mode.el" load-path))
-(autoload 'go-mode "go-mode" nil t)
-(add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
-(add-hook 'go-mode-hook '(lambda () (gtags-mode 1)))
+;(setq load-path (cons "~/srcs/go-mode.el" load-path))
+;(autoload 'go-mode "go-mode" nil t)
+;(add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
+;(add-hook 'go-mode-hook '(lambda () (gtags-mode 1)))
 
 ;; reStructuredText
 ;(require rst)
