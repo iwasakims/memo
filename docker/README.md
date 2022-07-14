@@ -1,28 +1,28 @@
 Setting up quick exp env for NN-HA and RM-HA
 ============================================
 
-for hadoop-3
-------------
+for 3.0.0 and above
+-------------------
 
-````
+```
 $ cd ~/srcs
 $ git clone https://github.com/iwasakims/memo
-````
+```
 
 ### setting up hadoop and zookeeper dist
 
-````
+```
 cd ~/srcs/hadoop
 mvn package -Pdist -Pnative -DskipTests
-mv hadoop-dist/target/hadoop-3.3.0-SNAPSHOT ~/dist/
-cp ~/srcs/memo/docker/etc/hadoop.ha/* ~/dist/hadoop-3.3.0-SNAPSHOT/etc/hadoop/
+mv hadoop-dist/target/hadoop-3.2.4 ~/dist/
+cp ~/srcs/memo/docker/etc/hadoop.ha/* ~/dist/hadoop-3.2.4/etc/hadoop/
 
 wget https://dlcdn.apache.org/zookeeper/zookeeper-3.5.9/apache-zookeeper-3.5.9-bin.tar.gz
 tar zxf apache-zookeeper-3.5.9-bin.tar.gz
 mv apache-zookeeper-3.5.9-bin zookeeper-3.5.9
 mv zookeeper-3.5.9 ~/dist/
 cp ~/srcs/memo/docker/etc/zookeeper/zoo.cfg ~/dist/zookeeper-3.5.9/conf/
-````
+```
 
 ### setting up docker env
 
@@ -36,9 +36,12 @@ docker network create --subnet=172.18.0.0/16 hadoop
 
 cd ~/dist/
 mkdir -p logs
-docker run -d -i -t --name hadoop01 --net hadoop --ip 172.18.0.11 -v ~/dist/hadoop-3.3.0-SNAPSHOT:/hadoop -v ~/dist/zookeeper-3.5.9:/zookeeper -v ~/dist/logs:/logs rockylinux8-openjdk8 /bin/bash
-docker run -d -i -t --name hadoop02 --net hadoop --ip 172.18.0.12 -v ~/dist/hadoop-3.3.0-SNAPSHOT:/hadoop -v ~/dist/zookeeper-3.5.9:/zookeeper -v ~/dist/logs:/logs rockylinux8-openjdk8 /bin/bash
-docker run -d -i -t --name hadoop03 --net hadoop --ip 172.18.0.13 -v ~/dist/hadoop-3.3.0-SNAPSHOT:/hadoop -v ~/dist/zookeeper-3.5.9:/zookeeper -v ~/dist/logs:/logs rockylinux8-openjdk8 /bin/bash
+export HADOOP_VERSION=3.2.4
+export ZOOKEEPER_VERSION=3.5.9
+docker run -d -i -t --name hadoop01 --net hadoop --ip 172.18.0.11 -v ~/dist/hadoop-${HADOOP_VERSION}:/hadoop -v ~/dist/zookeeper-${ZOOKEEPER_VERSION}:/zookeeper -v ~/dist/logs:/logs rockylinux8-openjdk8 /bin/bash
+docker run -d -i -t --name hadoop02 --net hadoop --ip 172.18.0.12 -v ~/dist/hadoop-${HADOOP_VERSION}:/hadoop -v ~/dist/zookeeper-${ZOOKEEPER_VERSION}:/zookeeper -v ~/dist/logs:/logs rockylinux8-openjdk8 /bin/bash
+docker run -d -i -t --name hadoop03 --net hadoop --ip 172.18.0.13 -v ~/dist/hadoop-${HADOOP_VERSION}:/hadoop -v ~/dist/zookeeper-${ZOOKEEPER_VERSION}:/zookeeper -v ~/dist/logs:/logs rockylinux8-openjdk8 /bin/bash
+
 ```
 
 ### starting daemons
@@ -96,8 +99,8 @@ docker rm hadoop01 hadoop02 hadoop03
 ```
 
 
-for hadoop-2
-------------
+for hadoop-2.10
+---------------
 
 ### setting up hadoop and zookeeper dist
 
