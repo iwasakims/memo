@@ -92,21 +92,35 @@ curl --negotiate -u : -k "https://localhost:9871/webhdfs/v1/zone1?op=LISTSTATUS"
 bin/hadoop fs -cat swebhdfs://localhost:9871/zone1/README.txt
 ```
 
+HttpFS
+------
+
+```
+cd ${HADOOP_HOME}
+kinit
+bin/hadoop --daemon start httpfs
+curl --negotiate -u : -k "https://localhost:14000/webhdfs/v1/zone1?op=LISTSTATUS"
+```
+
 
 stop and start
 --------------
 
-    bin/yarn --daemon stop nodemanager
-    bin/yarn --daemon stop resourcemanager
-    bin/hdfs --daemon stop datanode
-    bin/hdfs --daemon stop namenode
-    bin/hadoop --daemon stop kms
-    
-    bin/hadoop --daemon start kms
-    bin/hdfs --daemon start namenode
-    bin/hdfs --daemon start datanode
-    bin/yarn --daemon start resourcemanager
-    bin/yarn --daemon start nodemanager
+```
+bin/yarn --daemon stop nodemanager
+bin/yarn --daemon stop resourcemanager
+bin/hdfs --daemon stop httpfs
+bin/hdfs --daemon stop datanode
+bin/hdfs --daemon stop namenode
+bin/hadoop --daemon stop kms
+
+bin/hadoop --daemon start kms
+bin/hdfs --daemon start namenode
+bin/hdfs --daemon start datanode
+bin/hdfs --daemon start httpfs
+bin/yarn --daemon start resourcemanager
+bin/yarn --daemon start nodemanager
+```
 
 
 downloading JCE policy

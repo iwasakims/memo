@@ -65,4 +65,16 @@
     <name>hadoop.ssl.hostname.verifier</name>
     <value>ALLOW_ALL</value>
   </property>
+  <property>
+    <name>hadoop.proxyuser.HTTP.hosts</name>
+    <value>*</value>
+  </property>
+  <property>
+    <name>hadoop.proxyuser.HTTP.groups</name>
+    <value>*</value>
+  </property>
+  <property>
+    <name>hadoop.ssl.hostname.verifier</name>
+    <value>ALLOW_ALL</value>
+  </property>
 </configuration>
