@@ -106,12 +106,14 @@ curl --negotiate -u : -k "https://localhost:14000/webhdfs/v1/zone1?op=LISTSTATUS
 accessing a file in encryption zone via httpfs
 ----------------------------------------------
 
+```
 bin/hadoop key create key2
 bin/hdfs dfs -mkdir /zone2
 bin/hdfs crypto -createZone -keyName key2 -path /zone2
 curl -i -k --negotiate -u : -c cookiejar -X PUT 'https://localhost:14000/webhdfs/v1/zone2/README.txt?op=CREATE&replication=1'
 curl -i -k --negotiate -u : -b cookiejar -X PUT --header "Content-Type:application/octet-stream" --data-binary @README.txt 'https://localhost:14000/webhdfs/v1/zone2/README.txt?op=CREATE&replication=1&data=true'
 curl -i -k --negotiate -u : 'https://localhost:14000/webhdfs/v1/zone2/README.txt?op=OPEN'
+```
 
 
 stop and start
@@ -142,7 +144,7 @@ as common auth scheme for http servcer of all services.
 Since it turned out to break HttpFS and KMS,
 [HDFS-14845](https://issues.apache.org/jira/browse/HDFS-14845) (for HttpFS ) and
 [HADOOP-16972](https://issues.apache.org/jira/browse/HADOOP-16972) (for KMS) were filed.
-
+Hadoop 3.3.0 and above are affected.
 
 
 token cache file
@@ -151,41 +153,45 @@ token cache file
 Token files can be specifiled by `hadoop.token.files` which is system property or configuration property.
 https://github.com/apache/hadoop/blob/rel/release-3.2.0/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/security/UserGroupInformation.java#L721-L739
 
-    $ HADOOP_OPTS='-Dhadoop.token.files=./dt.dat' bin/hadoop org.apache.hadoop.security.UserGroupInformation
-    Getting UGI for current user
-    2019-06-28 17:24:25,987 DEBUG security.SecurityUtil: Setting hadoop.security.token.service.use_ip to true
-    2019-06-28 17:24:26,120 DEBUG security.Groups:  Creating new Groups object
-    2019-06-28 17:24:26,124 DEBUG security.JniBasedUnixGroupsMapping: Using JniBasedUnixGroupsMapping for Group resolution
-    2019-06-28 17:24:26,124 DEBUG security.JniBasedUnixGroupsMappingWithFallback: Group mapping impl=org.apache.hadoop.security.JniBasedUnixGroupsMapping
-    2019-06-28 17:24:26,267 DEBUG security.Groups: Group mapping impl=org.apache.hadoop.security.JniBasedUnixGroupsMappingWithFallback; cacheTimeout=300000; warningDeltaMs=5000
-    2019-06-28 17:24:26,291 DEBUG security.UserGroupInformation: hadoop login
-    2019-06-28 17:24:26,294 DEBUG security.UserGroupInformation: hadoop login commit
-    2019-06-28 17:24:26,295 DEBUG security.UserGroupInformation: using kerberos user:iwasakims@EXAMPLE.COM
-    2019-06-28 17:24:26,295 DEBUG security.UserGroupInformation: Using user: "iwasakims@EXAMPLE.COM" with name iwasakims@EXAMPLE.COM
-    2019-06-28 17:24:26,296 DEBUG security.UserGroupInformation: User entry: "iwasakims@EXAMPLE.COM"
-    2019-06-28 17:24:26,298 DEBUG security.UserGroupInformation: Reading credentials from location /home/iwasakims/dist/hadoop-3.3.0-SNAPSHOT/dt.dat
-    2019-06-28 17:24:26,370 DEBUG security.UserGroupInformation: Loaded 1 tokens from /home/iwasakims/dist/hadoop-3.3.0-SNAPSHOT/dt.dat
-    2019-06-28 17:24:26,370 DEBUG security.UserGroupInformation: UGI loginUser:iwasakims@EXAMPLE.COM (auth:KERBEROS)
-    User: iwasakims@EXAMPLE.COM
-    Group Ids:
-    2019-06-28 17:24:26,378 DEBUG security.UserGroupInformation: Current time is 1561710266378
-    2019-06-28 17:24:26,378 DEBUG security.UserGroupInformation: Next refresh is 1561769251000
-    2019-06-28 17:24:26,387 DEBUG security.Groups: GroupCacheLoader - load.
-    Groups: docker iwasakims
-    UGI: iwasakims@EXAMPLE.COM (auth:KERBEROS)
-    Auth method KERBEROS
-    Keytab false
-    ============================================================
+```
+$ HADOOP_OPTS='-Dhadoop.token.files=./dt.dat' bin/hadoop org.apache.hadoop.security.UserGroupInformation
+Getting UGI for current user
+2019-06-28 17:24:25,987 DEBUG security.SecurityUtil: Setting hadoop.security.token.service.use_ip to true
+2019-06-28 17:24:26,120 DEBUG security.Groups:  Creating new Groups object
+2019-06-28 17:24:26,124 DEBUG security.JniBasedUnixGroupsMapping: Using JniBasedUnixGroupsMapping for Group resolution
+2019-06-28 17:24:26,124 DEBUG security.JniBasedUnixGroupsMappingWithFallback: Group mapping impl=org.apache.hadoop.security.JniBasedUnixGroupsMapping
+2019-06-28 17:24:26,267 DEBUG security.Groups: Group mapping impl=org.apache.hadoop.security.JniBasedUnixGroupsMappingWithFallback; cacheTimeout=300000; warningDeltaMs=5000
+2019-06-28 17:24:26,291 DEBUG security.UserGroupInformation: hadoop login
+2019-06-28 17:24:26,294 DEBUG security.UserGroupInformation: hadoop login commit
+2019-06-28 17:24:26,295 DEBUG security.UserGroupInformation: using kerberos user:iwasakims@EXAMPLE.COM
+2019-06-28 17:24:26,295 DEBUG security.UserGroupInformation: Using user: "iwasakims@EXAMPLE.COM" with name iwasakims@EXAMPLE.COM
+2019-06-28 17:24:26,296 DEBUG security.UserGroupInformation: User entry: "iwasakims@EXAMPLE.COM"
+2019-06-28 17:24:26,298 DEBUG security.UserGroupInformation: Reading credentials from location /home/iwasakims/dist/hadoop-3.3.0-SNAPSHOT/dt.dat
+2019-06-28 17:24:26,370 DEBUG security.UserGroupInformation: Loaded 1 tokens from /home/iwasakims/dist/hadoop-3.3.0-SNAPSHOT/dt.dat
+2019-06-28 17:24:26,370 DEBUG security.UserGroupInformation: UGI loginUser:iwasakims@EXAMPLE.COM (auth:KERBEROS)
+User: iwasakims@EXAMPLE.COM
+Group Ids:
+2019-06-28 17:24:26,378 DEBUG security.UserGroupInformation: Current time is 1561710266378
+2019-06-28 17:24:26,378 DEBUG security.UserGroupInformation: Next refresh is 1561769251000
+2019-06-28 17:24:26,387 DEBUG security.Groups: GroupCacheLoader - load.
+Groups: docker iwasakims
+UGI: iwasakims@EXAMPLE.COM (auth:KERBEROS)
+Auth method KERBEROS
+Keytab false
+============================================================
+```
 
 Recent GenericOptionsParser provides generic option `-tokenCacheFile` .
 https://github.com/apache/hadoop/blob/rel/release-3.2.0/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/util/GenericOptionsParser.java#L341-L356
 
-    bin/hadoop dtutil get hdfs://localhost:8020/ ./dt.dat
-    bin/hdfs dfs -tokenCacheFile ./dt.dat -ls /
-
+```
+bin/hadoop dtutil get hdfs://localhost:8020/ ./dt.dat
+bin/hdfs dfs -tokenCacheFile ./dt.dat -ls /
+```
 
 downloading JCE policy
 ----------------------
 
-    curl -L -b "oraclelicense=a" -O http://download.oracle.com/otn-pub/java/jce/8/jce_policy-8.zip
-
+```
+curl -L -b "oraclelicense=a" -O http://download.oracle.com/otn-pub/java/jce/8/jce_policy-8.zip
+```
