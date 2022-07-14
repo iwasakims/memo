@@ -77,6 +77,7 @@
               auto-mode-alist))
 
 ;; Markdown
+(setq load-path (cons "~/srcs/markdown-mode" load-path))
 (autoload 'markdown-mode "markdown-mode" "Major mode for editing Markdown files" t)
 (add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))

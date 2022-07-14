@@ -103,6 +103,17 @@ curl --negotiate -u : -k "https://localhost:14000/webhdfs/v1/zone1?op=LISTSTATUS
 ```
 
 
+accessing a file in encryption zone via httpfs
+----------------------------------------------
+
+bin/hadoop key create key2
+bin/hdfs dfs -mkdir /zone2
+bin/hdfs crypto -createZone -keyName key2 -path /zone2
+curl -i -k --negotiate -u : -c cookiejar -X PUT 'https://localhost:14000/webhdfs/v1/zone2/README.txt?op=CREATE&replication=1'
+curl -i -k --negotiate -u : -b cookiejar -X PUT --header "Content-Type:application/octet-stream" --data-binary @README.txt 'https://localhost:14000/webhdfs/v1/zone2/README.txt?op=CREATE&replication=1&data=true'
+curl -i -k --negotiate -u : 'https://localhost:14000/webhdfs/v1/zone2/README.txt?op=OPEN'
+
+
 stop and start
 --------------
 
@@ -123,14 +134,19 @@ bin/yarn --daemon start nodemanager
 ```
 
 
-downloading JCE policy
-----------------------
+HTTP AuthenticationFilter
+-------------------------
 
-    curl -L -b "oraclelicense=a" -O http://download.oracle.com/otn-pub/java/jce/8/jce_policy-8.zip
+[HADOOP-16314](https://issues.apache.org/jira/browse/HADOOP-16314) introduced FilterAuthenticationFilterInitializer
+as common auth scheme for http servcer of all services.
+Since it turned out to break HttpFS and KMS,
+[HDFS-14845](https://issues.apache.org/jira/browse/HDFS-14845) (for HttpFS ) and
+[HADOOP-16972](https://issues.apache.org/jira/browse/HADOOP-16972) (for KMS) were filed.
 
 
-memo
-----
+
+token cache file
+----------------
 
 Token files can be specifiled by `hadoop.token.files` which is system property or configuration property.
 https://github.com/apache/hadoop/blob/rel/release-3.2.0/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/security/UserGroupInformation.java#L721-L739
@@ -166,3 +182,10 @@ https://github.com/apache/hadoop/blob/rel/release-3.2.0/hadoop-common-project/ha
 
     bin/hadoop dtutil get hdfs://localhost:8020/ ./dt.dat
     bin/hdfs dfs -tokenCacheFile ./dt.dat -ls /
+
+
+downloading JCE policy
+----------------------
+
+    curl -L -b "oraclelicense=a" -O http://download.oracle.com/otn-pub/java/jce/8/jce_policy-8.zip
+

@@ -42,6 +42,7 @@
     <value>
       RULE:[2:$1](hdfs)s/^.*$/${user.name}/
       RULE:[2:$1](yarn)s/^.*$/${user.name}/
+      RULE:[2:$1](HTTP)s/^.*$/HTTP/
       DEFAULT
     </value>
   </property>
