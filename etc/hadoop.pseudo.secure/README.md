@@ -139,7 +139,7 @@ bin/yarn --daemon start nodemanager
 HTTP AuthenticationFilter
 -------------------------
 
-[HADOOP-16314](https://issues.apache.org/jira/browse/HADOOP-16314) introduced FilterAuthenticationFilterInitializer
+[HADOOP-16314](https://issues.apache.org/jira/browse/HADOOP-16314) introduced AuthenticationFilterInitializer
 as common auth scheme for http servcer of all services.
 Since it turned out to break HttpFS and KMS,
 [HDFS-14845](https://issues.apache.org/jira/browse/HDFS-14845) (for HttpFS ) and
