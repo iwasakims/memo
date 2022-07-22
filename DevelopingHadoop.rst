@@ -1,4 +1,4 @@
-.. contents::
+G.. contents::
 
 
 リンク
@@ -264,15 +264,35 @@ Nexusが使っているkeyserverにpublic keyを送る。::
   gpg --keyserver pool.sks-keyservers.net --send-key E206BB0D
   gpg --keyserver keyserver.ubuntu.com --send-key E206BB0D
 
-https://infra.apache.org/release-signing.html#openpgp-ascii-detach-sig
-の手順でOpenPGP compatible ASCII armored detached signatureを作る。
-それに加えて、
-https://infra.apache.org/release-signing.html#sha-checksum
-の手順でsha512のチェックサムファイルを作る。::
+releasenotes, changelog and jdiff reports must be committed to upstream branches.::
 
-  cd target/artifacts
-  for f in `find . -type f` ; do gpg --armor --output $f.asc --detach-sig $f && gpg --print-md SHA512 $f > $f.sha512 ; done
+  export version=3.2.4
+  cp target/artifacts/RELEASENOTES.md hadoop-common-project/hadoop-common/src/site/markdown/release/${version}/RELEASENOTES.${version}.md
+  cp target/artifacts/CHANGELOG.md hadoop-common-project/hadoop-common/src/site/markdown/release/${version}/CHANGELOG.${version}.md
+  cp hadoop-common-project/hadoop-common/target/site/jdiff/xml/Apache_Hadoop_Common_${version}.xml hadoop-common-project/hadoop-common/dev-support/jdiff
+  cp hadoop-hdfs-project/hadoop-hdfs/target/site/jdiff/xml/Apache_Hadoop_HDFS_${version}.xml hadoop-hdfs-project/hadoop-hdfs/dev-support/jdiff
+  find hadoop-yarn-project -name "Apache_Hadoop_YARN_*_${version}.xml" | xargs -I{} cp {} hadoop-yarn-project/hadoop-yarn/dev-support/jdiff
+  find hadoop-mapreduce-project -name "Apache_Hadoop_MapReduce_*_${version}.xml" | xargs -I{} cp {} hadoop-mapreduce-project/dev-support/jdiff
+  git add hadoop-common-project/hadoop-common/src/site/markdown/release
+  git add hadoop-common-project/hadoop-common/dev-support/jdiff
+  git add hadoop-hdfs-project/hadoop-hdfs/dev-support/jdiff
+  git add hadoop-yarn-project/hadoop-yarn/dev-support/jdiff
+  git add hadoop-mapreduce-project/dev-support/jdiff
+  git commit -m 'Make upstream aware of ${version} release.'
 
+
+The binary tarball can not be uploaded to release tree due to its size.
+Uploading to dev tree first then mv should work.::
+
+  export version=3.2.4
+  cd ~/srcs/
+  svn co https://dist.apache.org/repos/dist/dev/hadoop dist-dev-hadoop
+  cd dist-dev-hadoop/
+  mkdir hadoop-${version}
+  cp ~/srcs/hadoop/target/artifacts/* ./hadoop-${version}/
+  svn add hadoop-${version}
+  svn ci -m 'Publishing the bits for release ${version}'
+  svn mv -m 'Publishing the bits for release ${version}' https://dist.apache.org/repos/dist/dev/hadoop/hadoop-${version} https://dist.apache.org/repos/dist/release/hadoop/common/
 
 
 たまに使う
