@@ -89,6 +89,15 @@
 ;(require 'csharp-mode)
 ;(add-hook 'csharp-mode-hook '(lambda () (gtags-mode 1)))
 
+;; Kotlin
+;; https://github.com/Emacs-Kotlin-Mode-Maintainers/kotlin-mode
+(setq load-path (cons "~/srcs/kotlin-mode" load-path))
+(autoload 'kotlin-mode "kotlin-mode" nil t)
+(setq auto-mode-alist
+      (append '(("\\.kt$" . kotlin-mode))
+              auto-mode-alist))
+(add-hook 'kotlin-mode-hook '(lambda () (gtags-mode 1)))
+
 
 ;;
 (cond 
