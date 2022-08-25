@@ -356,3 +356,4 @@ esac
 #HADOOP_OPTIONAL_TOOLS=hadoop-aws,hadoop-azure,hadoop-azure-datalake
 
 export HADOOP_JAAS_DEBUG=true
+export HADOOP_OPTS="-Dsun.security.krb5.debug=true -Dsun.security.spnego.debug"
