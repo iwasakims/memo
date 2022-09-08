@@ -47,7 +47,7 @@ sudo chmod 644 /usr/local/etc/hadoop/container-executor.cfg
 
 "first and last name" (CN) must be hostname of server.
 ```
-keytool -keystore ${HOME}/http.keystore -genkey -alias http -keyalg RSA
+keytool -keystore ${HOME}/http.keystore -genkey -alias http -keyalg RSA -dname "CN=localhost, OU=Unknown, O=Unknown, L=Unknown, ST=Unknown, C=Unknown"
 vi etc/hadoop/ssl-server.xml
 vi etc/hadoop/ssl-client.xml
 ```
