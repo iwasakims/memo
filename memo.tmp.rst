@@ -609,3 +609,49 @@ showing all settings of nftables.::
 
   $ sudo nft -a list ruleset | less
 
+ 
+PostgreSQL
+==========
+
+::
+
+  $ sudo apt install bison flex libreadline-dev
+  $ git clone https://github.com/postgres/postgres
+  $ cd postgres
+  $ git checkout REL9_2_24
+  $ CFLAGS='-ggdb -O0' ./configure --prefix=/usr/local/pgsql9224
+  $ make
+  $ sudo make install
+  $ cd contrib/pgstattuple
+  $ make
+  $ sudo make install
+  $ export PATH=/usr/local/pgsql9224/bin:$PATH
+  
+  
+  
+  $ initdb -D /home/iwasakims/pgdata1
+  $ mkdir /home/iwasakims/pgdata1/arc
+  
+  $ vi /home/iwasakims/pgdata1/postgresql.conf
+  (wal_level = hot_standby, archive_mode = on, archive_command = 'test ! -f /home/iwasakims/pgdat1/arc %f && cp %p /home/iwasakims/pgdata1/arc/%f', max_wal_senders = 3)
+  
+  $ vi /home/iwasakims/pgdata1/pg_hba.conf
+  (host    replication     iwasakims        127.0.0.1/32            trust)
+  
+  $ pg_ctl -D /home/iwasakims/pgdata1 -l /home/iwasakims/pgdata1/postgresql.log start
+  
+  
+  $ pg_basebackup -h localhost -D /home/iwasakims/pgdata2 -U iwasakims -v -P --xlog-method=stream
+  
+  $ vi /home/iwasakims/pgdata2/postgresql.conf
+  (port = 5433, hot_standby = on)
+  
+  $ vi /home/iwasakims/pgdata2/recovery.conf
+  $ cat /home/iwasakims/pgdata2/recovery.conf
+  standby_mode = on
+  primary_conninfo = 'host=localhost port=5432 user=iwasakims'
+  
+  $ pg_ctl -D /home/iwasakims/pgdata2 -l /home/iwasakims/pgdata2/postgresql.log start
+  
+  $ psql -p 5432 postgres
+  $ psql -p 5433 postgres
