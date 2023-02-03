@@ -613,7 +613,10 @@ showing all settings of nftables.::
 PostgreSQL
 ==========
 
-::
+replication quickstart
+----------------------
+
+PostgreSQL 9.2 on Ubuntu::
 
   $ sudo apt install bison flex libreadline-dev
   $ git clone https://github.com/postgres/postgres
@@ -629,29 +632,71 @@ PostgreSQL
   
   
   
-  $ initdb -D /home/iwasakims/pgdata1
-  $ mkdir /home/iwasakims/pgdata1/arc
+  $ initdb -D $HOME/pgdata1
+  $ mkdir $HOME/pgdata1/arc
   
-  $ vi /home/iwasakims/pgdata1/postgresql.conf
-  (wal_level = hot_standby, archive_mode = on, archive_command = 'test ! -f /home/iwasakims/pgdat1/arc %f && cp %p /home/iwasakims/pgdata1/arc/%f', max_wal_senders = 3)
+  $ vi $HOME/pgdata1/postgresql.conf
+  (wal_level = hot_standby, archive_mode = on, archive_command = 'test ! -f /home/iwasakims/pgdata1/arc/%f && cp %p /home/iwasakims/pgdata1/arc/%f', max_wal_senders = 3)
   
-  $ vi /home/iwasakims/pgdata1/pg_hba.conf
+  $ vi $HOME/pgdata1/pg_hba.conf
   (host    replication     iwasakims        127.0.0.1/32            trust)
   
-  $ pg_ctl -D /home/iwasakims/pgdata1 -l /home/iwasakims/pgdata1/postgresql.log start
+  $ pg_ctl -D $HOME/pgdata1 -l $HOME/pgdata1/postgresql.log start
   
   
-  $ pg_basebackup -h localhost -D /home/iwasakims/pgdata2 -U iwasakims -v -P --xlog-method=stream
+  $ pg_basebackup -h localhost -D $HOME/pgdata2 -U iwasakims -v -P --xlog-method=stream
   
-  $ vi /home/iwasakims/pgdata2/postgresql.conf
+  $ vi $HOME/pgdata2/postgresql.conf
   (port = 5433, hot_standby = on)
   
-  $ vi /home/iwasakims/pgdata2/recovery.conf
-  $ cat /home/iwasakims/pgdata2/recovery.conf
+  $ vi $HOME/pgdata2/recovery.conf
+  $ cat $HOME/pgdata2/recovery.conf
   standby_mode = on
   primary_conninfo = 'host=localhost port=5432 user=iwasakims'
   
-  $ pg_ctl -D /home/iwasakims/pgdata2 -l /home/iwasakims/pgdata2/postgresql.log start
+  $ pg_ctl -D $HOME/pgdata2 -l $HOME/pgdata2/postgresql.log start
+  
+  $ psql -p 5432 postgres
+  $ psql -p 5433 postgres
+
+
+PostgreSQL 13 on Rocky Linux 8::
+
+  $ sudo apt install bison flex libreadline-dev
+  $ git clone https://github.com/postgres/postgres
+  $ cd postgres
+  $ git checkout REL13_5
+  $ CFLAGS='-ggdb -O0' ./configure --prefix=/usr/local/pgsql9224
+  $ make
+  $ sudo make install
+  $ cd contrib/pgstattuple
+  $ make
+  $ sudo make install
+  $ export PATH=/usr/local/pgsql135/bin:$PATH
+  
+  
+  
+  $ initdb -D $HOME/pgdata1
+  $ mkdir $HOME/pgdata1/arc
+  
+  $ vi $HOME/pgdata1/postgresql.conf
+  (wal_level = replica, archive_mode = on, archive_command = 'test ! -f /home/rocky/pgdata1/arc/%f && cp %p /home/rocky/pgdata1/arc/%f', max_wal_senders = 3, synchronous_standby_names = '*')
+  
+  $ vi $HOME/pgdata1/pg_hba.conf
+  (host    replication     all        127.0.0.1/32            trust)
+  
+  $ pg_ctl -D $HOME/pgdata1 -l $HOME/pgdata1/postgresql.log start
+  
+  
+  $ pg_basebackup -h localhost -D $HOME/pgdata2 -U $USER -v -P --wal-method=stream
+  
+  $ vi $HOME/pgdata2/postgresql.conf
+  (port = 5433, hot_standby = on, archive_command = 'test ! -f /home/rocky/pgdata2/arc/%f && cp %p /home/rocky/pgdata2/arc/%f')
+  
+  $ touch $HOME/pgdata2/standby.signal
+  $ echo -e "\nprimary_conninfo = 'host=localhost port=5432 user=rocky'\n" >> $HOME/pgdata2/postgresql.conf
+  
+  $ pg_ctl -D $HOME/pgdata2 -l $HOME/pgdata2/postgresql.log start
   
   $ psql -p 5432 postgres
   $ psql -p 5433 postgres
