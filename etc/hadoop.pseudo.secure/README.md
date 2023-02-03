@@ -62,7 +62,7 @@ sudo vi /usr/local/etc/hadoop/container-executor.cfg
 
 "first and last name" (CN) must be hostname of server.
 ```
-keytool -keystore ${HOME}/http.keystore -genkey -alias http -keyalg RSA -dname "CN=localhost, OU=Unknown, O=Unknown, L=Unknown, ST=Unknown, C=Unknown"
+keytool -keystore ${HOME}/http.keystore -genkey -alias http -keyalg RSA -storepass hogemoge -keypass hogemoge -dname "CN=localhost, OU=Unknown, O=Unknown, L=Unknown, ST=Unknown, C=Unknown"
 vi etc/hadoop/ssl-server.xml
 vi etc/hadoop/ssl-client.xml
 ```

@@ -63,10 +63,6 @@
     <value>${user.home}/keytab/http.keytab</value>
   </property>
   <property>
-    <name>hadoop.ssl.hostname.verifier</name>
-    <value>ALLOW_ALL</value>
-  </property>
-  <property>
     <name>hadoop.proxyuser.HTTP.hosts</name>
     <value>*</value>
   </property>
