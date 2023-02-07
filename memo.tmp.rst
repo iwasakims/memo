@@ -613,10 +613,10 @@ showing all settings of nftables.::
 PostgreSQL
 ==========
 
-replication quickstart
-----------------------
+replication quickstart (PostgreSQL 9.2 on Ubuntu)
+-------------------------------------------------
 
-PostgreSQL 9.2 on Ubuntu::
+::
 
   $ sudo apt install bison flex libreadline-dev
   $ git clone https://github.com/postgres/postgres
@@ -660,13 +660,15 @@ PostgreSQL 9.2 on Ubuntu::
   $ psql -p 5433 postgres
 
 
-PostgreSQL 13 on Rocky Linux 8::
+replication quickstart (PostgreSQL 13 on Rocky Linux 8)
+-------------------------------------------------------
 
-  $ sudo apt install bison flex libreadline-dev
+::
+
   $ git clone https://github.com/postgres/postgres
   $ cd postgres
   $ git checkout REL13_5
-  $ CFLAGS='-ggdb -O0' ./configure --prefix=/usr/local/pgsql9224
+  $ CFLAGS='-ggdb -O0' ./configure --prefix=/usr/local/pgsql135
   $ make
   $ sudo make install
   $ cd contrib/pgstattuple
