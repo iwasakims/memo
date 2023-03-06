@@ -702,3 +702,16 @@ replication quickstart (PostgreSQL 13 on Rocky Linux 8)
   
   $ psql -p 5432 postgres
   $ psql -p 5433 postgres
+
+
+Gradle
+======
+
+maven-publish
+-------------
+
+https://docs.gradle.org/current/userguide/publishing_maven.html
+
+::
+
+  $ ./gradlew publishToMavenLocal -Pskip.signing
