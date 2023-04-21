@@ -25,9 +25,9 @@ Overview
 
 - EDCはIDSのリファレンスをそのまま踏襲するものではない。
 
-  - https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/blob/main/docs/README.md#statement-edc-vs-ds
-  - https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/discussions/1037
-  - https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/docs/developer/decision-records/2022-06-02-ids-serializer
+  - https://github.com/eclipse-edc/docs/blob/cc53fe25ea9c89797d2d04ebb3f857c6edcf1152/docs/README.md#statement-edc-vs-dsc
+  - https://github.com/eclipse-edc/Connector/discussions/1037
+  - https://github.com/eclipse-edc/Connector/blob/9adb0e4a09f4b0518a903e61890f94229ebda69e/docs/developer/decision-records/2022-06-02-ids-serializer/README.md
 
 - JettyとJerseyを使ってREST APIをserve
 
@@ -39,7 +39,7 @@ Overview
 
 - ServeceLoaderと独自アノテーションを使ったフレームワークを独自実装
 
-  - org.eclipse.dataspaceconnector.spi.system.ServiceExtensionの実装を、
+  - org.eclipse.edc.spi.system.ServiceExtensionの実装を、
     いろいろ組み合わせてコネクタとして機能するまとまりを形成する。
 
   - Extensionは、他のExtension(がregisterするService)に依存する形で作られがち。
@@ -48,7 +48,7 @@ Overview
     Extension間のdependency hellみたいになりそうな。
 
   - ServiceLoaderでロードするための
-    META-INF/services/org.eclipse.dataspaceconnector.spi.system.ServiceExtension
+    META-INF/services/org.eclipse.edc.spi.system.ServiceExtension
     が用意されている。コード上のモジュール間のつながりは見えにくい。
     build.gradle.ktsを見ると、どこで使われているは分かる。::
 
@@ -60,7 +60,8 @@ Overview
       ...
 
   - ソースツリーは最近リファクタリングされた。しかし、上記の課題が解決するわけではない。
-    https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/blob/main/docs/developer/decision-records/2022-08-09-project-structure-review/README.md
+
+    - https://github.com/eclipse-edc/Connector/blob/9adb0e4a09f4b0518a903e61890f94229ebda69e/docs/developer/decision-records/2022-08-09-project-structure-review/README.md
 
   - extensionの依存関係が循環していると、ロード時にエラーになる。see `ExtensionLoader#loadServiceExtensions`.
 
@@ -84,36 +85,18 @@ SPI
 ---
 
 - #1832 で多少整理された感がある。
-  https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/pull/1832
+
+  - https://github.com/eclipse-edc/Connector/pull/1832
 
 - どのモジュールがどのSPIを実装してるのかは、モジュールの依存関係から見るのが早いのかな..?::
 
-    $ find . -name build.gradle.kts | xargs grep 'project.*:spi:'
+    $ find . -name build.gradle.kts | xargs grep 'api(project(":spi:' | head -n 5
     ./core/data-plane-selector/data-plane-selector-core/build.gradle.kts:    api(project(":spi:data-plane-selector:data-plane-selector-spi"))
     ./core/data-plane/data-plane-framework/build.gradle.kts:    api(project(":spi:common:core-spi"))
     ./core/data-plane/data-plane-framework/build.gradle.kts:    api(project(":spi:data-plane:data-plane-spi"))
+    ./core/data-plane/data-plane-framework/build.gradle.kts:    api(project(":spi:control-plane:control-plane-api-client-spi"))
     ./core/data-plane/data-plane-util/build.gradle.kts:    api(project(":spi:data-plane:data-plane-spi"))
-    ./core/data-plane/data-plane-core/build.gradle.kts:    api(project(":spi:common:web-spi"))
     ...
-
-- DataManagement APIはdata-planeではなくcontrol-planeのSPIの実装というのは、名前的に分かりにくい。
-  https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/extensions/control-plane/api/data-management
-  ::
-
-    $ find ./extensions/control-plane/api/data-management -name build.gradle.kts | xargs grep '\-spi'
-    ./extensions/control-plane/api/data-management/contractnegotiation-api/build.gradle.kts:    api(project(":spi:control-plane:control-plane-spi"))
-    ./extensions/control-plane/api/data-management/contractnegotiation-api/build.gradle.kts:    api(project(":spi:common:transaction-spi"))
-    ./extensions/control-plane/api/data-management/contractdefinition-api/build.gradle.kts:    api(project(":spi:control-plane:control-plane-spi"))
-    ./extensions/control-plane/api/data-management/contractdefinition-api/build.gradle.kts:    api(project(":spi:common:transaction-spi"))
-    ./extensions/control-plane/api/data-management/catalog-api/build.gradle.kts:    implementation(project(":spi:common:catalog-spi"))
-    ./extensions/control-plane/api/data-management/asset-api/build.gradle.kts:    api(project(":spi:control-plane:control-plane-spi"))
-    ./extensions/control-plane/api/data-management/asset-api/build.gradle.kts:    api(project(":spi:common:transaction-spi"))
-    ./extensions/control-plane/api/data-management/transferprocess-api/build.gradle.kts:    api(project(":spi:common:transaction-spi"))
-    ./extensions/control-plane/api/data-management/transferprocess-api/build.gradle.kts:    api(project(":spi:control-plane:transfer-spi"))
-    ./extensions/control-plane/api/data-management/contractagreement-api/build.gradle.kts:    api(project(":spi:control-plane:control-plane-spi"))
-    ./extensions/control-plane/api/data-management/policydefinition-api/build.gradle.kts:    api(project(":spi:control-plane:contract-spi"))
-    ./extensions/control-plane/api/data-management/policydefinition-api/build.gradle.kts:    api(project(":spi:control-plane:policy-spi"))
-    ./extensions/control-plane/api/data-management/policydefinition-api/build.gradle.kts:    api(project(":spi:common:transaction-spi"))
 
 
 REST API
@@ -121,26 +104,37 @@ REST API
 
 - `web.http.{context}.path` and `web.http.{context}.port` のような設定プロパティの組で、ポートとpathの組を指定する。
 
-  - https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/blob/main/extensions/http/jetty/src/main/java/org/eclipse/dataspaceconnector/extension/jetty/JettyConfiguration.java#L29-L64
+  - https://github.com/eclipse-edc/Connector/blob/9adb0e4a09f4b0518a903e61890f94229ebda69e/extensions/common/http/jetty-core/src/main/java/org/eclipse/edc/web/jetty/JettyConfiguration.java
 
-  - 例: https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/blob/main/extensions/data-plane/data-plane-api/src/test/java/org/eclipse/dataspaceconnector/dataplane/api/controller/DataPlaneApiIntegrationTest.java#L96-L102
+- 上記のcontextとしてはmanagement、control、ids、publicがある。
+  managementはコネクタのクライアントが呼び出すもの。
+  controlはコネクタが内部的に使うもので、control-planeおよびdata-planeと呼ばれている部分は両方ここに入る。
 
-  - web.http.data.pathとweb.http.data.portで、data management API用の設定を指定する。
-    DataManagementApiConfigurationを参照するコードが、data management API用のパーツということになる。
-    
-    - https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/blob/main/extensions/control-plane/api/data-management/api-configuration/src/main/java/org/eclipse/dataspaceconnector/api/datamanagement/configuration/DataManagementApiConfigurationExtension.java
-
-    - https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/pull/714
+  - https://github.com/eclipse-edc/Connector/blob/9adb0e4a09f4b0518a903e61890f94229ebda69e/docs/developer/decision-records/2022-11-09-api-refactoring/renaming.md
 
 - Swaggerのアノテーションを利用して、*.yamlなどを生成している。
 
-  - https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/tree/main/docs/developer/decision-records/2022-03-15-swagger-annotations
+  - https://github.com/eclipse-edc/Connector/blob/9adb0e4a09f4b0518a903e61890f94229ebda69e/docs/developer/decision-records/2022-03-15-swagger-annotations/README.md
 
-  - resolveタスク、mergeOpenApiFilesタスク、generateSwaggerUiタスクを順に実行すると、Webブラウザで閲覧可能なドキュメント(docs/swaggerui)が更新される。
-    https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/blob/main/docs/developer/openapi.md
+  - resolveタスクを実行すると、.yamlファイルが生成される。
+
+    - https://github.com/eclipse-edc/Connector/blob/9adb0e4a09f4b0518a903e61890f94229ebda69e/docs/developer/openapi.md
 
   - connector同士がやりとりするためのIDSのAPIは、Swaggerによるドキュメント生成の対象外になっている。
-    https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/1563
+    https://github.com/eclipse-edc/Connector/issues/1563
+
+- OpenAPIで生成したドキュメントはSwagger Hubでホストされることになり、
+  ソースツリー内のdocs/swaggeruiは削除された。
+  generateSwaggerUiタスクによるローカルにドキュメント閲覧もできなくなった。
+
+  - https://github.com/eclipse-edc/Connector/discussions/2329
+  - https://github.com/eclipse-edc/Connector/pull/2328
+  - https://github.com/eclipse-edc/Connector/pull/2209
+
+  - バージョンが0.0.1-SNAPSHOTのまま、中身だけ変わっていくのだろうか??
+
+    - https://app.swaggerhub.com/apis/eclipse-edc-bot/control-api
+    - https://app.swaggerhub.com/apis/eclipse-edc-bot/management-api
 
 
 statemachine
@@ -162,6 +156,8 @@ transferprocess
 ---------------
 
 - /transferprocess は、consumer connectorが、データ転送のためのリクエストを受けるAPI。
+
+  - https://github.com/eclipse-edc/Connector/blob/65479dc186ad0517565c77047672d1783a2188d7/extensions/control-plane/transfer/transfer-data-plane/README.md
 
   - sourceは、ContractAgreementに含まれるassetIdで指定される。
 
@@ -224,7 +220,7 @@ transferprocess
 data-plane
 ----------
 
-- https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/463
+- https://github.com/eclipse-edc/Connector/issues/463
 
 - DataPlaneFrameWorkExtensionが本体。
   サンプル類はdata-plane-coreにdependencyを付けてロードしている。
@@ -268,7 +264,7 @@ test
     $ ./gradlew test -p system-tests/e2e-transfer-test/runner -DincludeTags="PostgresqlIntegrationTest"
 
   - アノテーションのクラス名とタグ名が一致していないので分かりにくい?
-    https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/blob/main/common/util/src/testFixtures/java/org/eclipse/dataspaceconnector/common/util/junit/annotations/PostgresqlDbIntegrationTest.java#L31-L32
+    https://github.com/eclipse-edc/Connector/blob/main/common/util/src/testFixtures/java/org/eclipse/dataspaceconnector/common/util/junit/annotations/PostgresqlDbIntegrationTest.java#L31-L32
 
 - JUnitのテストケース内でServiceExtension実装をテストするための枠組みが、
   core/common/junit下に定義されている。
@@ -354,21 +350,12 @@ versionining
 docs
 ====
 
-- 複数のサブモジュールのドキュメントをまとめて一つに見せる仕組みができてた。
+- Connectorからドキュメントを独立のリポジトリに移動し、
+  複数のリポジトリのドキュメントをまとめて一つに見せる仕組みができてた。
 
   - https://github.com/eclipse-edc/docs
   - https://eclipse-edc.github.io/docs/#/README
 
-- OpenAPIで生成したドキュメントはSwagger Hubでホストされることになったから、
-  ソースツリー内のdocs/swaggeruiは削除された。
-
-  - https://github.com/eclipse-edc/Connector/discussions/2329
-  - https://github.com/eclipse-edc/Connector/pull/2328
-
-  - バージョンが0.0.1-SNAPSHOTのまま、中身だけ変わっていくのだろうか??
-
-    - https://app.swaggerhub.com/apis/eclipse-edc-bot/control-api
-    - https://app.swaggerhub.com/apis/eclipse-edc-bot/management-api
 
 
 Samples
@@ -405,9 +392,9 @@ Samples
 
 - consumerがHTTPレスポンスのbodyとしてデータを受け取るパターンは、e2e-transfer-testの方に例が追加された。
 
-  - https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/discussions/1361
-  - https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/blob/main/system-tests/e2e-transfer-test/runner/src/test/java/org/eclipse/dataspaceconnector/test/e2e/AbstractEndToEndTransfer.java#L38-L104
-  - https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/pull/639
+  - https://github.com/eclipse-edc/Connector/discussions/1361
+  - https://github.com/eclipse-edc/Connector/blob/9adb0e4a09f4b0518a903e61890f94229ebda69e/system-tests/e2e-transfer-test/runner/src/test/java/org/eclipse/edc/test/e2e/AbstractEndToEndTransfer.java#L47-L113
+  - https://github.com/eclipse-edc/Connector/pull/639
 
   - 実行は以下の要領::
 
