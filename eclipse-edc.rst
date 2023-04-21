@@ -53,10 +53,9 @@ Overview
     build.gradle.ktsを見ると、どこで使われているは分かる。::
 
       $ find . -name build.gradle.kts | xargs grep iam-mock
-      ./extensions/common/iam/iam-mock/build.gradle.kts:        create<MavenPublication>("iam-mock") {
-      ./extensions/common/iam/iam-mock/build.gradle.kts:            artifactId = "iam-mock"
-      ./extensions/control-plane/api/data-management-api/catalog-api/build.gradle.kts:    testImplementation(project(":extensions:common:iam:iam-mock"))
+      ./extensions/control-plane/api/management-api/catalog-api/build.gradle.kts:    testImplementation(project(":extensions:common:iam:iam-mock"))
       ./system-tests/e2e-transfer-test/control-plane/build.gradle.kts:    implementation(project(":extensions:common:iam:iam-mock"))
+      ./system-tests/runtimes/azure-storage-transfer-consumer/build.gradle.kts:    implementation(project(":extensions:common:iam:iam-mock"))
       ...
 
   - ソースツリーは最近リファクタリングされた。しかし、上記の課題が解決するわけではない。
@@ -90,7 +89,7 @@ SPI
 
 - どのモジュールがどのSPIを実装してるのかは、モジュールの依存関係から見るのが早いのかな..?::
 
-    $ find . -name build.gradle.kts | xargs grep 'api(project(":spi:' | head -n 5
+    $ find . -name build.gradle.kts | xargs grep 'api(project(":spi:'
     ./core/data-plane-selector/data-plane-selector-core/build.gradle.kts:    api(project(":spi:data-plane-selector:data-plane-selector-spi"))
     ./core/data-plane/data-plane-framework/build.gradle.kts:    api(project(":spi:common:core-spi"))
     ./core/data-plane/data-plane-framework/build.gradle.kts:    api(project(":spi:data-plane:data-plane-spi"))
@@ -239,6 +238,31 @@ data-plane
 - DataPlanePublicApiControllerは、transferされたデータをByteArrayOutputStreamで受け取って、
   クライアントにtoStringして渡すので、大きなデータを受け渡せるわけではない。
 
+- consumerがHTTPレスポンスのbodyとしてデータを受け取るパターンは、e2e-transfer-testの方に例が追加された。
+
+  - https://github.com/eclipse-edc/Connector/discussions/1361
+  - https://github.com/eclipse-edc/Connector/blob/9adb0e4a09f4b0518a903e61890f94229ebda69e/system-tests/e2e-transfer-test/runner/src/test/java/org/eclipse/edc/test/e2e/AbstractEndToEndTransfer.java#L47-L113
+  - https://github.com/eclipse-edc/Connector/pull/639
+
+- providerは、
+  asset typeをcanHandleなSourceから、
+  dataDestination typeをcanHandleなSinkに、
+  transferする。
+
+
+authn
+-----
+
+- managementなAPIについては、AuthenticationService#isAuthenticatedを呼ぶようなfilterで認証している。
+
+  - https://github.com/eclipse-edc/Connector/blob/2e5a80f5070d3926a765cf991d50aedb40314f78/spi/common/auth-spi/src/main/java/org/eclipse/edc/api/auth/spi/AuthenticationRequestFilter.java#L44
+
+  - Connector配下にあるAuthenticationServiceの実装は以下だけ。
+
+    - https://github.com/eclipse-edc/Connector/blob/2e5a80f5070d3926a765cf991d50aedb40314f78/spi/common/auth-spi/src/main/java/org/eclipse/edc/api/auth/spi/AllPassAuthenticationService.java
+    - https://github.com/eclipse-edc/Connector/blob/2e5a80f5070d3926a765cf991d50aedb40314f78/extensions/common/auth/auth-basic/src/main/java/org/eclipse/edc/api/auth/basic/BasicAuthenticationService.java
+    - https://github.com/eclipse-edc/Connector/blob/2e5a80f5070d3926a765cf991d50aedb40314f78/extensions/common/auth/auth-tokenbased/src/main/java/org/eclipse/edc/api/auth/token/TokenBasedAuthenticationExtension.java
+
 
 test
 ----
@@ -283,6 +307,51 @@ test
     `ExtensionLoader#bootServiceExtensions` で実行される。
     そのため、 `@BetoreEach` なメソッドの中など、bootされるタイミングより前で、
     呼び出しておかなければならない。
+
+
+e2e-transfer-test
+-----------------
+
+- コネクタによるデータ転送の一連の流れを実行するテストコードが定義されている。
+
+- AbstractEndToEndTransferがベースクラスで、データの永続化先によって3種類の派生がある。
+  各派生には `@EndToEndTest` のようなアノテーションがついていて、それに応じて
+  `-DincludeTags=EndToEndTest` のような指定をしないと、テストが実行されない。
+
+- EndToEndTransferInMemoryTestはデータをメモリ上に持ち、永続化しないパターンで、それ単体で実行できる。::
+
+    $ ./gradlew clean test -p system-tests/e2e-transfer-test/runner -DincludeTags=EndToEndTest --tests '*EndToEndTransferInMemoryTest' -PverboseTest
+
+- EndToEndTransferPostgresqlTestはPostgreSQLにデータを永続化する。
+  これも、コンテナを利用してPostgreSQLのサーバを建てることで、簡単に実行できる。
+  アノテーションが `@PostgresqlDbIntegrationTest` だが、定義されているTagがPostgresqlIntegrationTestで紛らわしい。::
+
+    $ docker run --rm --name edc-postgres -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres
+    $ ./gradlew clean test -p system-tests/e2e-transfer-test/runner -DincludeTags=PostgresqlIntegrationTest --tests '*EndToEndTransferPostgresqlTest' -PverboseTest
+
+  - テスト実行後に、データベース内のデータを見てみるのも、理解を深めるのに役立つかもしれない。
+    concsumerとproducerというデータベースができている。::
+
+      $ psql -U postgres -W -h localhost -l
+      psql: warning: extra command-line argument "postgres" ignored
+      Password:
+                                       List of databases
+         Name    |  Owner   | Encoding |  Collate   |   Ctype    |   Access privileges
+      -----------+----------+----------+------------+------------+-----------------------
+       consumer  | postgres | UTF8     | en_US.utf8 | en_US.utf8 |
+       postgres  | postgres | UTF8     | en_US.utf8 | en_US.utf8 |
+       provider  | postgres | UTF8     | en_US.utf8 | en_US.utf8 |
+       template0 | postgres | UTF8     | en_US.utf8 | en_US.utf8 | =c/postgres          +
+                 |          |          |            |            | postgres=CTc/postgres
+       template1 | postgres | UTF8     | en_US.utf8 | en_US.utf8 | =c/postgres          +
+                 |          |          |            |            | postgres=CTc/postgres
+      (5 rows)
+      
+      $ psql -U postgres -W -h localhost -c 'SELECT * FROM edc_policydefinitions LIMIT 1;' provider
+                        policy_id               |  created_at   |                                                                                           permissions                                                                                           | prohibitions | duties | extensible_properties | inherits_from | assigner | assignee | target |      policy_type
+      --------------------------------------+---------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------+--------+-----------------------+---------------+----------+----------+--------+-----------------------
+       f5ed763c-7ec1-427d-a47d-3099236b61bd | 1682079999930 | [{"edctype":"dataspaceconnector:permission","uid":null,"target":null,"action":{"type":"USE","includedIn":null,"constraint":null},"assignee":null,"assigner":null,"constraints":[],"duties":[]}] | []           | []     | {}                    |               |          |          |        | {"@policytype":"set"}
+      (1 row)
 
 
 logging
@@ -366,8 +435,9 @@ Samples
   - https://github.com/eclipse-edc/Samples
   - https://github.com/eclipse-edc/Connector/pull/2362
 
-- 4番が、雰囲気をつかむのによさそうな内容。
-  https://github.com/eclipse-edc/Samples/tree/main/04.1-file-transfer-listener
+- transferのサンプルが雰囲気をつかむのによいのかも。
+
+  - https://github.com/eclipse-edc/Samples/blob/227d59073658bd8bc2c526719102b32525bd86bb/transfer/transfer-01-file-transfer/README.md
 
   - consumer, providerはどちらも基本的なモジュールが同じ。
     providerには、リクエストされたファイル操作をするための、
@@ -390,19 +460,11 @@ Samples
 
      - controlplaneやidsのAPIは叩かれない。
 
-- consumerがHTTPレスポンスのbodyとしてデータを受け取るパターンは、e2e-transfer-testの方に例が追加された。
+- 手でcurlコマンドを叩く代わりに、一連の処理をtestタスクで実行することもできる。::
 
-  - https://github.com/eclipse-edc/Connector/discussions/1361
-  - https://github.com/eclipse-edc/Connector/blob/9adb0e4a09f4b0518a903e61890f94229ebda69e/system-tests/e2e-transfer-test/runner/src/test/java/org/eclipse/edc/test/e2e/AbstractEndToEndTransfer.java#L47-L113
-  - https://github.com/eclipse-edc/Connector/pull/639
+    $ ./gradlew clean test -p transfer/transfer-01-file-transfer/file-transfer-integration-tests -DincludeTags=EndToEndTest --tests FileTransferSampleTest -PverboseTest
 
-  - 実行は以下の要領::
 
-      $ ./gradlew system-tests:e2e-transfer-test:runner:test -DincludeTags="EndToEndTest" --tests '*EndToEndTransferInMemoryTest'
-
-- providerは、assetのtypeを、canHandleなSourceから、
-  dataDestinationのtypeを、canHandleなDestinationに、transferする。
-  
 
 MinimumViableDataspace
 ======================
