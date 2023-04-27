@@ -78,7 +78,14 @@ Overview
       +--- project :extensions:common:transaction:transaction-local
       |    +--- project :spi:common:core-spi (*)
       |    \--- project :spi:common:transaction-spi
-      
+
+
+- BaseRuntimeクラスが、ServiceExtension実装をロードしていくようなmainクラスを提供している。
+
+  - https://github.com/eclipse-edc/Connector/blob/73a6d9b49d164c927031de71c384f239e05f33d4/core/common/boot/src/main/java/org/eclipse/edc/boot/system/runtime/BaseRuntime.java
+  - https://github.com/eclipse-edc/Connector/blob/73a6d9b49d164c927031de71c384f239e05f33d4/launchers/ids-connector/README.md
+  - https://github.com/eclipse-edc/Connector/blob/73a6d9b49d164c927031de71c384f239e05f33d4/launchers/ids-connector/build.gradle.kts#L39-L41
+
 
 SPI
 ---
@@ -469,20 +476,21 @@ Samples
 MinimumViableDataspace
 ======================
 
-- https://github.com/eclipse-dataspaceconnector/MinimumViableDataspace
+- https://github.com/eclipse-edc/MinimumViableDataspace
 
 - EDCを使ったDSのデモ
 
-- ローカル実行のdocker-compose.ymlを見ると、なんとなく構成が分かる。
-  https://github.com/eclipse-dataspaceconnector/MinimumViableDataspace/tree/main/system-tests
+- ローカル実行の資材を見ると、なんとなく構成が分かる。
+
+  - https://github.com/eclipse-edc/MinimumViableDataspace/blob/8141afce75613f62ed236cb325a862b8af40b903/system-tests/README.md
 
 - AssetはAzureのBlob。ローカル環境ではAzuriteを利用。
 
 - RegistrationServiceを利用。
-  https://github.com/eclipse-dataspaceconnector/RegistrationService
+  https://github.com/eclipse-edc/RegistrationService
 
   - CredentialVerifierに依存するが、それはIdentityHubが供給。
-    https://github.com/eclipse-dataspaceconnector/IdentityHub
+    https://github.com/eclipse-edc/IdentityHub
     
     - でも、IdentityHubのコードは、TrustFrameworkAdoptionの方に移動されることになるらしい。
 
@@ -492,10 +500,12 @@ MinimumViableDataspace
 - assetを定義する仕込みために、コネクタのdata management APIを呼び出す部分は、
   Postmanで作った.jsonをNewmanで実行する形で実装。
 
-  - https://github.com/eclipse-dataspaceconnector/MinimumViableDataspace/blob/main/deployment/data/MVD.postman_collection.json
-  - https://github.com/eclipse-dataspaceconnector/MinimumViableDataspace/blob/main/deployment/seed-data.sh
+  - https://github.com/eclipse-edc/MinimumViableDataspace/blob/8141afce75613f62ed236cb325a862b8af40b903/deployment/data/MVD.postman_collection.json
+
+  - https://github.com/eclipse-edc/MinimumViableDataspace/blob/8141afce75613f62ed236cb325a862b8af40b903/deployment/seed-data.sh
 
 - policyとregistrationに関連して、extensionを2個独自に実装して利用。
 
-  - https://github.com/eclipse-dataspaceconnector/MinimumViableDataspace/blob/main/extensions/policies/src/main/java/org/eclipse/dataspaceconnector/mvd/SeedPoliciesExtension.java
-  - https://github.com/eclipse-dataspaceconnector/MinimumViableDataspace/blob/main/extensions/refresh-catalog/src/main/java/org/eclipse/dataspaceconnector/mvd/RegistrationServiceNodeDirectoryExtension.java
+  - https://github.com/eclipse-edc/MinimumViableDataspace/blob/8141afce75613f62ed236cb325a862b8af40b903/extensions/policies/src/main/java/org/eclipse/edc/mvd/SeedPoliciesExtension.java
+
+  - https://github.com/eclipse-edc/MinimumViableDataspace/blob/8141afce75613f62ed236cb325a862b8af40b903/extensions/refresh-catalog/src/main/java/org/eclipse/edc/mvd/RegistrationServiceNodeDirectoryExtension.java
