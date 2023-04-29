@@ -94,7 +94,8 @@
 (setq load-path (cons "~/srcs/kotlin-mode" load-path))
 (autoload 'kotlin-mode "kotlin-mode" nil t)
 (setq auto-mode-alist
-      (append '(("\\.kt$" . kotlin-mode))
+      (append '(("\\.kt$" . kotlin-mode)
+                ("\\.kts$" . kotlin-mode))
               auto-mode-alist))
 (add-hook 'kotlin-mode-hook '(lambda () (gtags-mode 1)))
 
