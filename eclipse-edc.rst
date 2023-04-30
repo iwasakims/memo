@@ -143,6 +143,51 @@ REST API
     - https://app.swaggerhub.com/apis/eclipse-edc-bot/management-api
 
 
+test
+----
+
+- `-PverboseTest` を指定すると、出力されるログが増える。::
+
+    $ ./gradlew test -PverboseTest
+
+- 特定のテストだけを実行したい場合は以下の要領。 ::
+
+    $ ./gradlew extensions:api:data-management:transferprocess:test --tests '*TransferProcessEventDispatchTest'
+
+- 特定のディレクトリ下のサブモジュールのテストすべてを実行したい場合は、 `-p` でディレクトリを指定する。::
+
+    $ ./gradlew test -p extensions/api/data-management/transferprocess --tests '*TransferProcessEventDispatchTest'
+
+- `@EndToEntTest` アノテーションがついたテストを実行するためには、以下の要領。::
+
+    $ ./gradlew test -DincludeTags="EndToEndTest"
+
+- `@PostgresqlDbIntegrationTest` アノテーションが付いたテストを実行する場合、下記の要領。::
+  
+    $ ./gradlew test -p system-tests/e2e-transfer-test/runner -DincludeTags="PostgresqlIntegrationTest"
+
+  - アノテーションのクラス名とタグ名が一致していないので分かりにくい?
+    https://github.com/eclipse-edc/Connector/blob/main/common/util/src/testFixtures/java/org/eclipse/dataspaceconnector/common/util/junit/annotations/PostgresqlDbIntegrationTest.java#L31-L32
+
+- JUnitのテストケース内でServiceExtension実装をテストするための枠組みが、
+  core/common/junit下に定義されている。
+
+  - EdcExtensionは、各テストメソッドの前後でbootしてshutdownするようなBaseRuntimeの拡張。
+    テストクラスに `@ExtendWith(EdcExtension.class)` して利用する。
+
+  - EdcExtensionはParameterResolverを実装しているので、
+    テストメソッドの引数としてregister済みのサービス(mock)を指定できる。
+
+  - `EdcExtension#registerServiceMock` はテスト用のserviceをregisterする。
+    `ServiceExtensionContext#registerService` で既にregister済みのserviceでもオーバーライドできる。
+
+  - `EdcExtension#registerSystemExtension` はテスト用にextensionをregisterする。
+    `@Inject` なフィールドに `@Provider` なメソッドで生成したインスタンスをセットする処理は、
+    `ExtensionLoader#bootServiceExtensions` で実行される。
+    そのため、 `@BetoreEach` なメソッドの中など、bootされるタイミングより前で、
+    呼び出しておかなければならない。
+
+
 statemachine
 ------------
 
@@ -156,6 +201,26 @@ statemachine
   - どちらもテスト用にWaitStrategyを差し込み可能になっている。
 
     - see NegotiationWaitStrategy and TransferWaitStrategy
+
+
+authn
+-----
+
+- managementなAPIについては、AuthenticationService#isAuthenticatedを呼ぶようなfilterで認証している。
+
+  - https://github.com/eclipse-edc/Connector/blob/2e5a80f5070d3926a765cf991d50aedb40314f78/spi/common/auth-spi/src/main/java/org/eclipse/edc/api/auth/spi/AuthenticationRequestFilter.java#L44
+
+  - Connector配下にあるAuthenticationServiceの実装は以下だけ。
+
+    - https://github.com/eclipse-edc/Connector/blob/2e5a80f5070d3926a765cf991d50aedb40314f78/spi/common/auth-spi/src/main/java/org/eclipse/edc/api/auth/spi/AllPassAuthenticationService.java
+    - https://github.com/eclipse-edc/Connector/blob/2e5a80f5070d3926a765cf991d50aedb40314f78/extensions/common/auth/auth-basic/src/main/java/org/eclipse/edc/api/auth/basic/BasicAuthenticationService.java
+    - https://github.com/eclipse-edc/Connector/blob/2e5a80f5070d3926a765cf991d50aedb40314f78/extensions/common/auth/auth-tokenbased/src/main/java/org/eclipse/edc/api/auth/token/TokenBasedAuthenticationExtension.java
+
+
+catalog
+-------
+
+
 
 
 transferprocess
@@ -255,65 +320,6 @@ data-plane
   asset typeをcanHandleなSourceから、
   dataDestination typeをcanHandleなSinkに、
   transferする。
-
-
-authn
------
-
-- managementなAPIについては、AuthenticationService#isAuthenticatedを呼ぶようなfilterで認証している。
-
-  - https://github.com/eclipse-edc/Connector/blob/2e5a80f5070d3926a765cf991d50aedb40314f78/spi/common/auth-spi/src/main/java/org/eclipse/edc/api/auth/spi/AuthenticationRequestFilter.java#L44
-
-  - Connector配下にあるAuthenticationServiceの実装は以下だけ。
-
-    - https://github.com/eclipse-edc/Connector/blob/2e5a80f5070d3926a765cf991d50aedb40314f78/spi/common/auth-spi/src/main/java/org/eclipse/edc/api/auth/spi/AllPassAuthenticationService.java
-    - https://github.com/eclipse-edc/Connector/blob/2e5a80f5070d3926a765cf991d50aedb40314f78/extensions/common/auth/auth-basic/src/main/java/org/eclipse/edc/api/auth/basic/BasicAuthenticationService.java
-    - https://github.com/eclipse-edc/Connector/blob/2e5a80f5070d3926a765cf991d50aedb40314f78/extensions/common/auth/auth-tokenbased/src/main/java/org/eclipse/edc/api/auth/token/TokenBasedAuthenticationExtension.java
-
-
-test
-----
-
-- `-PverboseTest` を指定すると、出力されるログが増える。::
-
-    $ ./gradlew test -PverboseTest
-
-- 特定のテストだけを実行したい場合は以下の要領。 ::
-
-    $ ./gradlew extensions:api:data-management:transferprocess:test --tests '*TransferProcessEventDispatchTest'
-
-- 特定のディレクトリ下のサブモジュールのテストすべてを実行したい場合は、 `-p` でディレクトリを指定する。::
-
-    $ ./gradlew test -p extensions/api/data-management/transferprocess --tests '*TransferProcessEventDispatchTest'
-
-- `@EndToEntTest` アノテーションがついたテストを実行するためには、以下の要領。::
-
-    $ ./gradlew test -DincludeTags="EndToEndTest"
-
-- `@PostgresqlDbIntegrationTest` アノテーションが付いたテストを実行する場合、下記の要領。::
-  
-    $ ./gradlew test -p system-tests/e2e-transfer-test/runner -DincludeTags="PostgresqlIntegrationTest"
-
-  - アノテーションのクラス名とタグ名が一致していないので分かりにくい?
-    https://github.com/eclipse-edc/Connector/blob/main/common/util/src/testFixtures/java/org/eclipse/dataspaceconnector/common/util/junit/annotations/PostgresqlDbIntegrationTest.java#L31-L32
-
-- JUnitのテストケース内でServiceExtension実装をテストするための枠組みが、
-  core/common/junit下に定義されている。
-
-  - EdcExtensionは、各テストメソッドの前後でbootしてshutdownするようなBaseRuntimeの拡張。
-    テストクラスに `@ExtendWith(EdcExtension.class)` して利用する。
-
-  - EdcExtensionはParameterResolverを実装しているので、
-    テストメソッドの引数としてregister済みのサービス(mock)を指定できる。
-
-  - `EdcExtension#registerServiceMock` はテスト用のserviceをregisterする。
-    `ServiceExtensionContext#registerService` で既にregister済みのserviceでもオーバーライドできる。
-
-  - `EdcExtension#registerSystemExtension` はテスト用にextensionをregisterする。
-    `@Inject` なフィールドに `@Provider` なメソッドで生成したインスタンスをセットする処理は、
-    `ExtensionLoader#bootServiceExtensions` で実行される。
-    そのため、 `@BetoreEach` なメソッドの中など、bootされるタイミングより前で、
-    呼び出しておかなければならない。
 
 
 e2e-transfer-test
