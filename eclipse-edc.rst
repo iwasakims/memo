@@ -220,6 +220,20 @@ authn
 catalog
 -------
 
+- CatalogはContractOfferの集まり。だったが、Dataspace Protocol対応で、DatasetやDataServiceという概念が登場した。
+
+  - https://github.com/eclipse-edc/Connector/blob/0ac9755d7a058117fb8372181af7389760818e7e/spi/common/catalog-spi/src/main/java/org/eclipse/edc/catalog/spi/Catalog.java
+  - https://github.com/eclipse-edc/Connector/pull/2656
+
+ - CatalogServiceにはEDCのとIDSのと、2種類ある。
+   e2e-transfer-test等の既存のテストやサンプルで使われているのは、後者のIDSのもののみに見える。
+   Catalogのデータモデルは共通。
+
+    - https://github.com/eclipse-edc/Connector/blob/0ac9755d7a058117fb8372181af7389760818e7e/spi/control-plane/control-plane-spi/src/main/java/org/eclipse/edc/connector/spi/catalog/CatalogService.java
+    - https://github.com/eclipse-edc/Connector/blob/0ac9755d7a058117fb8372181af7389760818e7e/core/control-plane/control-plane-aggregate-services/src/main/java/org/eclipse/edc/connector/service/catalog/CatalogServiceImpl.java
+
+    - https://github.com/eclipse-edc/Connector/blob/0ac9755d7a058117fb8372181af7389760818e7e/data-protocols/ids/ids-spi/src/main/java/org/eclipse/edc/protocol/ids/spi/service/CatalogService.java
+    - https://github.com/eclipse-edc/Connector/blob/0ac9755d7a058117fb8372181af7389760818e7e/data-protocols/ids/ids-core/src/main/java/org/eclipse/edc/protocol/ids/service/CatalogServiceImpl.java
 
 
 
@@ -478,7 +492,6 @@ Samples
     $ ./gradlew clean test -p transfer/transfer-01-file-transfer/file-transfer-integration-tests -DincludeTags=EndToEndTest --tests FileTransferSampleTest -PverboseTest
 
 
-
 MinimumViableDataspace
 ======================
 
@@ -486,22 +499,7 @@ MinimumViableDataspace
 
 - EDCを使ったDSのデモ
 
-- ローカル実行の資材を見ると、なんとなく構成が分かる。
-
-  - https://github.com/eclipse-edc/MinimumViableDataspace/blob/8141afce75613f62ed236cb325a862b8af40b903/system-tests/README.md
-
 - AssetはAzureのBlob。ローカル環境ではAzuriteを利用。
-
-- RegistrationServiceを利用。
-  https://github.com/eclipse-edc/RegistrationService
-
-  - CredentialVerifierに依存するが、それはIdentityHubが供給。
-    https://github.com/eclipse-edc/IdentityHub
-    
-    - でも、IdentityHubのコードは、TrustFrameworkAdoptionの方に移動されることになるらしい。
-
-      - https://github.com/eclipse-edc/Connector/discussions/2303
-      - https://github.com/eclipse-edc/TrustFrameworkAdoption
 
 - assetを定義する仕込みために、コネクタのdata management APIを呼び出す部分は、
   Postmanで作った.jsonをNewmanで実行する形で実装。
@@ -515,3 +513,80 @@ MinimumViableDataspace
   - https://github.com/eclipse-edc/MinimumViableDataspace/blob/8141afce75613f62ed236cb325a862b8af40b903/extensions/policies/src/main/java/org/eclipse/edc/mvd/SeedPoliciesExtension.java
 
   - https://github.com/eclipse-edc/MinimumViableDataspace/blob/8141afce75613f62ed236cb325a862b8af40b903/extensions/refresh-catalog/src/main/java/org/eclipse/edc/mvd/RegistrationServiceNodeDirectoryExtension.java
+
+- RegistrationServiceを利用。
+  https://github.com/eclipse-edc/RegistrationService
+
+  - CredentialVerifierに依存するが、それはIdentityHubが供給。
+    https://github.com/eclipse-edc/IdentityHub
+    
+    - でも、IdentityHubのコードは、TrustFrameworkAdoptionの方に移動されることになるらしい。
+
+      - https://github.com/eclipse-edc/Connector/discussions/2303
+      - https://github.com/eclipse-edc/TrustFrameworkAdoption
+
+- FederatedCatalogを利用。
+
+- Dockerを利用して、ローカルノードで動作確認できる。
+
+  - https://github.com/eclipse-edc/MinimumViableDataspace/blob/8141afce75613f62ed236cb325a862b8af40b903/system-tests/README.md#test-execution-using-embedded-services
+
+  - `-DuseFsVault="true"` をつけてビルドしないと、Azureを使うVaultが使われて、エラーになる。
+    (AzuriteをVaultとして使うための仕込みがない。)
+
+  - MVD_UI_PATHをexportして、DataDashboardのUIを動かす場合も、上記の仕込みは必要。
+
+    - https://github.com/eclipse-edc/MinimumViableDataspace/tree/8141afce75613f62ed236cb325a862b8af40b903#local-development-setup
+  - ローカル実行用のdocker-compose.ymlの中身も、構成を知る参考になる。
+
+    - https://github.com/eclipse-edc/MinimumViableDataspace/blob/8141afce75613f62ed236cb325a862b8af40b903/system-tests/docker-compose.yml
+
+
+IdentityHub
+===========
+
+- https://github.com/eclipse-edc/IdentityHub
+
+
+RegistrationService
+===================
+
+- https://github.com/eclipse-edc/RegistrationService
+
+- extensionとしては5つ。::
+
+    31 RegistrationService/extensions/participant-verifier/src/main/java/org/eclipse/edc/registration/ParticipantVerifierExtension.java public class ParticipantVerifierExtension implements ServiceExtension {
+    42 RegistrationService/extensions/registration-policy-gaiax-member/src/main/java/org/eclipse/edc/registration/policy/GaiaxMemberDataspaceRegistrationPolicyExtension.java public class GaiaxMemberDataspaceRegistrationPolicyExtension implements ServiceExtension {
+    60 RegistrationService/extensions/registration-service/src/main/java/org/eclipse/edc/registration/AuthorityExtension.java public class AuthorityExtension implements ServiceExtension {
+    37 RegistrationService/extensions/store/cosmos/participant-store-cosmos/src/main/java/org/eclipse/edc/registration/store/cosmos/CosmosParticipantStoreExtension.java public class CosmosParticipantStoreExtension implements ServiceExtension {
+    35 RegistrationService/extensions/store/sql/participant-store-sql/src/main/java/org/eclipse/edc/registration/store/sql/SqlParticipantStoreExtension.java public class SqlParticipantStoreExtension implements ServiceExtension {
+
+
+FederatedCatalog
+================
+
+- https://github.com/eclipse-edc/FederatedCatalog
+
+- /federatedcatalogというpathに対応したAPIをserveする。
+  指定された条件を満たすContractOfferを返す。
+
+  - https://github.com/eclipse-edc/FederatedCatalog/blob/6e4fccb942bb352f098b23f4f1e31f1e3b5957be/extensions/api/federated-catalog-api/src/main/java/org/eclipse/edc/catalog/api/query/FederatedCatalogApiController.java
+
+- (test用ではない)extensionとしては4つ。::
+
+    40 FederatedCatalog/core/federated-catalog-core/src/main/java/org/eclipse/edc/catalog/cache/FederatedCatalogCacheExtension.java public class FederatedCatalogCacheExtension implements ServiceExtension {
+    37 FederatedCatalog/core/federated-catalog-core/src/main/java/org/eclipse/edc/catalog/cache/FederatedCatalogDefaultServicesExtension.java public class FederatedCatalogDefaultServicesExtension implements ServiceExtension {
+    28 FederatedCatalog/extensions/api/federated-catalog-api/src/main/java/org/eclipse/edc/catalog/api/query/FederatedCatalogCacheQueryApiExtension.java public class FederatedCatalogCacheQueryApiExtension implements ServiceExtension {
+    35 FederatedCatalog/extensions/store/fcc-node-directory-cosmos/src/main/java/org/eclipse/edc/catalog/node/directory/azure/CosmosFederatedCacheNodeDirectoryExtension.java public class CosmosFederatedCacheNodeDirectoryExtension implements ServiceExtension {
+
+
+DataDashboard
+=============
+
+- https://github.com/eclipse-edc/DataDashboard
+
+- デモ用のWeb UI。TypeScriptで実装されている。
+
+- Catalogの画面は、/federatedcatalogから取得したContractOfferをすべて並べて表示している感じ。
+
+  - https://github.com/eclipse-edc/DataDashboard/blob/c3ec34f730ca4322121c67e54ea2ae980c96c2f0/src/modules/edc-demo/services/catalog-browser.service.ts
