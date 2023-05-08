@@ -398,6 +398,13 @@ documentation
   https://github.com/eclipse-dataspaceconnector/GradlePlugins
 
 
+Dataspace Protocol
+------------------
+
+- https://github.com/eclipse-edc/Connector/issues/2429
+
+- https://github.com/eclipse-edc/Connector/blob/73a6d9b49d164c927031de71c384f239e05f33d4/docs/developer/architecture/ids-dataspace-protocol/README.md
+
 
 versionining
 ============
