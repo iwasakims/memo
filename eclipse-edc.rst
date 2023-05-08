@@ -544,6 +544,14 @@ MinimumViableDataspace
   - MVD_UI_PATHをexportして、DataDashboardのUIを動かす場合も、上記の仕込みは必要。
 
     - https://github.com/eclipse-edc/MinimumViableDataspace/tree/8141afce75613f62ed236cb325a862b8af40b903#local-development-setup
+
+    - まとめると以下の要領::
+
+        $ ./gradlew -DuseFsVault="true" :launchers:connector:shadowJar
+        $ ./gradlew -DuseFsVault="true" :launchers:registrationservice:shadowJar
+        $ export MVD_UI_PATH=/home/iwasakims/srcs/eclipse-edc/DataDashboard
+        $ docker compose --profile ui -f system-tests/docker-compose.yml up --build
+
   - ローカル実行用のdocker-compose.ymlの中身も、構成を知る参考になる。
 
     - https://github.com/eclipse-edc/MinimumViableDataspace/blob/8141afce75613f62ed236cb325a862b8af40b903/system-tests/docker-compose.yml
