@@ -203,10 +203,10 @@ statemachine
     - see NegotiationWaitStrategy and TransferWaitStrategy
 
 
-authn
------
+authentication
+--------------
 
-- managementなAPIについては、AuthenticationService#isAuthenticatedを呼ぶようなfilterで認証している。
+- managementやcontorolなAPIについては、AuthenticationService#isAuthenticatedを呼ぶようなfilterで認証している。
 
   - https://github.com/eclipse-edc/Connector/blob/2e5a80f5070d3926a765cf991d50aedb40314f78/spi/common/auth-spi/src/main/java/org/eclipse/edc/api/auth/spi/AuthenticationRequestFilter.java#L44
 
@@ -215,6 +215,13 @@ authn
     - https://github.com/eclipse-edc/Connector/blob/2e5a80f5070d3926a765cf991d50aedb40314f78/spi/common/auth-spi/src/main/java/org/eclipse/edc/api/auth/spi/AllPassAuthenticationService.java
     - https://github.com/eclipse-edc/Connector/blob/2e5a80f5070d3926a765cf991d50aedb40314f78/extensions/common/auth/auth-basic/src/main/java/org/eclipse/edc/api/auth/basic/BasicAuthenticationService.java
     - https://github.com/eclipse-edc/Connector/blob/2e5a80f5070d3926a765cf991d50aedb40314f78/extensions/common/auth/auth-tokenbased/src/main/java/org/eclipse/edc/api/auth/token/TokenBasedAuthenticationExtension.java
+
+- コネクタの認証は、IdentityServiceが利用される。
+
+  - Connector配下にある実装はDIDとOAuth2の2択。
+
+    - https://github.com/eclipse-edc/Connector/blob/72d8b8ef58de41db7111c9928f777ce60781f51c/extensions/common/iam/decentralized-identity/identity-did-service/src/main/java/org/eclipse/edc/iam/did/service/DecentralizedIdentityService.java
+    - https://github.com/eclipse-edc/Connector/blob/72d8b8ef58de41db7111c9928f777ce60781f51c/extensions/common/iam/oauth2/oauth2-core/src/main/java/org/eclipse/edc/iam/oauth2/identity/Oauth2ServiceImpl.java
 
 
 catalog
@@ -234,7 +241,6 @@ catalog
 
     - https://github.com/eclipse-edc/Connector/blob/0ac9755d7a058117fb8372181af7389760818e7e/data-protocols/ids/ids-spi/src/main/java/org/eclipse/edc/protocol/ids/spi/service/CatalogService.java
     - https://github.com/eclipse-edc/Connector/blob/0ac9755d7a058117fb8372181af7389760818e7e/data-protocols/ids/ids-core/src/main/java/org/eclipse/edc/protocol/ids/service/CatalogServiceImpl.java
-
 
 
 transferprocess
@@ -521,16 +527,11 @@ MinimumViableDataspace
 
   - https://github.com/eclipse-edc/MinimumViableDataspace/blob/8141afce75613f62ed236cb325a862b8af40b903/extensions/refresh-catalog/src/main/java/org/eclipse/edc/mvd/RegistrationServiceNodeDirectoryExtension.java
 
-- RegistrationServiceを利用。
-  https://github.com/eclipse-edc/RegistrationService
+- DID/VCでParticipantを認証する仕組みとしてIdentityHubとRegistrationServiceを利用。
 
-  - CredentialVerifierに依存するが、それはIdentityHubが供給。
-    https://github.com/eclipse-edc/IdentityHub
-    
-    - でも、IdentityHubのコードは、TrustFrameworkAdoptionの方に移動されることになるらしい。
-
-      - https://github.com/eclipse-edc/Connector/discussions/2303
-      - https://github.com/eclipse-edc/TrustFrameworkAdoption
+  - https://github.com/eclipse-edc/MinimumViableDataspace/tree/8141afce75613f62ed236cb325a862b8af40b903/docs/developer/decision-records/2022-06-20-mvd-onboarding
+  - https://github.com/eclipse-edc/MinimumViableDataspace/tree/8141afce75613f62ed236cb325a862b8af40b903/docs/developer/decision-records/2022-06-16-distributed-authorization
+  - https://github.com/eclipse-edc/MinimumViableDataspace/tree/8141afce75613f62ed236cb325a862b8af40b903/docs/developer/decision-records/2022-06-15-registration-service
 
 - FederatedCatalogを利用。
 
@@ -556,11 +557,18 @@ MinimumViableDataspace
 
     - https://github.com/eclipse-edc/MinimumViableDataspace/blob/8141afce75613f62ed236cb325a862b8af40b903/system-tests/docker-compose.yml
 
+    - WebDidResolverがDIDを取得するために、nginxがいる。
+
 
 IdentityHub
 ===========
 
 - https://github.com/eclipse-edc/IdentityHub
+
+- コードはそのうち、TrustFrameworkAdoptionの方に移動されることになる?
+
+  - https://github.com/eclipse-edc/Connector/discussions/2303
+  - https://github.com/eclipse-edc/TrustFrameworkAdoption
 
 
 RegistrationService
@@ -568,13 +576,25 @@ RegistrationService
 
 - https://github.com/eclipse-edc/RegistrationService
 
-- extensionとしては5つ。::
+- MVDのための簡易サービス。
 
-    31 RegistrationService/extensions/participant-verifier/src/main/java/org/eclipse/edc/registration/ParticipantVerifierExtension.java public class ParticipantVerifierExtension implements ServiceExtension {
-    42 RegistrationService/extensions/registration-policy-gaiax-member/src/main/java/org/eclipse/edc/registration/policy/GaiaxMemberDataspaceRegistrationPolicyExtension.java public class GaiaxMemberDataspaceRegistrationPolicyExtension implements ServiceExtension {
-    60 RegistrationService/extensions/registration-service/src/main/java/org/eclipse/edc/registration/AuthorityExtension.java public class AuthorityExtension implements ServiceExtension {
-    37 RegistrationService/extensions/store/cosmos/participant-store-cosmos/src/main/java/org/eclipse/edc/registration/store/cosmos/CosmosParticipantStoreExtension.java public class CosmosParticipantStoreExtension implements ServiceExtension {
-    35 RegistrationService/extensions/store/sql/participant-store-sql/src/main/java/org/eclipse/edc/registration/store/sql/SqlParticipantStoreExtension.java public class SqlParticipantStoreExtension implements ServiceExtension {
+  - https://github.com/eclipse-edc/MinimumViableDataspace/blob/main/docs/developer/decision-records/2022-06-15-registration-service/README.md
+
+- DIDで識別されるParticipantを登録する。
+  /registry/participant[s] で、単純な追加と取得ができるAPIだけ定義されている。
+
+  - https://github.com/eclipse-edc/RegistrationService/blob/04df5c8f361d71520b48385872db63df68291537/extensions/registration-service-api/src/main/java/org/eclipse/edc/registration/api/RegistrationServiceApiController.java
+
+  - Participant追加は、 `Authorization: Bearer DID-JWT` のようなヘッダー付きのリクエストをPOSTすることで行う。
+
+  - Participantの情報は一旦storeに格納し、ParticipantManagerがPolicyに応じて参加を許可するか判断する。
+    デフォルトでは無条件に許可する。
+
+    - https://github.com/eclipse-edc/RegistrationService/blob/04df5c8f361d71520b48385872db63df68291537/core/registration-service/src/main/java/org/eclipse/edc/registration/RegistrationServiceExtension.java#L93-L96
+
+- 参加登録されたParticipantのIdentityHubにtokenを渡す。
+
+  - https://github.com/eclipse-edc/MinimumViableDataspace/blob/8141afce75613f62ed236cb325a862b8af40b903/docs/developer/decision-records/2022-06-15-registration-service/README.md#1-dataspace-participant-enrollment
 
 
 FederatedCatalog
