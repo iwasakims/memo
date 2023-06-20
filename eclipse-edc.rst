@@ -118,6 +118,11 @@ REST API
 
   - https://github.com/eclipse-edc/Connector/blob/9adb0e4a09f4b0518a903e61890f94229ebda69e/docs/developer/decision-records/2022-11-09-api-refactoring/renaming.md
 
+    - その後整理されて、controlはmanagementと同じdefault contextが使われるようになったような??
+
+      - https://github.com/eclipse-edc/Connector/pull/2165
+      - https://github.com/eclipse-edc/Connector/pull/2250
+
 - Swaggerのアノテーションを利用して、*.yamlなどを生成している。
 
   - https://github.com/eclipse-edc/Connector/blob/9adb0e4a09f4b0518a903e61890f94229ebda69e/docs/developer/decision-records/2022-03-15-swagger-annotations/README.md
@@ -141,6 +146,11 @@ REST API
 
     - https://app.swaggerhub.com/apis/eclipse-edc-bot/control-api
     - https://app.swaggerhub.com/apis/eclipse-edc-bot/management-api
+
+  - と思ったが、0.1.0リリース後は0.1.1-SNAPSHOTに変わった
+
+    - https://app.swaggerhub.com/apis/eclipse-edc-bot/control-api/0.1.1-SNAPSHOT
+    - https://app.swaggerhub.com/apis/eclipse-edc-bot/management-api/0.1.1-SNAPSHOT
 
 
 test
