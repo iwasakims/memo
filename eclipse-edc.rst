@@ -464,6 +464,16 @@ versionining
 
     - https://github.com/eclipse-edc/GradlePlugins/blob/83ad790b6e521862db8f66b7985457176070da81/gradle/libs.versions.toml
 
+- `version catalog自体はGradleが提供する機能 <https://docs.gradle.org/current/userguide/platforms.html>`_ 。
+
+  - libs.versions.tomlという `TOML形式 <https://toml.io/>`_ のファイルによるバージョン定義を読んで解釈するのは、
+    `GradleのVersionCatalobBuilder <https://docs.gradle.org/current/javadoc/org/gradle/api/initialization/dsl/VersionCatalogBuilder.html>`_ 。
+
+  - `groovy-core` のようにハイフン区切りで定義されたaliasには、
+    `libs.groovy.core` のようにドット区切りのアクセサでアクセスする `流儀 <https://docs.gradle.org/current/userguide/platforms.html#sub:mapping-aliases-to-accessors>`_ らしい。
+
+  - Maven等にpublishして、外部から参照できるようにするためには、
+    `version-catalog プラグイン<https://docs.gradle.org/current/userguide/platforms.html#sec:version-catalog-plugin>`_ を利用する。
 
 
 docs
