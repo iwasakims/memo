@@ -112,16 +112,17 @@ REST API
 
   - https://github.com/eclipse-edc/Connector/blob/9adb0e4a09f4b0518a903e61890f94229ebda69e/extensions/common/http/jetty-core/src/main/java/org/eclipse/edc/web/jetty/JettyConfiguration.java
 
-- 上記のcontextとしてはmanagement、control、ids、publicがある。
+- 上記のcontext aliasとしてはcontrol、management、protocol、publicがある。
+  controlはコネクタが内部的に使うもの。
   managementはコネクタのクライアントが呼び出すもの。
-  controlはコネクタが内部的に使うもので、control-planeおよびdata-planeと呼ばれている部分は両方ここに入る。
+  protocolはDataspace Protocol用のもので、Dataspace Protocolへの移行前はidsだった。
+  publicはdata planeがデータを送るときに使うもの。
 
   - https://github.com/eclipse-edc/Connector/blob/9adb0e4a09f4b0518a903e61890f94229ebda69e/docs/developer/decision-records/2022-11-09-api-refactoring/renaming.md
 
-    - その後整理されて、controlはmanagementと同じdefault contextが使われるようになったような??
-
-      - https://github.com/eclipse-edc/Connector/pull/2165
-      - https://github.com/eclipse-edc/Connector/pull/2250
+- `web.http.path` and `web.http.port` は、defaultコンテキストに対応づけられる。
+  controlとmanagementは固有の指定( `web.http.control.path` や `web.http.management.path` )がない場合、defaultを使う。
+  ( `useDefaultContext(true)` されている。)
 
 - Swaggerのアノテーションを利用して、*.yamlなどを生成している。
 
@@ -198,6 +199,17 @@ test
     呼び出しておかなければならない。
 
 
+configuration
+-------------
+
+- 設定プロパティは、ConfigurationExtensionがロードしたもの、環境変数からのもの、システムプロパティからのものがマージされる。競合があれば後のものほど強い。
+
+  - https://github.com/eclipse-edc/Connector/blob/7e6089c9ac61310a05f08d6037bf877920095d9f/core/common/boot/src/main/java/org/eclipse/edc/boot/system/DefaultServiceExtensionContext.java#L121-L129
+
+- `FsConfigurationExtension <https://github.com/eclipse-edc/Connector/blob/7e6089c9ac61310a05f08d6037bf877920095d9f/extensions/common/configuration/configuration-filesystem/src/main/java/org/eclipse/edc/configuration/filesystem/FsConfigurationExtension.java>`_
+  は、edc.fs.configでpathを指定されたファイルから、設定内容を読み込む。
+
+
 statemachine
 ------------
 
@@ -253,18 +265,19 @@ catalog
     - https://github.com/eclipse-edc/Connector/blob/0ac9755d7a058117fb8372181af7389760818e7e/data-protocols/ids/ids-core/src/main/java/org/eclipse/edc/protocol/ids/service/CatalogServiceImpl.java
 
 
-transferprocess
----------------
+transferprocesses
+-----------------
 
-- /transferprocess は、consumer connectorが、データ転送のためのリクエストを受けるAPI。
-
-  - https://github.com/eclipse-edc/Connector/blob/65479dc186ad0517565c77047672d1783a2188d7/extensions/control-plane/transfer/transfer-data-plane/README.md
+- /v2/transferprocesses は、consumer connectorが、データ転送のためのリクエストを受けるAPI。
 
   - sourceは、ContractAgreementに含まれるassetIdで指定される。
 
   - destinationは、dataDestinationで具体的にtypeとその他propertyで指定される。
     例えばAzure Blobだと、typeはAzureStorageで、
     accountでストレージアカウント名、containerはcontainer名を指す。
+
+- データ転送の処理それ自体は、transfer-data-plane側にコードがある。
+  https://github.com/eclipse-edc/Connector/blob/65479dc186ad0517565c77047672d1783a2188d7/extensions/control-plane/transfer/transfer-data-plane/README.md
 
 - リクエストが呼ばれると、TransferProcessインスタンスが作成され、
   状態(state)を含む情報がTransferProcessStoreに保存される。
@@ -473,7 +486,7 @@ versionining
     `libs.groovy.core` のようにドット区切りのアクセサでアクセスする `流儀 <https://docs.gradle.org/current/userguide/platforms.html#sub:mapping-aliases-to-accessors>`_ らしい。
 
   - Maven等にpublishして、外部から参照できるようにするためには、
-    `version-catalog プラグイン<https://docs.gradle.org/current/userguide/platforms.html#sec:version-catalog-plugin>`_ を利用する。
+    `version-catalogプラグイン <https://docs.gradle.org/current/userguide/platforms.html#sec:version-catalog-plugin>`_ を利用する。
 
 
 docs
