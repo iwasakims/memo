@@ -153,6 +153,29 @@ REST API
     - https://app.swaggerhub.com/apis/eclipse-edc-bot/control-api/0.1.1-SNAPSHOT
     - https://app.swaggerhub.com/apis/eclipse-edc-bot/management-api/0.1.1-SNAPSHOT
 
+- Swagger UIのドキュメント上、management-apiとcontrol-apiの2つのくくりに分かれている。
+  v0.1.0で見た時の分類は以下。
+  context aliasとの対応で見ると、managementはmanagement-apiで、
+  残りのcontrol、protocol、publicはcontrol-apiなのかしら。::
+      
+    $ find . -name build.gradle.kts | xargs grep management-api | grep apiGroup
+    ./extensions/data-plane-selector/data-plane-selector-api/build.gradle.kts:        apiGroup.set("management-api")
+    ./extensions/control-plane/provision/provision-http/build.gradle.kts:        apiGroup.set("management-api")
+    ./extensions/control-plane/api/management-api/policy-definition-api/build.gradle.kts:        apiGroup.set("management-api")
+    ./extensions/control-plane/api/management-api/contract-definition-api/build.gradle.kts:        apiGroup.set("management-api")
+    ./extensions/control-plane/api/management-api/contract-negotiation-api/build.gradle.kts:        apiGroup.set("management-api")
+    ./extensions/control-plane/api/management-api/transfer-process-api/build.gradle.kts:        apiGroup.set("management-api")
+    ./extensions/control-plane/api/management-api/catalog-api/build.gradle.kts:        apiGroup.set("management-api")
+    ./extensions/control-plane/api/management-api/asset-api/build.gradle.kts:        apiGroup.set("management-api")
+    ./extensions/control-plane/api/management-api/contract-agreement-api/build.gradle.kts:        apiGroup.set("management-api")
+    ./extensions/common/api/api-observability/build.gradle.kts:        apiGroup.set("management-api")
+    ./extensions/common/api/management-api-configuration/build.gradle.kts:        apiGroup.set("management-api")
+    
+    $ find . -name build.gradle.kts | xargs grep control-api | grep apiGroup
+    ./extensions/data-plane/data-plane-api/build.gradle.kts:        apiGroup.set("control-api")
+    ./extensions/control-plane/transfer/transfer-data-plane/build.gradle.kts:        apiGroup.set("control-api")
+    ./extensions/control-plane/api/control-plane-api/build.gradle.kts:        apiGroup.set("control-api")
+
 
 test
 ----
@@ -160,6 +183,8 @@ test
 - `-PverboseTest` を指定すると、出力されるログが増える。::
 
     $ ./gradlew test -PverboseTest
+
+  - https://github.com/eclipse-edc/GradlePlugins/blob/af36bd7b0d79cd484736d45e59a3318e5f1b4e04/plugins/edc-build/src/main/java/org/eclipse/edc/plugins/edcbuild/conventions/TestConvention.java#L55-L65
 
 - 特定のテストだけを実行したい場合は以下の要領。 ::
 
@@ -363,6 +388,9 @@ data-plane
   asset typeをcanHandleなSourceから、
   dataDestination typeをcanHandleなSinkに、
   transferする。
+
+- assetのtypeを増やす場合、DataSourceFactoryとDataSinkFactoryの実装をつくり、
+  `PipelineService#registerFactory` する。
 
 
 e2e-transfer-test
