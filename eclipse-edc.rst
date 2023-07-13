@@ -444,7 +444,15 @@ logging
 - ログの出力はMonitorというインターフェースで抽象化されている。
   明示的にMonitor実装がregisterされていない場合、
   ConsoleMonitorという単純な実装が使われる。
-  ロギングライブラリは使用せずに、コンソールにログを出力する、
+  ロギングライブラリは使用せずに、コンソールにDEBUGレベルを含むすべてのログを出力する。
+
+- MonitorExtension実装をロードすることで、monitorの切りかえ/追加ができる。
+
+- LoggerMonitorExtensionは、java.util.loggingでログ出力するLoggerMonitorを提供するもの。
+
+- BaseRuntimeは `MonitorProvider <https://github.com/eclipse-edc/Connector/blob/v0.1.3/core/common/boot/src/main/java/org/eclipse/edc/boot/monitor/MonitorProvider.java>`_
+  というSLF4JServiceProvider実装をロードし、SLF4J APIで出力されたログを、Monitor側に送る仕組みを用意している。
+  結果として、ほかのSLF4J bindingを使うことができない。
 
 
 documentation
