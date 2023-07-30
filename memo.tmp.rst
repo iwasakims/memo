@@ -531,6 +531,84 @@ adding local repository create by `./gradlew repo`::
 
 
 
+download all built packages then create Yum repository
+------------------------------------------------------
+
+Example of rockylinux-8 built by https://ci.bigtop.apache.org/job/Bigtop-3.2.1-aarch64/
+::
+
+  $ mkdir rockylinux-8-aarch64
+  $ cd rockylinux-8-aarch64
+  $ for p in alluxio ambari bigtop-ambari-mpack bigtop-groovy bigtop-jsvc bigtop-utils flink gpdb hadoop hbase hive kafka livy oozie phoenix solr spark tez ycsb zeppelin zookeeper
+    do
+      curl -L -o $p.zip https://ci.bigtop.apache.org/job/Bigtop-3.2.1-aarch64/DISTRO=rockylinux-8,PLATFORM=aarch64-slave,PRODUCT=$p/lastSuccessfulBuild/artifact/*zip*/archive.zip &&
+      jar xf $p.zip &&
+      mv archive/output/$p . &&
+      rmdir -p archive/output &&
+      rm $p.zip
+    done
+
+  $ export GPG_TTY=$(tty)
+  $ find . -name '*.rpm' | xargs rpm --define '_gpg_name Masatake Iwasaki' --addsign
+
+  $ createrepo .
+  $ gpg --detach-sign --armor repodata/repomd.xml
+
+  $ aws --profile iwasakims s3 sync --acl public-read . s3://repos.bigtop.apache.org/releases/3.2.1/rockylinux/8/aarch64/
+
+
+download all built packages then create APT repository
+------------------------------------------------------
+
+Example of debian-11 built by https://ci.bigtop.apache.org/job/Bigtop-3.2.1-aarch64/
+::
+
+  $ mkdir debian-11-aarch64
+  $ cd debian-11-aarch64
+  $ for p in alluxio ambari bigtop-ambari-mpack bigtop-groovy bigtop-jsvc bigtop-utils flink gpdb hadoop hbase hive kafka livy oozie phoenix solr spark tez ycsb zeppelin zookeeper
+    do
+      curl -L -o $p.zip https://ci.bigtop.apache.org/job/Bigtop-3.2.1-aarch64/DISTRO=debian-11,PLATFORM=aarch64-slave,PRODUCT=$p/lastSuccessfulBuild/artifact/*zip*/archive.zip &&
+      jar xf $p.zip &&
+      mv archive/output/$p . &&
+      rmdir -p archive/output &&
+      rm $p.zip
+    done
+  
+  $ export GPG_TTY=$(tty)
+  $ find . -name '*.deb' | xargs dpkg-sig --cache-passphrase --sign builder --sign-changes force_full
+  
+  $ export VERSION=3.2.1
+  $ export OS=debian
+  $ export OSVER=11
+  $ export ARCH=arm64
+  $ export SIGN_KEY=36243EECE206BB0D
+  
+  $ mkdir -p conf
+  
+  $ cat > conf/distributions <<__EOT__
+  Origin: Bigtop
+  Label: Bigtop
+  Suite: stable
+  Codename: bigtop
+  Version: ${VERSION}
+  Architectures: ${ARCH} source
+  Components: contrib
+  Description: Apache Bigtop
+  SignWith: ${SIGN_KEY}
+  __EOT__
+  
+  $ cat > conf/options <<__EOT__
+  verbose
+  ask-passphrase
+  __EOT__
+  
+  $ find . -name '*.deb' | xargs reprepro --ask-passphrase -Vb . includedeb bigtop
+  $ mkdir tmprepo
+  $ mv conf db dists pool tmprepo/
+  
+  $ aws --profile iwasakims s3 sync --acl public-read ./tmprepo s3://repos.bigtop.apache.org/releases/3.2.1/${OS}/${OSVER}/${ARCH}/
+
+
 Ranger
 ======
 
