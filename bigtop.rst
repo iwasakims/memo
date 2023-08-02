@@ -160,14 +160,18 @@ adding local repository create by `./gradlew repo`::
 download all built packages then create Yum repository
 ------------------------------------------------------
 
-Example of rockylinux-8 built by https://ci.bigtop.apache.org/job/Bigtop-3.2.1-aarch64/
+Example of rockylinux-8 built by https://ci.bigtop.apache.org/job/Bigtop-3.2.1-x86_64/
+
+Possible values of ARCH are amd64, arm64 and ppc64el.
+
 ::
 
+  $ export PLATFORM= 
   $ mkdir rockylinux-8-aarch64
   $ cd rockylinux-8-aarch64
   $ for p in alluxio ambari bigtop-ambari-mpack bigtop-groovy bigtop-jsvc bigtop-utils flink gpdb hadoop hbase hive kafka livy oozie phoenix solr spark tez ycsb zeppelin zookeeper
     do
-      curl -L -o $p.zip https://ci.bigtop.apache.org/job/Bigtop-3.2.1-aarch64/DISTRO=rockylinux-8,PLATFORM=aarch64-slave,PRODUCT=$p/lastSuccessfulBuild/artifact/*zip*/archive.zip &&
+      curl -L -o $p.zip https://ci.bigtop.apache.org/job/Bigtop-3.2.1-aarch64/DISTRO=rockylinux-8,PLATFORM=amd64-slave,PRODUCT=$p/lastSuccessfulBuild/artifact/*zip*/archive.zip &&
       jar xf $p.zip &&
       mv archive/output/$p . &&
       rmdir -p archive/output &&
@@ -186,28 +190,42 @@ Example of rockylinux-8 built by https://ci.bigtop.apache.org/job/Bigtop-3.2.1-a
 download all built packages then create APT repository
 ------------------------------------------------------
 
-Example of debian-11 built by https://ci.bigtop.apache.org/job/Bigtop-3.2.1-aarch64/
+Example of debian-11 built by https://ci.bigtop.apache.org/job/Bigtop-3.2.1-x86_64/
+
+ARCH is used as `$(ARCH)` of deb. Bigtop is using `amd64`, `arm64` and `ppc64el`. Possible values are shown by `dpkg-architecture -L`. `ppc64el` instead of `ppc64le` here.
+
+BASEARCH is used as `$basearch` of Yum variables. Bigtop is using `x86_64`, `aarch64` and `ppc64le`. It is used as the name of Jenkins job too.
+
+PLATFORM is label set to `agent of Jenkins <https://ci.bigtop.apache.org/computer/docker-slave-06/>`_. Possible values are `amd64-slave`, `aarch64-slave` and `ppc64el-slave` here.
+
 ::
 
-  $ mkdir debian-11-aarch64
-  $ cd debian-11-aarch64
-  $ for p in alluxio ambari bigtop-ambari-mpack bigtop-groovy bigtop-jsvc bigtop-utils flink gpdb hadoop hbase hive kafka livy oozie phoenix solr spark tez ycsb zeppelin zookeeper
-    do
-      curl -L -o $p.zip https://ci.bigtop.apache.org/job/Bigtop-3.2.1-aarch64/DISTRO=debian-11,PLATFORM=aarch64-slave,PRODUCT=$p/lastSuccessfulBuild/artifact/*zip*/archive.zip &&
-      jar xf $p.zip &&
-      mv archive/output/$p . &&
-      rmdir -p archive/output &&
-      rm $p.zip
-    done
-  
   $ export GPG_TTY=$(tty)
-  $ find . -name '*.deb' | xargs dpkg-sig --cache-passphrase --sign builder --sign-changes force_full
-  
   $ export VERSION=3.2.1
   $ export OS=debian
   $ export OSVER=11
-  $ export ARCH=arm64
+  $ export ARCH=amd64
+  $ export BASEARCH=x86_64
+  $ export PLATFORM=amd64-slave
   $ export SIGN_KEY=36243EECE206BB0D
+
+::
+
+  $ mkdir -p releases/${VERSION}/${OS}/${OSVER}/${ARCH}
+  $ cd releases/${VERSION}/${OS}/${OSVER}/${ARCH}
+  $ for product in alluxio ambari bigtop-ambari-mpack bigtop-groovy bigtop-jsvc bigtop-utils flink gpdb hadoop hbase hive kafka livy oozie phoenix solr spark tez ycsb zeppelin zookeeper
+    do
+      rm -rf ${product} &&
+      curl -L -o ${product}.zip https://ci.bigtop.apache.org/job/Bigtop-${VERSION}-${BASEARCH}/DISTRO=${OS}-${OSVER},PLATFORM=${PLATFORM},PRODUCT=${product}/lastSuccessfulBuild/artifact/*zip*/archive.zip &&
+      jar xf ${product}.zip &&
+      mv archive/output/${product} . &&
+      find ${product} -name '*.deb' | xargs dpkg-sig --cache-passphrase --sign builder --sign-changes force_full &&
+      rmdir -p archive/output &&
+      rm ${product}.zip
+    done
+
+::
+
   
   $ mkdir -p conf
   
@@ -232,4 +250,4 @@ Example of debian-11 built by https://ci.bigtop.apache.org/job/Bigtop-3.2.1-aarc
   $ mkdir tmprepo
   $ mv conf db dists pool tmprepo/
   
-  $ aws --profile iwasakims s3 sync --acl public-read ./tmprepo s3://repos.bigtop.apache.org/releases/3.2.1/${OS}/${OSVER}/${ARCH}/
+  $ aws --profile iwasakims s3 sync --acl public-read ./tmprepo s3://repos.bigtop.apache.org/releases/${VERSION}/${OS}/${OSVER}/${ARCH}/
