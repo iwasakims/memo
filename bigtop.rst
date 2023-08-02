@@ -157,46 +157,58 @@ adding local repository create by `./gradlew repo`::
 
 
 
-download all built packages then create Yum repository
-------------------------------------------------------
+download built packages then create Yum repository
+--------------------------------------------------
 
-Example of rockylinux-8 built by https://ci.bigtop.apache.org/job/Bigtop-3.2.1-x86_64/
+Example of rockylinux-8 built by https://ci.bigtop.apache.org/job/Bigtop-3.2.1-aarch64/
 
-Possible values of ARCH are amd64, arm64 and ppc64el.
+BASEARCH is used as ``$basearch`` of Yum variables. Bigtop is using ``x86_64``, ``aarch64`` and ``ppc64le``. It is used as the name of Jenkins job too.
+
+PLATFORM is label set to `agent of Jenkins <https://ci.bigtop.apache.org/computer/docker-slave-06/>`_. Possible values are ``amd64-slave``, ``aarch64-slave`` and ``ppc64el-slave`` here.
 
 ::
 
-  $ export PLATFORM= 
-  $ mkdir rockylinux-8-aarch64
-  $ cd rockylinux-8-aarch64
-  $ for p in alluxio ambari bigtop-ambari-mpack bigtop-groovy bigtop-jsvc bigtop-utils flink gpdb hadoop hbase hive kafka livy oozie phoenix solr spark tez ycsb zeppelin zookeeper
+  $ export GPG_TTY=$(tty)
+  $ export VERSION=3.2.1
+  $ export OS=rockylinux
+  $ export OSVER=8
+  $ export BASEARCH=aarch64
+  $ export PLATFORM=aarch64-slave
+
+::
+
+  $ mkdir -p releases/${VERSION}/${OS}/${OSVER}/${BASEARCH}
+  $ cd releases/${VERSION}/${OS}/${OSVER}/${BASEARCH}
+  $ for product in alluxio ambari bigtop-ambari-mpack bigtop-groovy bigtop-jsvc bigtop-utils flink gpdb hadoop hbase hive kafka livy oozie phoenix solr spark tez ycsb zeppelin zookeeper
     do
-      curl -L -o $p.zip https://ci.bigtop.apache.org/job/Bigtop-3.2.1-aarch64/DISTRO=rockylinux-8,PLATFORM=amd64-slave,PRODUCT=$p/lastSuccessfulBuild/artifact/*zip*/archive.zip &&
-      jar xf $p.zip &&
-      mv archive/output/$p . &&
+      rm -rf ${product} &&
+      curl -L -o ${product}.zip https://ci.bigtop.apache.org/job/Bigtop-${VERSION}-${BASEARCH}/DISTRO=${OS}-${OSVER},PLATFORM=${PLATFORM},PRODUCT=${product}/lastSuccessfulBuild/artifact/*zip*/archive.zip &&
+      jar xf ${product}.zip &&
+      mv archive/output/${product} . &&
+      find ${product} -name '*.rpm' | xargs rpm --define '_gpg_name Masatake Iwasaki' --addsign
       rmdir -p archive/output &&
-      rm $p.zip
+      rm ${product}.zip
     done
 
-  $ export GPG_TTY=$(tty)
-  $ find . -name '*.rpm' | xargs rpm --define '_gpg_name Masatake Iwasaki' --addsign
+::
 
+  $ rm -rf repodata   
   $ createrepo .
   $ gpg --detach-sign --armor repodata/repomd.xml
+  
+  $ aws --profile iwasakims s3 sync --acl public-read . s3://repos.bigtop.apache.org/releases/${VERSION}/${OS}/${OSVER}/${BASEARCH}/
 
-  $ aws --profile iwasakims s3 sync --acl public-read . s3://repos.bigtop.apache.org/releases/3.2.1/rockylinux/8/aarch64/
 
-
-download all built packages then create APT repository
-------------------------------------------------------
+download built packages then create APT repository
+--------------------------------------------------
 
 Example of debian-11 built by https://ci.bigtop.apache.org/job/Bigtop-3.2.1-x86_64/
 
-ARCH is used as `$(ARCH)` of deb. Bigtop is using `amd64`, `arm64` and `ppc64el`. Possible values are shown by `dpkg-architecture -L`. `ppc64el` instead of `ppc64le` here.
+ARCH is used as ``$(ARCH)`` of deb. Bigtop is using ``amd64``, ``arm64`` and ``ppc64el``. Possible values are shown by ``dpkg-architecture -L``. ``ppc64el`` instead of ``ppc64le`` here.
 
-BASEARCH is used as `$basearch` of Yum variables. Bigtop is using `x86_64`, `aarch64` and `ppc64le`. It is used as the name of Jenkins job too.
+BASEARCH is used as ``$basearch`` of Yum variables. Bigtop is using ``x86_64``, ``aarch64`` and ``ppc64le``. It is used as the name of Jenkins job too.
 
-PLATFORM is label set to `agent of Jenkins <https://ci.bigtop.apache.org/computer/docker-slave-06/>`_. Possible values are `amd64-slave`, `aarch64-slave` and `ppc64el-slave` here.
+PLATFORM is label set to `agent of Jenkins <https://ci.bigtop.apache.org/computer/docker-slave-06/>`_. Possible values are ``amd64-slave``, ``aarch64-slave`` and ``ppc64el-slave`` here.
 
 ::
 
