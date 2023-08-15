@@ -5,8 +5,7 @@
 (setq-default indent-tabs-mode nil)
 (setq-default column-number-mode t)
 (setq use-dialog-box nil)
-;(when (fboundp 'terminal-init-bobcat)
-;  (terminal-init-bobcat))
+(global-unset-key "\C-\\")
 
 ;; GNU GLOBAL
 (setq load-path (cons "/usr/local/share/gtags" load-path))
