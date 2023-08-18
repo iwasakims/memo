@@ -311,7 +311,7 @@ transferprocesses
 
   - processInitialで、destinationのtypeに応じて必要なら、
     登録されたConsumerResourceManifestGeneratorにが、ResourceDefinitionを作成する。
-    現状destinationがAzure Blog/Amazon S3/GCSのオブジェクトの場合に、この処理が入る。
+    現状destinationがAzure Blob/Amazon S3/GCSのオブジェクトの場合に、この処理が入る。
 
   - processProvisioningで、上記のResourceDefinitionに応じて、
     ProvisionManagerが登録されたProvisioner実装を利用して、resourceを作成する。
@@ -335,7 +335,9 @@ transferprocesses
       - (provider側の)processProvisioningの段階で、initiateDataTransferが呼ばれ、
         DataFlowManagerを介して、data-planeの処理が呼ばれる。
 
-        - DataFlowManagerは、ただHttpProxyなdestinationを追加するために追加された??
+        - DataFlowManagerは、DataFlowControllerを切り替える。
+          destinationがHttpProxyだとConsumerPullTransferDataFlowControllerが、
+          それ以外だとProviderPushTransferDataFlwoControllerが使われる。
 
       - DataPlaneSelectorで、接続先を選択する。
         DataPlaneSelectorも、個別に建ててREST APIでアクセスする方式を取れる。
@@ -391,6 +393,10 @@ data-plane
 
 - assetのtypeを増やす場合、DataSourceFactoryとDataSinkFactoryの実装をつくり、
   `PipelineService#registerFactory` する。
+
+
+
+
 
 
 e2e-transfer-test
