@@ -1,7 +1,13 @@
+======
 Bigtop
 ======
 
-Setting up build environment on CentOS 7/CentOS 8
+.. contents::
+
+toolchain and provisioner
+=========================
+
+setting up build environment on CentOS 7/CentOS 8
 -------------------------------------------------
 
 ::
@@ -70,6 +76,9 @@ docker provisioner using published repository
       --repo http://repos.bigtop.apache.org/releases/3.2.1/ubuntu/22.04/amd64
 
 
+Develpment
+==========
+
 Debugging dpkg
 --------------
 
@@ -109,6 +118,9 @@ adding local repository create by `./gradlew repo`::
   $ sudo bash -c 'echo "deb [trusted=yes] file:///home/admin/srcs/bigtop/output/apt bigtop contrib" > /etc/apt/sources.list.d/bigtop-home_output.list'
   $ sudo apt update
 
+
+Release process of Bigtop
+=========================
 
 download built packages then create Yum repository
 --------------------------------------------------
@@ -218,16 +230,17 @@ PLATFORM is label set to `agent of Jenkins <https://ci.bigtop.apache.org/compute
   $ aws --profile iwasakims s3 sync --acl public-read ./tmprepo s3://repos.bigtop.apache.org/releases/${VERSION}/${OS}/${OSVER}/${ARCH}/
 
 
-tarballからhadoopのrpmをビルドしてsmoke-testを流してみる
---------------------------------------------------------
+Using Bigtop as test bed of Hadoop RC
+=====================================
 
-bigtopのソースツリーをダウンロードする。::
+building Hadoop RPM with RC tarball then running smoke-tests
+------------------------------------------------------------
+
+tweak file name and download site of source tarball.::
 
   $ git clone https://github.com/apache/bigtop
   $ cd bigtop 
-
-bigtop.bomを修正し、source tarballのdownload URLを差し替える。::
-
+  $ vi bigtop.bom
   $ git diff .
   diff --git a/bigtop.bom b/bigtop.bom
   index ff6d4e1..d4ce521 100644
@@ -251,48 +264,15 @@ bigtop.bomを修正し、source tarballのdownload URLを差し替える。::
        'ignite-hadoop' {
          name    = 'ignite-hadoop'
 
-必要なrpmをビルドする。::
+build with depended components then run smoke-tests.::
 
-  $ gradle bigtop-groovy-rpm
-  $ gradle bigtop-groovy-rpm
-  $ gradle bigtop-jsvc-rpm
-  $ gradle bigtop-tomcat-rpm
-  $ gradle bigtop-utils-rpm
-  $ gradle hadoop-rpm
-
-ビルドしたrpmでyum repositoryを作る。(./outputにそのままリポジトリが作成される。)::
-
-  $ gradle yum
-
-Dockerを使ってクラスタをデプロイする。
-config.yamlを修正し、上記で作成したyumリポジトリを使ってパッケージインストールを行う設定に変更する。::
-
-  $ cd provisioner/docker
-  $ vi config.yaml
-  $ git diff .
-  diff --git a/provisioner/docker/config_centos-7.yaml b/provisioner/docker/config_centos-7.yaml
-  index 6cdd7cf..342f860 100644
-  --- a/provisioner/docker/config_centos-7.yaml
-  +++ b/provisioner/docker/config_centos-7.yaml
-  @@ -20,5 +20,5 @@ docker:
-   repo: "http://bigtop-repos.s3.amazonaws.com/releases/1.2.0/centos/7/x86_64"
-   distro: centos
-   components: [hdfs, yarn, mapreduce]
-  -enable_local_repo: false
-  +enable_local_repo: true
-   smoke_test_components: [hdfs, yarn, mapreduce]
-
-以下の例では3ノードのクラスタがデプロイされる。::
-  
-  $ ./docker-hadoop.sh --create 3
-  
-  $ ./docker-hadoop.sh --exec 1 rpm -q hadoop
-  WARNING: The DOCKER_IMAGE variable is not set. Defaulting to a blank string.
-  WARNING: The MEM_LIMIT variable is not set. Defaulting to a blank string.
-  hadoop-2.7.4-1.el7.centos.x86_64
-
-smoke testを実行する。::
-
-  ./docker-hadoop.sh --smoke-tests
-
+  $ ./gradlew hadoop-rpm yum -Dbuildwithdeps=true
+  $ ./docker-hadoop.sh \
+      --create 3 \
+      --image bigtop/puppet:trunk-centos-8 \
+      --memory 8g \
+      --repo file:///bigtop-home/output \
+      --disable-gpg-check \
+      --stack hdfs,yarn,mapreduce \
+      --smoke-tests hdfs,yarn,mapreduce
 
