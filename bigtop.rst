@@ -38,9 +38,9 @@ docker provisioner using local repository
       --create 1 \
       --image bigtop/puppet:trunk-centos-8 \
       --memory 16g \
-      --stack hdfs,yarn,mapreduce \
       --repo file:///bigtop-home/output \
-      --disable-gpg-check
+      --disable-gpg-check \
+      --stack hdfs,yarn,mapreduce
 
 
 docker provisioner for cgroup v2 and docker compose plugin
@@ -55,25 +55,26 @@ docker provisioner for cgroup v2 and docker compose plugin
       --docker-compose-yml docker-compose-cgroupv2.yml \
       --docker-compose-plugin \
       --memory 16g \
-      --stack hdfs,yarn,mapreduce \
       --repo file:///bigtop-home/output/apt \
-      --disable-gpg-check
+      --disable-gpg-check \
+      --stack hdfs,yarn,mapreduce
 
 
 docker provisioner using published repository
 ---------------------------------------------
 
-::
+`bigtop::bigtop_repo_apt_key <https://github.com/apache/bigtop/blob/release-3.2.1-RC0/bigtop-deploy/puppet/hieradata/bigtop/repo.yaml#L2>`_
+must match the public key used for packaging. Add ``--disable-gpg-check`` otherwise.::
 
   $ cd provisioner/docker
   $ ./docker-hadoop.sh \
       --create 1 \
-      --image bigtop/puppet:trunk-ubuntu-22.04 \
+      --image bigtop/puppet:3.2.1-ubuntu-22.04 \
       --docker-compose-yml docker-compose-cgroupv2.yml \
       --docker-compose-plugin \
       --memory 16g \
-      --stack hdfs,yarn,mapreduce \
-      --repo http://repos.bigtop.apache.org/releases/3.2.1/ubuntu/22.04/amd64
+      --repo http://repos.bigtop.apache.org/releases/3.2.1/ubuntu/22.04/amd64 \
+      --stack hdfs,yarn,mapreduce
 
 
 Develpment
