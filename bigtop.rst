@@ -120,6 +120,44 @@ adding local repository create by `./gradlew repo`::
   $ sudo apt update
 
 
+building and testins in container
+---------------------------------
+
+you can leverage Docker by ``*-pkg-ind`` and ``repo-ind`` task.::
+
+  $ ./gradlew hadoop-pkg-ind repo-ind -POS=ubuntu-22.04 -Pprefix=trunk -Dbuildwithdeps=true -Pdocker-run-option="--privileged" -Pmvn-cache-volume=true
+
+- ``-Dbuildwithdeps=true`` kicks packging of products depended by hadoop (such as bigtop-utils and zookeeper).
+
+- ``-Pdocker-run-option="--privileged"`` is needed on the Fedora-35 and Ubuntu-22.04 now (depending on the version of systemd).
+
+- ``-Pmvn-cache-volume=true`` attaches docker volume to reuse local repository (~/.m2) to make repeatable build faster.
+
+You can deploy a cluster and run smoke-tests in container by docker provisioner which requires docker-compose.::
+
+  $ cd provisioner/docker
+  $ ./docker-hadoop.sh \
+      --create 3 \
+      --image bigtop/puppet:trunk-ubuntu-22.04 \
+      --docker-compose-yml docker-compose-cgroupv2.yml \
+      --docker-compose-plugin \
+      --memory 8g \
+      --repo file:///bigtop-home/output/apt \
+      --disable-gpg-check \
+      --stack hdfs,yarn,mapreduce \
+      --smoke-tests hdfs,yarn,mapreduce
+
+- ``--docker-compose-yml docker-compose-cgroupv2.yml`` is needed on cgroup v2.
+
+- ``--docker-compose-plugin`` is for using ``docker compose`` instead of ``docker-compose``.
+
+- use ``--repo file:///bigtop-home/output`` for RPM instead of DEB.
+
+You can log in to the node and see files if you need.::
+
+  $ ./docker-hadoop.sh -dcp --exec 1 /bin/bash
+
+
 Release process of Bigtop
 =========================
 
