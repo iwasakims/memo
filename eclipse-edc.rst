@@ -198,6 +198,10 @@ test
 
     $ ./gradlew test -DincludeTags="EndToEndTest"
 
+- 特定のテストメソッドだけ実行する例::
+
+    $ ./gradlew clean test -p system-tests/e2e-transfer-test/runner -PverboseTest -DincludeTags="EndToEndTest" --tests "*EndToEndTransferInMemoryTest.httpPull_dataTransfer" 2>&1 | tee /tmp/test.log
+
 - `@PostgresqlDbIntegrationTest` アノテーションが付いたテストを実行する場合、下記の要領。::
   
     $ ./gradlew test -p system-tests/e2e-transfer-test/runner -DincludeTags="PostgresqlIntegrationTest"
@@ -394,9 +398,26 @@ data-plane
 - assetのtypeを増やす場合、DataSourceFactoryとDataSinkFactoryの実装をつくり、
   `PipelineService#registerFactory` する。
 
+- 元々あったprovider pushは、provider connector側でデータ送信の処理( ``sink.transfer(source)`` )が呼ばれるのでわかりやすい。
+  それに対して、後から追加されたデータ転送方式であるところのconsumer pullはちょっとわかりにくい。
 
+  - 現状consumer pullになるのは、destinationのtypeがHttpProxyの場合のみ。
 
+  - consumer pullの場合は、TransferStartMessageのペイロードとして、データの在処を示すEndpointDataReference(EDR)をconsumer connectorに渡す。
+    consumer connectorは、受け取ったEDRをbackendにPOSTする。
 
+  - consumer clientは(backendから取り出した)EDRに入っているendpointのURLに対して、authCodeに入っているトークンをAuthorizationヘッダに入れて、GETする。
+    このendpointのURLはコネクタのdata-plane APIを指すもの。
+    コネクタは、authCodeに含まれている真のデータの在処を示すURLからデータを取得し、clientに渡す。つまり、プロキシサーバとして振る舞う。
+    authCodeに含まれる情報で認証を行うために、クライアントは直接データの在処にアクセスしない。
+
+    - という仕組み上、sourceのtypeはHttpDataでなければ成立しないような。
+
+    - consumerとproviderのどちらのコネクタのproxyとして振る舞えるが、
+      ドキュメント上はprovider connectorがデータを中継する想定になっているように見える。
+      この場合、データをpullするのはconsumer connectorではなく、そのクライアントということになる。
+
+  - https://github.com/eclipse-edc/Connector/tree/5803513f0c4cc795c0d1d069f7039c8ca1bd8f7e/extensions/control-plane/transfer/transfer-data-plane
 
 
 e2e-transfer-test
