@@ -34,68 +34,70 @@ docker build -t rockylinux8-openjdk8 -f Dockerfile.rockylinux8 .
 
 docker network create --subnet=172.18.0.0/16 hadoop
 
-cd ~/dist/
-mkdir -p logs
 export HADOOP_VERSION=3.2.4
 export ZOOKEEPER_VERSION=3.5.9
-docker run -d -i -t --name hadoop01 --net hadoop --ip 172.18.0.11 -v ~/dist/hadoop-${HADOOP_VERSION}:/hadoop -v ~/dist/zookeeper-${ZOOKEEPER_VERSION}:/zookeeper -v ~/dist/logs:/logs rockylinux8-openjdk8 /bin/bash
-docker run -d -i -t --name hadoop02 --net hadoop --ip 172.18.0.12 -v ~/dist/hadoop-${HADOOP_VERSION}:/hadoop -v ~/dist/zookeeper-${ZOOKEEPER_VERSION}:/zookeeper -v ~/dist/logs:/logs rockylinux8-openjdk8 /bin/bash
-docker run -d -i -t --name hadoop03 --net hadoop --ip 172.18.0.13 -v ~/dist/hadoop-${HADOOP_VERSION}:/hadoop -v ~/dist/zookeeper-${ZOOKEEPER_VERSION}:/zookeeper -v ~/dist/logs:/logs rockylinux8-openjdk8 /bin/bash
+export DIST=~/dist
+cd ${DIST}
+mkdir -p logs
+
+docker run -d -i -t --name h01 --net hadoop --hostname h01 --ip 172.18.0.11 -v ${DIST}/hadoop-${HADOOP_VERSION}:/hadoop -v ${DIST}/zookeeper-${ZOOKEEPER_VERSION}:/zookeeper -v ${DIST}/logs:/logs rockylinux8-openjdk8 /bin/bash
+docker run -d -i -t --name h02 --net hadoop --hostname h02 --ip 172.18.0.12 -v ${DIST}/hadoop-${HADOOP_VERSION}:/hadoop -v ${DIST}/zookeeper-${ZOOKEEPER_VERSION}:/zookeeper -v ${DIST}/logs:/logs rockylinux8-openjdk8 /bin/bash
+docker run -d -i -t --name h03 --net hadoop --hostname h03 --ip 172.18.0.13 -v ${DIST}/hadoop-${HADOOP_VERSION}:/hadoop -v ${DIST}/zookeeper-${ZOOKEEPER_VERSION}:/zookeeper -v ${DIST}/logs:/logs rockylinux8-openjdk8 /bin/bash
 
 ```
 
 ### starting daemons
 
 ```
-docker exec hadoop01 mkdir /zk
-docker exec hadoop01 bash -c 'echo 1 > /zk/myid'
-docker exec hadoop01 /zookeeper/bin/zkServer.sh start
-docker exec hadoop02 mkdir /zk
-docker exec hadoop02 bash -c 'echo 2 > /zk/myid'
-docker exec hadoop02 /zookeeper/bin/zkServer.sh start
-docker exec hadoop03 mkdir /zk
-docker exec hadoop03 bash -c 'echo 3 > /zk/myid'
-docker exec hadoop03 /zookeeper/bin/zkServer.sh start
+docker exec h01 mkdir /zk
+docker exec h01 bash -c 'echo 1 > /zk/myid'
+docker exec h01 /zookeeper/bin/zkServer.sh start
+docker exec h02 mkdir /zk
+docker exec h02 bash -c 'echo 2 > /zk/myid'
+docker exec h02 /zookeeper/bin/zkServer.sh start
+docker exec h03 mkdir /zk
+docker exec h03 bash -c 'echo 3 > /zk/myid'
+docker exec h03 /zookeeper/bin/zkServer.sh start
 
 sleep 5
 
-docker exec hadoop01 /hadoop/bin/hdfs --daemon start journalnode
-docker exec hadoop02 /hadoop/bin/hdfs --daemon start journalnode
-docker exec hadoop03 /hadoop/bin/hdfs --daemon start journalnode
+docker exec h01 /hadoop/bin/hdfs --daemon start journalnode
+docker exec h02 /hadoop/bin/hdfs --daemon start journalnode
+docker exec h03 /hadoop/bin/hdfs --daemon start journalnode
 
 sleep 5
 
-docker exec hadoop01 /hadoop/bin/hdfs namenode -format -force -nonInteractive
-docker exec hadoop01 /hadoop/bin/hdfs zkfc -formatZK -force -nonInteractive
-docker exec hadoop01 /hadoop/bin/hdfs --daemon start namenode
-docker exec hadoop01 /hadoop/bin/hdfs --daemon start zkfc
+docker exec h01 /hadoop/bin/hdfs namenode -format -force -nonInteractive
+docker exec h01 /hadoop/bin/hdfs zkfc -formatZK -force -nonInteractive
+docker exec h01 /hadoop/bin/hdfs --daemon start namenode
+docker exec h01 /hadoop/bin/hdfs --daemon start zkfc
 
-docker exec hadoop02 /hadoop/bin/hdfs namenode -bootstrapStandby -force -nonInteractive
-docker exec hadoop02 /hadoop/bin/hdfs --daemon start namenode
-docker exec hadoop02 /hadoop/bin/hdfs --daemon start zkfc
+docker exec h02 /hadoop/bin/hdfs namenode -bootstrapStandby -force -nonInteractive
+docker exec h02 /hadoop/bin/hdfs --daemon start namenode
+docker exec h02 /hadoop/bin/hdfs --daemon start zkfc
 
-docker exec hadoop03 /hadoop/bin/hdfs namenode -bootstrapStandby -force -nonInteractive
-docker exec hadoop03 /hadoop/bin/hdfs --daemon start namenode
-docker exec hadoop03 /hadoop/bin/hdfs --daemon start zkfc
+docker exec h03 /hadoop/bin/hdfs namenode -bootstrapStandby -force -nonInteractive
+docker exec h03 /hadoop/bin/hdfs --daemon start namenode
+docker exec h03 /hadoop/bin/hdfs --daemon start zkfc
 
-docker exec hadoop01 /hadoop/bin/hdfs --daemon start datanode
-docker exec hadoop02 /hadoop/bin/hdfs --daemon start datanode
-docker exec hadoop03 /hadoop/bin/hdfs --daemon start datanode
+docker exec h01 /hadoop/bin/hdfs --daemon start datanode
+docker exec h02 /hadoop/bin/hdfs --daemon start datanode
+docker exec h03 /hadoop/bin/hdfs --daemon start datanode
 
-docker exec hadoop01 /hadoop/bin/yarn --daemon start resourcemanager
-docker exec hadoop02 /hadoop/bin/yarn --daemon start resourcemanager
-docker exec hadoop03 /hadoop/bin/yarn --daemon start resourcemanager
+docker exec h01 /hadoop/bin/yarn --daemon start resourcemanager
+docker exec h02 /hadoop/bin/yarn --daemon start resourcemanager
+docker exec h03 /hadoop/bin/yarn --daemon start resourcemanager
 
-docker exec hadoop01 /hadoop/bin/yarn --daemon start nodemanager
-docker exec hadoop02 /hadoop/bin/yarn --daemon start nodemanager
-docker exec hadoop03 /hadoop/bin/yarn --daemon start nodemanager
+docker exec h01 /hadoop/bin/yarn --daemon start nodemanager
+docker exec h02 /hadoop/bin/yarn --daemon start nodemanager
+docker exec h03 /hadoop/bin/yarn --daemon start nodemanager
 ```
 
 ### removing containers
 
 ```
-docker kill hadoop01 hadoop02 hadoop03
-docker rm hadoop01 hadoop02 hadoop03
+docker kill h01 h02 h03
+docker rm h01 h02 h03
 ```
 
 
