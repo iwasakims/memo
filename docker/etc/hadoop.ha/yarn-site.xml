@@ -64,15 +64,15 @@
   </property>
   <property>
     <name>yarn.resourcemanager.hostname.rm1</name>
-    <value>172.18.0.11</value>
+    <value>h01</value>
   </property>
   <property>
     <name>yarn.resourcemanager.hostname.rm2</name>
-    <value>172.18.0.12</value>
+    <value>h02</value>
   </property>
   <property>
     <name>yarn.resourcemanager.hostname.rm3</name>
-    <value>172.18.0.13</value>
+    <value>h03</value>
   </property>
   <property>
     <name>yarn.resourcemanager.webapp.address.rm1</name>
@@ -89,7 +89,7 @@
 
   <property>
     <name>yarn.resourcemanager.zk-address</name>
-    <value>172.18.0.11:2181,172.18.0.12:2181,172.18.2.13:2181</value>
+    <value>h01:2181,h02:2181,h03:2181</value>
   </property>
 </configuration>
 

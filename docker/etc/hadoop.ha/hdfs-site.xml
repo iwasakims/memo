@@ -44,31 +44,31 @@
   </property>
   <property>
     <name>dfs.namenode.rpc-address.mycluster.nn1</name>
-    <value>172.18.0.11:9820</value>
+    <value>h01:9820</value>
   </property>
   <property>
     <name>dfs.namenode.rpc-address.mycluster.nn2</name>
-    <value>172.18.0.12:9820</value>
+    <value>h02:9820</value>
   </property>
   <property>
     <name>dfs.namenode.rpc-address.mycluster.nn3</name>
-    <value>172.18.0.13:9820</value>
+    <value>h03:9820</value>
   </property>
   <property>
     <name>dfs.namenode.http-address.mycluster.nn1</name>
-    <value>172.18.0.11:9870</value>
+    <value>h01:9870</value>
   </property>
   <property>
     <name>dfs.namenode.http-address.mycluster.nn2</name>
-    <value>172.18.0.12:9870</value>
+    <value>h02:9870</value>
   </property>
   <property>
     <name>dfs.namenode.http-address.mycluster.nn3</name>
-    <value>172.18.0.13:9870</value>
+    <value>h03:9870</value>
   </property>
   <property>
     <name>dfs.namenode.shared.edits.dir</name>
-    <value>qjournal://172.18.0.11:8485;172.18.0.12:8485;172.18.0.13:8485/mycluster</value>
+    <value>qjournal://h01:8485;h02:8485;h03:8485/mycluster</value>
   </property>
   <property>
     <name>dfs.client.failover.proxy.provider.mycluster</name>
@@ -84,6 +84,6 @@
   </property>
   <property>
     <name>ha.zookeeper.quorum</name>
-    <value>172.18.0.11:2181,172.18.0.12:2181,172.18.0.13:2181</value>
+    <value>h01:2181,h02:2181,h03:2181</value>
   </property>
 </configuration>

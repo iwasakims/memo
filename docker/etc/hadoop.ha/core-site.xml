@@ -23,6 +23,6 @@
   </property>
   <property>
     <name>hadoop.security.key.provider.path</name>
-    <value>kms://http@172.18.0.11:9600/kms</value>
+    <value>kms://http@h01:9600/kms</value>
   </property>
 </configuration>
