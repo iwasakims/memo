@@ -17,6 +17,9 @@ tar zxf apache-storm-2.4.0.tar.gz
 mv apache-storm-2.4.0 storm-2.4.0
 cp ~/srcs/memo/docker/etc/storm.ha/* storm-2.4.0/conf/
 
+cd ~/srcs/storm
+mvn clean install -DskipTests -Dhadoop.version=3.2.4
+cp external/storm-hdfs-blobstore/target/storm-hdfs-blobstore-2.4.0.jar ${DIST}/storm-2.4.0/lib/
 ```
 
 ```
