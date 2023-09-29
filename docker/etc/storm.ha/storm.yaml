@@ -33,5 +33,15 @@ supervisor.slots.ports:
 supervisor.childopts: "-Xmx512m"
 storm.log.dir: "/logs"
 storm.local.dir: "/var/lib/storm/storm-local"
-blobstore.dir: "/var/lib/storm"
 storm.metricstore.class: "org.apache.storm.metricstore.NoOpMetricStore"
+
+topology.min.replication.count: 2
+topology.max.replication.wait.time.sec: 60
+#supervisor.worker.heartbeats.max.timeout.secs: 2147483647
+
+storm.blobstore.replication.factor: 3
+#blobstore.dir: "/var/lib/storm"
+blobstore.dir: hdfs://mycluster/blobstore
+nimbus.blobstore.class: org.apache.storm.hdfs.blobstore.HdfsBlobStore
+supervisor.blobstore.class: org.apache.storm.hdfs.blobstore.HdfsClientBlobStore
+client.blobstore.class: org.apache.storm.hdfs.blobstore.HdfsClientBlobStore

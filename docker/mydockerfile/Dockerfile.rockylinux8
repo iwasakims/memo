@@ -1,4 +1,4 @@
 FROM rockylinux/rockylinux:8
+RUN yum -y install procps which
 RUN yum -y install java-1.8.0-openjdk-devel
-RUN yum -y install procps
-RUN yum -y install which
+RUN yum -y install python2 && alternatives --set python /usr/bin/python2
