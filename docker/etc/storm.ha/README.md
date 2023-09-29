@@ -1,4 +1,15 @@
 ```
+cd ~/srcs
+git clone https://github.com/iwasakims/memo
+```
+
+```
+cd memo/docker/mydockerfile
+docker build -t rockylinux8-openjdk8 -f Dockerfile.rockylinux8 .
+docker network create --subnet=172.18.0.0/16 hadoop
+```
+
+```
 export DIST=~/dist/storm-ha
 cd ${DIST}
 
@@ -17,9 +28,13 @@ tar zxf apache-storm-2.4.0.tar.gz
 mv apache-storm-2.4.0 storm-2.4.0
 cp ~/srcs/memo/docker/etc/storm.ha/* storm-2.4.0/conf/
 
-cd ~/srcs/storm
+cd ~/srcs
+git clone https://github.com/apache/storm
+cd storm
+git checkout v2.4.0
 mvn clean install -DskipTests -Dhadoop.version=3.2.4
 cp external/storm-hdfs-blobstore/target/storm-hdfs-blobstore-2.4.0.jar ${DIST}/storm-2.4.0/lib/
+cp examples/storm-starter/target/storm-starter-2.4.0.jar ${DIST}/storm-2.4.0/
 ```
 
 ```
