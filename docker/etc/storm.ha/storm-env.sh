@@ -23,4 +23,4 @@ export JAVA_HOME=${JAVA_HOME}
 
 # export STORM_CONF_DIR=""
 
-export STORM_EXT_CLASSPATH="/zookeeper/conf:$(/hadoop/bin/hadoop classpath)"
+export STORM_EXT_CLASSPATH="$(/hadoop/bin/hadoop classpath)"

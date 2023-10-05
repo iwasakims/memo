@@ -43,7 +43,7 @@ export HADOOP_VERSION=3.2.4
 export STORM_VERSION=2.4.0
 export DIST=~/dist
 cd ${DIST}
-mkdir logs
+mkdir -p logs
 ```
 
 ```
