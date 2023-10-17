@@ -481,6 +481,84 @@ logging
   というSLF4JServiceProvider実装をロードし、SLF4J APIで出力されたログを、Monitor側に送る仕組みを用意している。
   結果として、ほかのSLF4J bindingを使うことができない。
 
+  - removed: https://github.com/eclipse-edc/Connector/pull/3463
+
+
+okhttp3 logging
+---------------
+
+コネクタ内のHTTPリクエストは、okhttp3で実行されている。
+logging-interceptorを仕込むと、リクエストの内容をログ出力できる。::
+
+  $ git diff
+  diff --git a/core/common/connector-core/src/main/java/org/eclipse/edc/connector/core/base/OkHttpClientFactory.java b/core/common/connector-core/src/main/java/org/eclipse/edc/connector/core/base/OkHttpClientFactory.java
+  index 10dc4d5d2..1c7bc3eab 100644
+  --- a/core/common/connector-core/src/main/java/org/eclipse/edc/connector/core/base/OkHttpClientFactory.java
+  +++ b/core/common/connector-core/src/main/java/org/eclipse/edc/connector/core/base/OkHttpClientFactory.java
+  @@ -77,6 +77,9 @@ public class OkHttpClientFactory {
+               context.getMonitor().info("HTTPS enforcement it not enabled, please enable it in a production environment");
+           }
+   
+  +        var logging = new okhttp3.logging.HttpLoggingInterceptor();
+  +        logging.setLevel(okhttp3.logging.HttpLoggingInterceptor.Level.BODY);
+  +        builder.addInterceptor(logging);
+           return builder.build();
+       }
+   
+  diff --git a/gradle.properties b/gradle.properties
+  index 9bd583ee1..e86600c1b 100644
+  --- a/gradle.properties
+  +++ b/gradle.properties
+  @@ -1,9 +1,9 @@
+   group=org.eclipse.edc
+  -version=0.3.1-SNAPSHOT
+  +version=0.3.1
+   # for now, we're using the same version for the autodoc plugin, the processor and the runtime-metamodel lib, but that could
+   # change in the future
+  -annotationProcessorVersion=0.3.1-SNAPSHOT
+  -edcGradlePluginsVersion=0.3.1-SNAPSHOT
+  -metaModelVersion=0.3.1-SNAPSHOT
+  +annotationProcessorVersion=0.3.1
+  +edcGradlePluginsVersion=0.3.1
+  +metaModelVersion=0.3.1
+   edcScmUrl=https://github.com/eclipse-edc/Connector.git
+   edcScmConnection=scm:git:git@github.com:eclipse-edc/Connector.git
+  diff --git a/gradle/libs.versions.toml b/gradle/libs.versions.toml
+  index 97672f052..12b80c690 100644
+  --- a/gradle/libs.versions.toml
+  +++ b/gradle/libs.versions.toml
+  @@ -79,6 +79,7 @@ mockserver-client = { module = "org.mock-server:mockserver-client-java", version
+   mockserver-netty = { module = "org.mock-server:mockserver-netty", version.ref = "httpMockServer" }
+   nimbus-jwt = { module = "com.nimbusds:nimbus-jose-jwt", version.ref = "nimbus" }
+   okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+  +okhttp-logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
+   opentelemetry-api = { module = "io.opentelemetry:opentelemetry-api", version.ref = "opentelemetry" }
+   opentelemetry-instrumentation-annotations = { module = "io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations", version.ref = "opentelemetry" }
+   opentelemetry-proto = { module = "io.opentelemetry.proto:opentelemetry-proto", version.ref = "opentelemetry-proto" }
+  diff --git a/spi/common/http-spi/build.gradle.kts b/spi/common/http-spi/build.gradle.kts
+  index 9aaf288b5..d9fa0bfa7 100644
+  --- a/spi/common/http-spi/build.gradle.kts
+  +++ b/spi/common/http-spi/build.gradle.kts
+  @@ -21,6 +21,7 @@ dependencies {
+       api(project(":spi:common:core-spi"))
+   
+       api(libs.okhttp)
+  +    api(libs.okhttp.logging.interceptor)
+       api(libs.failsafe.okhttp)
+   }
+
+okhttp3のロギングはjava.util.loggingを使っているので、
+``-Djava.util.logging.config.file=/tmp/logging.properties``
+のようにシステムプロパティ経由で設定ファイルを指定できる。::
+
+  $ cat >/tmp/logging.properties <<EOF
+  handlers = java.util.logging.ConsoleHandler
+  .level = INFO
+  java.util.logging.ConsoleHandler.level = ALL
+  java.util.logging.ConsoleHandler.formatter = java.util.logging.SimpleFormatter
+  java.util.logging.SimpleFormatter.format = %1$tF %1$tT %4$s : %5$s %n
+  EOF
+
 
 documentation
 -------------
