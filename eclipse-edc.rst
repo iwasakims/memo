@@ -556,7 +556,7 @@ okhttp3のロギングはjava.util.loggingを使っているので、
   .level = INFO
   java.util.logging.ConsoleHandler.level = ALL
   java.util.logging.ConsoleHandler.formatter = java.util.logging.SimpleFormatter
-  java.util.logging.SimpleFormatter.format = %1$tF %1$tT %4$s : %5$s %n
+  java.util.logging.SimpleFormatter.format = %1\$tF %1\$tT %4\$s : %5\$s %n
   EOF
 
 
