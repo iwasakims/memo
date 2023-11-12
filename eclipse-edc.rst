@@ -559,8 +559,7 @@ okhttp3のロギングはjava.util.loggingを使っているので、
   java.util.logging.SimpleFormatter.format = %1\$tF %1\$tT %4\$s : %5\$s %n
   EOF
 
-logging.propertiesの中に、例えばjava.util.loggingには存在しないDEBUGというレベル指定をするなどの誤りがあると、
-単にログが出なくなるため、原因を見つけにくい。
+指定したファイルのpathが誤っているなどすると、単にログが出なくなるため、原因を見つけにくい。
 
 
 documentation
