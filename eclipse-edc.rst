@@ -578,6 +578,21 @@ Dataspace Protocol
 - https://github.com/eclipse-edc/Connector/blob/73a6d9b49d164c927031de71c384f239e05f33d4/docs/developer/architecture/ids-dataspace-protocol/README.md
 
 
+chunked transfer
+----------------
+
+`#1645 <https://github.com/eclipse-edc/Connector/pull/1645>`_ で、
+chunked transferが問題となる場合の対策として、
+HttpAddressのpropertyで、nonChunkedTransferをtrueにすることで、
+chunked transferをオフにできるようになった。::
+
+        "dataDestination": {
+          "type": "HttpData",
+          "baseUrl": "http://localhost:4000/api/consumer/store",
+          "nonChunkedTransfer": "true"
+        }
+
+
 versionining
 ============
 
@@ -607,10 +622,25 @@ versionining
 
   - まずGradlePlugins側のバージョン定義を修正したものをローカルリポジトリにインストールする。::
 
-    $ ./gradlew publishToMavenLocal -Pskip.signing
+      $ ./gradlew publishToMavenLocal -Pskip.signing
 
-  - Connector側のsettings.gradle.ktsのdependencyResolutionManagementのrepositoriesの部分を修正して、mavenLocal()を一番上に持ってくる。
+  - Mavenのローカルリポジトリを使うために、
+    Connector側のsettings.gradle.ktsのdependencyResolutionManagementのrepositoriesの部分を修正して、
+　　mavenLocal()を一番上に持ってくる必要なことがある。
     https://github.com/eclipse-edc/Connector/blob/2c4bf1529b538077c2dd2cccd12128c3202d7548/settings.gradle.kts#L31-L38
+
+  - `Gradleのドキュメント <https://docs.gradle.org/8.0/userguide/composite_builds.html#composite_builds>`_
+    を見た感じ、ローカルでビルドしたartifactsに対してビルドするには、
+    `--include-build` を使うことを推奨しているが...例えばSamplesをそれでビルドしようとすると、
+    モジュール名の重複みたいな感じのエラーになる。::
+
+      $ ./gradlew --include-build /path/to/Connector clean build
+      ...
+      > Could not resolve all task dependencies for configuration ':advanced:advanced-01-open-telemetry:open-telemetry-consumer:compileClasspath'.
+        > Could not resolve org.eclipse.edc:management-api:0.3.1.
+          Required by:
+              project :advanced:advanced-01-open-telemetry:open-telemetry-consumer
+           > Module version 'org.eclipse.edc:management-api:0.3.1' is not unique in composite: can be provided by [project :Connector:extensions:control-plane:api:management-api, project :Connector:system-tests:management-api].
 
 - その後、あまりうまくないことが分かり、各コンポーネントがバージョンカタログを持つやり方に変わった。
 
