@@ -618,30 +618,6 @@ versionining
   - https://github.com/eclipse-edc/GradlePlugins/blob/96f9cc05047c111a547f6ac78168cb6ce9a84fd4/version-catalog/build.gradle.kts
   - https://github.com/eclipse-edc/GradlePlugins/blob/96f9cc05047c111a547f6ac78168cb6ce9a84fd4/gradle/libs.versions.toml
 
-- ローカルで修正して試すには、ちょっと手順が必要。
-
-  - まずGradlePlugins側のバージョン定義を修正したものをローカルリポジトリにインストールする。::
-
-      $ ./gradlew publishToMavenLocal -Pskip.signing
-
-  - Mavenのローカルリポジトリを使うために、
-    Connector側のsettings.gradle.ktsのdependencyResolutionManagementのrepositoriesの部分を修正して、
-　　mavenLocal()を一番上に持ってくる必要なことがある。
-    https://github.com/eclipse-edc/Connector/blob/2c4bf1529b538077c2dd2cccd12128c3202d7548/settings.gradle.kts#L31-L38
-
-  - `Gradleのドキュメント <https://docs.gradle.org/8.0/userguide/composite_builds.html#composite_builds>`_
-    を見た感じ、ローカルでビルドしたartifactsに対してビルドするには、
-    `--include-build` を使うことを推奨しているが...例えばSamplesをそれでビルドしようとすると、
-    モジュール名の重複みたいな感じのエラーになる。::
-
-      $ ./gradlew --include-build /path/to/Connector clean build
-      ...
-      > Could not resolve all task dependencies for configuration ':advanced:advanced-01-open-telemetry:open-telemetry-consumer:compileClasspath'.
-        > Could not resolve org.eclipse.edc:management-api:0.3.1.
-          Required by:
-              project :advanced:advanced-01-open-telemetry:open-telemetry-consumer
-           > Module version 'org.eclipse.edc:management-api:0.3.1' is not unique in composite: can be provided by [project :Connector:extensions:control-plane:api:management-api, project :Connector:system-tests:management-api].
-
 - その後、あまりうまくないことが分かり、各コンポーネントがバージョンカタログを持つやり方に変わった。
 
   - https://github.com/eclipse-edc/Connector/blob/e7a092bf81fc43b42c349d98e3e6ad3939f181a6/docs/developer/decision-records/2023-03-31-version-catalog-per-component/README.md
@@ -660,6 +636,36 @@ versionining
 
   - Maven等にpublishして、外部から参照できるようにするためには、
     `version-catalogプラグイン <https://docs.gradle.org/current/userguide/platforms.html#sec:version-catalog-plugin>`_ を利用する。
+
+- ローカルでEDCのコードを修正して、それをSamplesから使って試したりするには、ちょっと手順が必要。
+
+  - まずGradlePlugins側のバージョン定義を修正したものをローカルリポジトリにインストールする。::
+
+      $ ./gradlew publishToMavenLocal -Pskip.signing
+
+  - `dependencyResolutionManagementのrepositoriesの設定 <https://github.com/eclipse-edc/Samples/blob/e837a2f9be9d8537f6b000103c580d0c7ef24f6e/settings.gradle.kts#L24-L29>`_
+    の設定で、mavenLocalをmavenCentralの上に持ってこないと、
+    ローカルのリポジトリ(~/.m2/repository)を見てくれないのかな? と思ったが、
+    そうしなくても、ローカルからartifactsが取得されるように見える。
+
+  - Gradleのキャッシュ(~/.gradle/caches)はキャッシュであって、リポジトリではない。
+    キャッシュに対してartifactsをpublishするようなことはできない。
+    mavenLocalから取得したartifactsはキャッシュされない。
+    そのため、mavenLocalを使うとビルドが遅くなるので、使うべき場面以外では使わないほうがよいというトーンになっている。
+
+  - Gradleのドキュメント的には、ローカルなartifactsを使ってビルドする場合、
+    `composite build <https://docs.gradle.org/8.0/userguide/composite_builds.html#composite_builds>`_
+    を使うことを推奨している。
+    だがしかし、Samplesを `--include-build` を使ってビルドしようとしたところ、
+    モジュール名の重複みたいな感じのエラーになった。::
+
+      $ ./gradlew --include-build /path/to/Connector clean build
+      ...
+      > Could not resolve all task dependencies for configuration ':advanced:advanced-01-open-telemetry:open-telemetry-consumer:compileClasspath'.
+        > Could not resolve org.eclipse.edc:management-api:0.3.1.
+          Required by:
+              project :advanced:advanced-01-open-telemetry:open-telemetry-consumer
+           > Module version 'org.eclipse.edc:management-api:0.3.1' is not unique in composite: can be provided by [project :Connector:extensions:control-plane:api:management-api, project :Connector:system-tests:management-api].
 
 
 docs
