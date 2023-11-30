@@ -239,6 +239,30 @@ configuration
   は、edc.fs.configでpathを指定されたファイルから、設定内容を読み込む。
 
 
+persistence
+-----------
+
+- データの永続化のための仕組み/抽象化は独自実装で、外部ライブラリの依存性が増えることを避ける方針に見える。
+
+  - 永続化が必要なサブモジュールは、それぞれ ``org.eclipse.edc.spi.persistence.*.*Store`` のような名前の、インターフェースを定義する。
+    この定義はサブモジュールごとに行っていて、意外と共通化されていない。
+
+  - デフォルト実装として、データを永続化しない ``InMemory*Store`` があり、ユニットテストやサンプルの実行に利用される。
+    こちらも、あまり共通化する余地なし。
+
+  - RDBMSを利用してデータを永続化する実装として ``Sql*Store`` がある。
+    これらの実装は、
+    common/sql/sql-core下の ``org.eclipse.edc.sql.store.AbstractSqlStore`` を、
+    ベースロジックとしてモジュール横断的に利用されているようだ。
+
+    - ``Sql*Store`` では、 ``*Statements`` のような名前のクラスを使い、
+      SQLステートメントを組み上げてJDBCドライバで実行する。｀
+
+    - ``*Statements`` は ``*DialectStatements`` のようなクラスをベースにしている。
+      このDialectを切り替えることで、複数RDBMSに対応できるようにする方針。
+      デフォルトで用意されているのは ``PostgresDialectStatements`` でPostgreSQLが前提。
+
+
 statemachine
 ------------
 
