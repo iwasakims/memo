@@ -274,15 +274,20 @@ persistence
 authentication
 --------------
 
-- managementやcontorolなAPIについては、AuthenticationService#isAuthenticatedを呼ぶようなfilterで認証している。
+- management APIについては、AuthenticationService#isAuthenticatedを呼ぶようなfilterで認証している。
 
   - https://github.com/eclipse-edc/Connector/blob/2e5a80f5070d3926a765cf991d50aedb40314f78/spi/common/auth-spi/src/main/java/org/eclipse/edc/api/auth/spi/AuthenticationRequestFilter.java#L44
 
+  - デフォルトでは、isAuthenticatedが常にtrueなfilterを使うことで、認証なし状態にしている。
+
+    - https://github.com/eclipse-edc/Connector/blob/96734fc83067381ec3c8edc314af4627231b62e3/extensions/common/api/api-core/src/main/java/org/eclipse/edc/api/ApiCoreDefaultServicesExtension.java#L37-L41
+    - https://github.com/eclipse-edc/Connector/blob/96734fc83067381ec3c8edc314af4627231b62e3/spi/common/auth-spi/src/main/java/org/eclipse/edc/api/auth/spi/AllPassAuthenticationService.java
+
   - Connector配下にあるAuthenticationServiceの実装は以下だけ。
 
-    - https://github.com/eclipse-edc/Connector/blob/2e5a80f5070d3926a765cf991d50aedb40314f78/spi/common/auth-spi/src/main/java/org/eclipse/edc/api/auth/spi/AllPassAuthenticationService.java
+    - https://github.com/eclipse-edc/Connector/blob/96734fc83067381ec3c8edc314af4627231b62e3/spi/common/auth-spi/src/main/java/org/eclipse/edc/api/auth/spi/AllPassAuthenticationService.java
+    - https://github.com/eclipse-edc/Connector/blob/96734fc83067381ec3c8edc314af4627231b62e3/extensions/common/auth/auth-basic/src/main/java/org/eclipse/edc/api/auth/basic/BasicAuthenticationService.java
     - https://github.com/eclipse-edc/Connector/blob/2e5a80f5070d3926a765cf991d50aedb40314f78/extensions/common/auth/auth-basic/src/main/java/org/eclipse/edc/api/auth/basic/BasicAuthenticationService.java
-    - https://github.com/eclipse-edc/Connector/blob/2e5a80f5070d3926a765cf991d50aedb40314f78/extensions/common/auth/auth-tokenbased/src/main/java/org/eclipse/edc/api/auth/token/TokenBasedAuthenticationExtension.java
 
 - コネクタの認証は、IdentityServiceが利用される。
 
@@ -290,6 +295,12 @@ authentication
 
     - https://github.com/eclipse-edc/Connector/blob/72d8b8ef58de41db7111c9928f777ce60781f51c/extensions/common/iam/decentralized-identity/identity-did-service/src/main/java/org/eclipse/edc/iam/did/service/DecentralizedIdentityService.java
     - https://github.com/eclipse-edc/Connector/blob/72d8b8ef58de41db7111c9928f777ce60781f51c/extensions/common/iam/oauth2/oauth2-core/src/main/java/org/eclipse/edc/iam/oauth2/identity/Oauth2ServiceImpl.java
+
+
+identity
+--------
+
+- org.eclipse.edc.spi.iam.IdentityService
 
 
 logging
@@ -710,34 +721,22 @@ Samples
   - https://github.com/eclipse-edc/Samples
   - https://github.com/eclipse-edc/Connector/pull/2362
 
-- transferのサンプルが雰囲気をつかむのによいのかも。
+- transferのサンプルが雰囲気をつかむのによい。
 
-  - https://github.com/eclipse-edc/Samples/blob/227d59073658bd8bc2c526719102b32525bd86bb/transfer/transfer-01-file-transfer/README.md
+  - https://github.com/eclipse-edc/Samples/tree/66b108bd9e30efe430c62aaa1aebe445ba81c2fe/transfer
 
-  - consumer, providerはどちらも基本的なモジュールが同じ。
-    providerには、リクエストされたファイル操作をするための、
-    固有Extension(に附随するSourceとSink)が、追加でロードされる。
+  - consumer, providerはどちら同じモジュールを利用し、設定で使い分ける。
 
-   - clientはconsumerにREST APIでリクエストを送る。consumerは受付情報的な内容をすぐにレスポンスとして返す。
+   - client(curlコマンド)はconsumerにREST APIでmanagemnent APIのリクエストを送る。
+     consumerは受付情報的な内容をすぐにレスポンスとして返す。
 
-   - consumerはclientリクエストを受けて、providerにリクエストを送る。
-
-   - providerはそれを受けて、指定されたasset(ここではファイル)を、指定されたpathにコピーする。
-     ここではproviderからconsumerに実データが送られたりするわけではない。
-     データ転送の実処理はprovider(役のモジュール)側で完結している。
-
-     - データの送り先としてS3のバケットとかを指定した場合も、同じイメージだろうか。
-
-   - clientは受付情報から、依頼したデータ転送処理が終わったかどうかをpollingして確認する。
-
-   - このサンプルでは、curlコマンドでリクエストを送る先が全部9192番ポートで、
-     providerのdata management APIができることの範囲で完結している。
-
-     - controlplaneやidsのAPIは叩かれない。
+   - consumerはclientリクエストを受けて、providerにDataspace Protocolのリクエストを送る。
 
 - 手でcurlコマンドを叩く代わりに、一連の処理をtestタスクで実行することもできる。::
 
-    $ ./gradlew clean test -p transfer/transfer-01-file-transfer/file-transfer-integration-tests -DincludeTags=EndToEndTest --tests FileTransferSampleTest -PverboseTest
+    $ ./gradlew clean test -p system-tests -DincludeTags=EndToEndTest --tests Transfer03providerPushTest -PverboseTest
+
+  - 最近は、testcontainersを使って、backendなどをDockerで起動するようになった様子。
 
 
 MinimumViableDataspace
