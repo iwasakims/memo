@@ -113,12 +113,37 @@ REST API
   - https://github.com/eclipse-edc/Connector/blob/9adb0e4a09f4b0518a903e61890f94229ebda69e/extensions/common/http/jetty-core/src/main/java/org/eclipse/edc/web/jetty/JettyConfiguration.java
 
 - 上記のcontext aliasとしてはcontrol、management、protocol、publicがある。
-  controlはコネクタが内部的に使うもの。
-  managementはコネクタのクライアントが呼び出すもの。
-  protocolはDataspace Protocol用のもので、Dataspace Protocolへの移行前はidsだった。
-  publicはdata planeがデータを送るときに使うもの。
 
   - https://github.com/eclipse-edc/Connector/blob/9adb0e4a09f4b0518a903e61890f94229ebda69e/docs/developer/decision-records/2022-11-09-api-refactoring/renaming.md
+
+  - controlはコネクタが内部的に使うもの。
+    という理解だったが、コネクタ間のやりとりでDataspace Protocol以外のものだと、少ないように見える。
+    transferのsample実行時に/controlというcontext pathにregisterされたcontrollerは以下。
+
+    - TransferProcessControlApiController
+    - ConsumerPullTransferTokenValidationApiController
+    - DataPlaneControlApiController
+
+  - managementはコネクタのクライアントが呼び出すもの。
+
+  - protocolはDataspace Protocol用のもので、Dataspace Protocolへの移行前はidsだった。
+
+  - publicはdata planeがデータを送るときに使うもの。
+
+- どのAPIがどのport/contextに対応してるいるのか、コードを静的に眺めて判断するのが以外と難しい。
+  `JerseyRestService#start <https://github.com/eclipse-edc/Connector/blob/6012c7ae99bda409b9780c0a2c17d803a19e0106/extensions/common/http/jersey-core/src/main/java/org/eclipse/edc/web/jersey/JerseyRestService.java#L74-L80>`_
+  にブレークポイントを仕掛けて、contextとcontrolerとの対応付けをデバッガで見るとわかりやすいか。
+  `Samples/transferのコネクタ <https://github.com/eclipse-edc/Samples/tree/66b108bd9e30efe430c62aaa1aebe445ba81c2fe/transfer/transfer-00-prerequisites>`_
+  でやると、以下のような感じ。::
+
+    $ java \
+       -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=18888 \
+       -Dedc.keystore=transfer/transfer-00-prerequisites/resources/certs/cert.pfx \
+       -Dedc.keystore.password=123456 \
+       -Dedc.vault=transfer/transfer-00-prerequisites/resources/configuration/provider-vault.properties \
+       -Dedc.fs.config=transfer/transfer-00-prerequisites/resources/configuration/provider-configuration.properties \
+       -jar \
+       transfer/transfer-00-prerequisites/connector/build/libs/connector.jar
 
 - `web.http.path` and `web.http.port` は、defaultコンテキストに対応づけられる。
   controlとmanagementは固有の指定( `web.http.control.path` や `web.http.management.path` )がない場合、defaultを使う。
