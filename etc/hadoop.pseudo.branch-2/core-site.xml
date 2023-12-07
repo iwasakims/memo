@@ -21,4 +21,12 @@
     <name>fs.default.name</name>
     <value>hdfs://localhost:9000/</value>
   </property>
+  <property>
+    <name>hadoop.http.filter.initializers</name>
+    <value>org.apache.hadoop.security.HttpCrossOriginFilterInitializer</value>
+  </property>
+  <property>
+    <name>hadoop.http.cross-origin.enabled</name>
+    <value>true</value>
+  </property>
 </configuration>
