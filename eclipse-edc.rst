@@ -819,6 +819,60 @@ MinimumViableDataspace
     - WebDidResolverがDIDを取得するために、nginxがいる。
 
 
+Azure CLI
+---------
+
+MVDはAxure BlobのみをAssetのデータ置き場としてサポートしているため、
+試すには現物のAzureを使うか、Azuriteのコンテナをローカル実行する必要がある。
+
+テストようにAzure Blogのcontainerやblobを作る上では、
+Azure CLIのazコマンドを使うのが楽。
+Ubuntu環境であれば、
+`LinuxにAzure CLIをインストールする https://learn.microsoft.com/ja-jp/cli/azure/install-azure-cli-linux?pivots=apt`_
+の手順にあるように、aptでインストールできる。::
+
+  $ sudo apt-get update
+  $ sudo apt-get install ca-certificates curl apt-transport-https lsb-release gnupg
+  $ curl -sLS https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/keyrings/microsoft.gpg > /dev/null
+  $ sudo chmod go+r /etc/apt/keyrings/microsoft.gpg
+  $ AZ_DIST=$(lsb_release -cs)
+  $ echo "deb [arch=`dpkg --print-architecture` signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/azure-cli/ $AZ_DIST main" | sudo tee /etc/apt/sources.list.d/azure-cli.list
+  $ sudo apt-get update
+  $ sudo apt-get install azure-cli
+  $ az version
+
+azuriteを使う場合、ストレージアカウント名とキーは、
+`docker-compose.ymlのAZURITE_ACCOUNTS <https://github.com/eclipse-edc/MinimumViableDataspace/blob/659505e2a3dee432341d3e91d6f22509dfcff6ec/system-tests/docker-compose.yml#L152-L159>`_
+で設定されている。
+それに合わせて、接続文字列を設定して使う。::
+
+  $ az config set storage.connection_string="DefaultEndpointsProtocol=http;AccountName=company1assets;AccountKey=key1;BlobEndpoint=http://localhost:10000/company1assets"
+
+  $ az storage container list
+  []
+
+  $ az storage container create --name src-container
+  {
+    "created": true
+  }
+
+  $ az storage blob upload --container-name src-container --file README.md
+  Finished[#############################################################]  100.0000%
+  {
+    "client_request_id": "404c134a-9907-11ee-9694-7f9fa7b97662",
+    "content_md5": "W0MNw9Q0CAJaDOAmZHEvGw==",
+    "date": "2023-12-12T15:58:12+00:00",
+    "encryption_key_sha256": null,
+    "encryption_scope": null,
+    "etag": "\"0x211DED5A35B0E40\"",
+    "lastModified": "2023-12-12T15:58:12+00:00",
+    "request_id": "4c2d8613-822f-4046-9049-a6926ac7f4a7",
+    "request_server_encrypted": true,
+    "version": "2023-11-03",
+    "version_id": null
+  }
+
+
 IdentityHub
 ===========
 
