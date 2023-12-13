@@ -794,29 +794,35 @@ MinimumViableDataspace
 
 - FederatedCatalogを利用。
 
-- Dockerを利用して、ローカルノードで動作確認できる。
 
-  - https://github.com/eclipse-edc/MinimumViableDataspace/blob/8141afce75613f62ed236cb325a862b8af40b903/system-tests/README.md#test-execution-using-embedded-services
+local testing
+-------------
 
-  - `-DuseFsVault="true"` をつけてビルドしないと、Azureを使うVaultが使われて、エラーになる。
-    (AzuriteをVaultとして使うための仕込みがない。)
+Docker Composeを利用して、ローカルノードで動作確認できる。
 
-  - MVD_UI_PATHをexportして、DataDashboardのUIを動かす場合も、上記の仕込みは必要。
+- https://github.com/eclipse-edc/MinimumViableDataspace/blob/659505e2a3dee432341d3e91d6f22509dfcff6ec/system-tests/README.md#test-execution-using-embedded-services
 
-    - https://github.com/eclipse-edc/MinimumViableDataspace/tree/8141afce75613f62ed236cb325a862b8af40b903#local-development-setup
+- `-DuseFsVault="true"` をつけてビルドしないと、(azuriteではなく)Azure前提のVaultが使われて、エラーになる。
 
-    - まとめると以下の要領::
+- MVD_UI_PATHをexportして、DataDashboardのUIを動かす場合も、上記の仕込みは必要。
 
-        $ ./gradlew -DuseFsVault="true" :launchers:connector:shadowJar
-        $ ./gradlew -DuseFsVault="true" :launchers:registrationservice:shadowJar
-        $ export MVD_UI_PATH=/home/iwasakims/srcs/eclipse-edc/DataDashboard
-        $ docker compose --profile ui -f system-tests/docker-compose.yml up --build
+  - https://github.com/eclipse-edc/MinimumViableDataspace/tree/659505e2a3dee432341d3e91d6f22509dfcff6ec#local-development-setup
 
-  - ローカル実行用のdocker-compose.ymlの中身も、構成を知る参考になる。
+- MVDはAxure BlobのみをAssetのデータ置き場としてサポートしているため、azuriteのコンテナがいる。
 
-    - https://github.com/eclipse-edc/MinimumViableDataspace/blob/8141afce75613f62ed236cb325a862b8af40b903/system-tests/docker-compose.yml
+- WebDidResolverがDIDを取得するために、nginxのコンテナがいる。
 
-    - WebDidResolverがDIDを取得するために、nginxがいる。
+まとめると以下の要領::
+
+  $ cd /home/iwasakims/srcs
+  $ git clone https://github.com/eclipse-edc/MinimumViableDataspace
+  $ git clone https://github.com/eclipse-edc/DataDashBoard
+  $ cd MinimumViableDataspace
+  
+  $ ./gradlew -DuseFsVault="true" :launchers:connector:shadowJar
+  $ ./gradlew -DuseFsVault="true" :launchers:registrationservice:shadowJar
+  $ export MVD_UI_PATH=/home/iwasakims/srcs/eclipse-edc/DataDashboard
+  $ docker compose --profile ui -f system-tests/docker-compose.yml up --build
 
 
 Azure CLI
@@ -825,11 +831,11 @@ Azure CLI
 MVDはAxure BlobのみをAssetのデータ置き場としてサポートしているため、
 試すには現物のAzureを使うか、Azuriteのコンテナをローカル実行する必要がある。
 
-テストようにAzure Blogのcontainerやblobを作る上では、
+テスト用にAzure Blogのcontainerやblobを作る上では、
 Azure CLIのazコマンドを使うのが楽。
 Ubuntu環境であれば、
-`LinuxにAzure CLIをインストールする https://learn.microsoft.com/ja-jp/cli/azure/install-azure-cli-linux?pivots=apt`_
-の手順にあるように、aptでインストールできる。::
+`LinuxにAzure CLIをインストールする https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt`_
+手順にあるように、aptでインストールできる。::
 
   $ sudo apt-get update
   $ sudo apt-get install ca-certificates curl apt-transport-https lsb-release gnupg
@@ -847,30 +853,13 @@ azuriteを使う場合、ストレージアカウント名とキーは、
 それに合わせて、接続文字列を設定して使う。::
 
   $ az config set storage.connection_string="DefaultEndpointsProtocol=http;AccountName=company1assets;AccountKey=key1;BlobEndpoint=http://localhost:10000/company1assets"
-
   $ az storage container list
-  []
-
   $ az storage container create --name src-container
-  {
-    "created": true
-  }
+  $ az storage blob upload --container-name src-container --file ./deployment/azure/terraform/modules/participant/sample-data/text-document.txt
 
-  $ az storage blob upload --container-name src-container --file README.md
-  Finished[#############################################################]  100.0000%
-  {
-    "client_request_id": "404c134a-9907-11ee-9694-7f9fa7b97662",
-    "content_md5": "W0MNw9Q0CAJaDOAmZHEvGw==",
-    "date": "2023-12-12T15:58:12+00:00",
-    "encryption_key_sha256": null,
-    "encryption_scope": null,
-    "etag": "\"0x211DED5A35B0E40\"",
-    "lastModified": "2023-12-12T15:58:12+00:00",
-    "request_id": "4c2d8613-822f-4046-9049-a6926ac7f4a7",
-    "request_server_encrypted": true,
-    "version": "2023-11-03",
-    "version_id": null
-  }
+Azure CLIでblobを操作する方法は、
+`Azure Blob Storage documentation <https://learn.microsoft.com/en-us/azure/storage/blobs/blob-cli>`_
+等に説明がある。
 
 
 IdentityHub
