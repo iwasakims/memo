@@ -5,18 +5,6 @@ eclipse-edc
 .. contents::
 
 
-Rebranding
-==========
-
-- 元々はEclipse Dataspace Connectorだったが、Eclipse Dataspace Componentsにrebrandされた。
-
-  - https://github.com/eclipse-edc/Connector/discussions/2244
-
-  - URLも https://github.com/eclipse-dataspaceconnector/DataSpaceConnector から
-    https://github.com/eclipse-edc/Connector に変わった。
-    古いURLでもアクセス可能。
-
-
 Connector
 =========
 
@@ -253,6 +241,51 @@ test
     呼び出しておかなければならない。
 
 
+e2e-transfer-test
+-----------------
+
+- コネクタによるデータ転送の一連の流れを実行するテストコードが定義されている。
+
+- AbstractEndToEndTransferがベースクラスで、データの永続化先によって3種類の派生がある。
+  各派生には `@EndToEndTest` のようなアノテーションがついていて、それに応じて
+  `-DincludeTags=EndToEndTest` のような指定をしないと、テストが実行されない。
+
+- EndToEndTransferInMemoryTestはデータをメモリ上に持ち、永続化しないパターンで、それ単体で実行できる。::
+
+    $ ./gradlew clean test -p system-tests/e2e-transfer-test/runner -DincludeTags=EndToEndTest --tests '*EndToEndTransferInMemoryTest' -PverboseTest
+
+- EndToEndTransferPostgresqlTestはPostgreSQLにデータを永続化する。
+  これも、コンテナを利用してPostgreSQLのサーバを建てることで、簡単に実行できる。
+  アノテーションが `@PostgresqlDbIntegrationTest` だが、定義されているTagがPostgresqlIntegrationTestで紛らわしい。::
+
+    $ docker run --rm --name edc-postgres -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres
+    $ ./gradlew clean test -p system-tests/e2e-transfer-test/runner -DincludeTags=PostgresqlIntegrationTest --tests '*EndToEndTransferPostgresqlTest' -PverboseTest
+
+  - テスト実行後に、データベース内のデータを見てみるのも、理解を深めるのに役立つかもしれない。
+    concsumerとproducerというデータベースができている。::
+
+      $ psql -U postgres -W -h localhost -l
+      psql: warning: extra command-line argument "postgres" ignored
+      Password:
+                                       List of databases
+         Name    |  Owner   | Encoding |  Collate   |   Ctype    |   Access privileges
+      -----------+----------+----------+------------+------------+-----------------------
+       consumer  | postgres | UTF8     | en_US.utf8 | en_US.utf8 |
+       postgres  | postgres | UTF8     | en_US.utf8 | en_US.utf8 |
+       provider  | postgres | UTF8     | en_US.utf8 | en_US.utf8 |
+       template0 | postgres | UTF8     | en_US.utf8 | en_US.utf8 | =c/postgres          +
+                 |          |          |            |            | postgres=CTc/postgres
+       template1 | postgres | UTF8     | en_US.utf8 | en_US.utf8 | =c/postgres          +
+                 |          |          |            |            | postgres=CTc/postgres
+      (5 rows)
+      
+      $ psql -U postgres -W -h localhost -c 'SELECT * FROM edc_policydefinitions LIMIT 1;' provider
+                        policy_id               |  created_at   |                                                                                           permissions                                                                                           | prohibitions | duties | extensible_properties | inherits_from | assigner | assignee | target |      policy_type
+      --------------------------------------+---------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------+--------+-----------------------+---------------+----------+----------+--------+-----------------------
+       f5ed763c-7ec1-427d-a47d-3099236b61bd | 1682079999930 | [{"edctype":"dataspaceconnector:permission","uid":null,"target":null,"action":{"type":"USE","includedIn":null,"constraint":null},"assignee":null,"assigner":null,"constraints":[],"duties":[]}] | []           | []     | {}                    |               |          |          |        | {"@policytype":"set"}
+      (1 row)
+
+
 documentation
 -------------
 
@@ -301,31 +334,28 @@ authentication
 
 - management APIについては、AuthenticationService#isAuthenticatedを呼ぶようなfilterで認証している。
 
-  - https://github.com/eclipse-edc/Connector/blob/2e5a80f5070d3926a765cf991d50aedb40314f78/spi/common/auth-spi/src/main/java/org/eclipse/edc/api/auth/spi/AuthenticationRequestFilter.java#L44
+  - https://github.com/eclipse-edc/Connector/blob/v0.3.1/spi/common/auth-spi/src/main/java/org/eclipse/edc/api/auth/spi/AuthenticationRequestFilter.java
 
-  - デフォルトでは、isAuthenticatedが常にtrueなfilterを使うことで、認証なし状態にしている。
+  - Connector配下にあるAuthenticationServiceの実装は2種類だけ。
 
-    - https://github.com/eclipse-edc/Connector/blob/96734fc83067381ec3c8edc314af4627231b62e3/extensions/common/api/api-core/src/main/java/org/eclipse/edc/api/ApiCoreDefaultServicesExtension.java#L37-L41
-    - https://github.com/eclipse-edc/Connector/blob/96734fc83067381ec3c8edc314af4627231b62e3/spi/common/auth-spi/src/main/java/org/eclipse/edc/api/auth/spi/AllPassAuthenticationService.java
+    - 未指定デフォルトで利用される
+      `AllPassAuthenticationService <https://github.com/eclipse-edc/Connector/blob/v0.3.1/spi/common/auth-spi/src/main/java/org/eclipse/edc/api/auth/spi/AllPassAuthenticationService.java>`_
+      は文字通り素通し。
 
-  - Connector配下にあるAuthenticationServiceの実装は以下だけ。
+    - `BasicAuthenticationService <https://github.com/eclipse-edc/Connector/blob/v0.3.1/extensions/common/auth/auth-basic/src/main/java/org/eclipse/edc/api/auth/basic/BasicAuthenticationService.java>`_
+      は、 ``edc.api.auth.key`` で指定されたキー文字列が、
+      X-Api-Keyヘッダーにセットされているかをセットする、素朴なもの。
 
-    - https://github.com/eclipse-edc/Connector/blob/96734fc83067381ec3c8edc314af4627231b62e3/spi/common/auth-spi/src/main/java/org/eclipse/edc/api/auth/spi/AllPassAuthenticationService.java
-    - https://github.com/eclipse-edc/Connector/blob/96734fc83067381ec3c8edc314af4627231b62e3/extensions/common/auth/auth-basic/src/main/java/org/eclipse/edc/api/auth/basic/BasicAuthenticationService.java
-    - https://github.com/eclipse-edc/Connector/blob/2e5a80f5070d3926a765cf991d50aedb40314f78/extensions/common/auth/auth-basic/src/main/java/org/eclipse/edc/api/auth/basic/BasicAuthenticationService.java
-
-- コネクタの認証は、IdentityServiceが利用される。
-
-  - Connector配下にある実装はDIDとOAuth2の2択。
-
-    - https://github.com/eclipse-edc/Connector/blob/72d8b8ef58de41db7111c9928f777ce60781f51c/extensions/common/iam/decentralized-identity/identity-did-service/src/main/java/org/eclipse/edc/iam/did/service/DecentralizedIdentityService.java
-    - https://github.com/eclipse-edc/Connector/blob/72d8b8ef58de41db7111c9928f777ce60781f51c/extensions/common/iam/oauth2/oauth2-core/src/main/java/org/eclipse/edc/iam/oauth2/identity/Oauth2ServiceImpl.java
+- コネクタの認証には、org.eclipse.edc.spi.iam.IdentityServiceが利用される。
 
 
 identity
 --------
 
-- org.eclipse.edc.spi.iam.IdentityService
+- Connector配下にある実装はDIDとOAuth2の2択。
+
+  - https://github.com/eclipse-edc/Connector/blob/72d8b8ef58de41db7111c9928f777ce60781f51c/extensions/common/iam/decentralized-identity/identity-did-service/src/main/java/org/eclipse/edc/iam/did/service/DecentralizedIdentityService.java
+  - https://github.com/eclipse-edc/Connector/blob/72d8b8ef58de41db7111c9928f777ce60781f51c/extensions/common/iam/oauth2/oauth2-core/src/main/java/org/eclipse/edc/iam/oauth2/identity/Oauth2ServiceImpl.java
 
 
 logging
@@ -438,6 +468,13 @@ statemachine
   - どちらもテスト用にWaitStrategyを差し込み可能になっている。
 
     - see NegotiationWaitStrategy and TransferWaitStrategy
+
+
+usage control
+-------------
+
+
+- https://github.com/eclipse-edc/Connector/blob/v0.3.1/docs/developer/architecture/usage-control/policies.md
 
 
 catalog
@@ -585,50 +622,6 @@ data-plane
   - https://github.com/eclipse-edc/Connector/tree/5803513f0c4cc795c0d1d069f7039c8ca1bd8f7e/extensions/control-plane/transfer/transfer-data-plane
 
 
-e2e-transfer-test
------------------
-
-- コネクタによるデータ転送の一連の流れを実行するテストコードが定義されている。
-
-- AbstractEndToEndTransferがベースクラスで、データの永続化先によって3種類の派生がある。
-  各派生には `@EndToEndTest` のようなアノテーションがついていて、それに応じて
-  `-DincludeTags=EndToEndTest` のような指定をしないと、テストが実行されない。
-
-- EndToEndTransferInMemoryTestはデータをメモリ上に持ち、永続化しないパターンで、それ単体で実行できる。::
-
-    $ ./gradlew clean test -p system-tests/e2e-transfer-test/runner -DincludeTags=EndToEndTest --tests '*EndToEndTransferInMemoryTest' -PverboseTest
-
-- EndToEndTransferPostgresqlTestはPostgreSQLにデータを永続化する。
-  これも、コンテナを利用してPostgreSQLのサーバを建てることで、簡単に実行できる。
-  アノテーションが `@PostgresqlDbIntegrationTest` だが、定義されているTagがPostgresqlIntegrationTestで紛らわしい。::
-
-    $ docker run --rm --name edc-postgres -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres
-    $ ./gradlew clean test -p system-tests/e2e-transfer-test/runner -DincludeTags=PostgresqlIntegrationTest --tests '*EndToEndTransferPostgresqlTest' -PverboseTest
-
-  - テスト実行後に、データベース内のデータを見てみるのも、理解を深めるのに役立つかもしれない。
-    concsumerとproducerというデータベースができている。::
-
-      $ psql -U postgres -W -h localhost -l
-      psql: warning: extra command-line argument "postgres" ignored
-      Password:
-                                       List of databases
-         Name    |  Owner   | Encoding |  Collate   |   Ctype    |   Access privileges
-      -----------+----------+----------+------------+------------+-----------------------
-       consumer  | postgres | UTF8     | en_US.utf8 | en_US.utf8 |
-       postgres  | postgres | UTF8     | en_US.utf8 | en_US.utf8 |
-       provider  | postgres | UTF8     | en_US.utf8 | en_US.utf8 |
-       template0 | postgres | UTF8     | en_US.utf8 | en_US.utf8 | =c/postgres          +
-                 |          |          |            |            | postgres=CTc/postgres
-       template1 | postgres | UTF8     | en_US.utf8 | en_US.utf8 | =c/postgres          +
-                 |          |          |            |            | postgres=CTc/postgres
-      (5 rows)
-      
-      $ psql -U postgres -W -h localhost -c 'SELECT * FROM edc_policydefinitions LIMIT 1;' provider
-                        policy_id               |  created_at   |                                                                                           permissions                                                                                           | prohibitions | duties | extensible_properties | inherits_from | assigner | assignee | target |      policy_type
-      --------------------------------------+---------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------+--------+-----------------------+---------------+----------+----------+--------+-----------------------
-       f5ed763c-7ec1-427d-a47d-3099236b61bd | 1682079999930 | [{"edctype":"dataspaceconnector:permission","uid":null,"target":null,"action":{"type":"USE","includedIn":null,"constraint":null},"assignee":null,"assigner":null,"constraints":[],"duties":[]}] | []           | []     | {}                    |               |          |          |        | {"@policytype":"set"}
-      (1 row)
-
 
 Dataspace Protocol
 ------------------
@@ -651,6 +644,18 @@ chunked transferをオフにできるようになった。::
           "baseUrl": "http://localhost:4000/api/consumer/store",
           "nonChunkedTransfer": "true"
         }
+
+
+Rebranding
+==========
+
+- 元々はEclipse Dataspace Connectorだったが、Eclipse Dataspace Componentsにrebrandされた。
+
+  - https://github.com/eclipse-edc/Connector/discussions/2244
+
+  - URLも https://github.com/eclipse-dataspaceconnector/DataSpaceConnector から
+    https://github.com/eclipse-edc/Connector に変わった。
+    古いURLでもアクセス可能。
 
 
 versionining
@@ -786,7 +791,11 @@ MinimumViableDataspace
 
   - https://github.com/eclipse-edc/MinimumViableDataspace/blob/8141afce75613f62ed236cb325a862b8af40b903/extensions/refresh-catalog/src/main/java/org/eclipse/edc/mvd/RegistrationServiceNodeDirectoryExtension.java
 
-- DID/VCでParticipantを認証する仕組みとしてIdentityHubとRegistrationServiceを利用。
+- DID/VCでParticipantを認証する仕組みとして
+  `IdentityHub <https://github.com/eclipse-edc/IdentityHub>`_
+  と
+  `RegistrationService <https://github.com/eclipse-edc/RegistrationService>`_
+  を利用。
 
   - https://github.com/eclipse-edc/MinimumViableDataspace/tree/8141afce75613f62ed236cb325a862b8af40b903/docs/developer/decision-records/2022-06-20-mvd-onboarding
   - https://github.com/eclipse-edc/MinimumViableDataspace/tree/8141afce75613f62ed236cb325a862b8af40b903/docs/developer/decision-records/2022-06-16-distributed-authorization
