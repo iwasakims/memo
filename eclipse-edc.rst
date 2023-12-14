@@ -473,8 +473,35 @@ statemachine
 usage control
 -------------
 
-
 - https://github.com/eclipse-edc/Connector/blob/v0.3.1/docs/developer/architecture/usage-control/policies.md
+
+- `PolicyEngine <https://github.com/eclipse-edc/Connector/blob/v0.3.1/spi/common/policy-engine-spi/src/main/java/org/eclipse/edc/policy/engine/spi/PolicyEngine.java>`_
+  が
+  `registerしておいた関数群 <https://github.com/eclipse-edc/Connector/blob/v0.3.1/core/common/policy-engine/src/main/java/org/eclipse/edc/policy/engine/PolicyEngineImpl.java#L51-L54>`_
+  を実行することで、
+  `Policy <https://github.com/eclipse-edc/Connector/blob/v0.3.1/spi/common/policy-model/src/main/java/org/eclipse/edc/policy/model/Policy.java>`_
+  を満たすかどうか評価する。
+
+- Catalog, ContractNegotiation, TransferProcess等のサービス内で、 ``PolicyEngine#evaluate`` が評価される。
+
+- 関数によって評価される
+  `Rule <https://github.com/eclipse-edc/Connector/blob/v0.3.1/spi/common/policy-model/src/main/java/org/eclipse/edc/policy/model/Rule.java>`_ には、
+  `Duty <https://github.com/eclipse-edc/Connector/blob/v0.3.1/spi/common/policy-model/src/main/java/org/eclipse/edc/policy/model/Duty.java>`_ 、
+  `Permission <https://github.com/eclipse-edc/Connector/blob/v0.3.1/spi/common/policy-model/src/main/java/org/eclipse/edc/policy/model/Permission.java>`_ 、
+  `Prohibition <https://github.com/eclipse-edc/Connector/blob/v0.3.1/spi/common/policy-model/src/main/java/org/eclipse/edc/policy/model/Prohibition.java>`_
+  の3種類がある。
+
+- 上記のPolicyやRuleの概念は、 `ODRL <https://www.w3.org/TR/odrl-model/>`_ で定義されたもの。
+
+- Policyは `policydefinitions <https://app.swaggerhub.com/apis/eclipse-edc-bot/management-api/0.3.1#/Policy%20Definition/>`_ のAPIで登録する。
+
+- `MVDでポリシーを登録してるところ <https://github.com/eclipse-edc/MinimumViableDataspace/blob/main/deployment/data/MVD.postman_collection.json#L92-L131>`_
+  が参考になるかもしれない。
+  MVDは
+  `regionの値でアクセス制御するためのルール関数 <https://github.com/eclipse-edc/MinimumViableDataspace/blob/659505e2a3dee432341d3e91d6f22509dfcff6ec/extensions/policies/src/main/java/org/eclipse/edc/mvd/RegionConstraintFunction.java>`_
+  を実装して使っている。
+  `関数の登録するためのextension <https://github.com/eclipse-edc/MinimumViableDataspace/blob/659505e2a3dee432341d3e91d6f22509dfcff6ec/extensions/policies/src/main/java/org/eclipse/edc/mvd/SeedPoliciesExtension.java>`_
+  がセットで必要。
 
 
 catalog
@@ -646,7 +673,7 @@ chunked transferをオフにできるようになった。::
         }
 
 
-Rebranding
+rebranding
 ==========
 
 - 元々はEclipse Dataspace Connectorだったが、Eclipse Dataspace Componentsにrebrandされた。
@@ -658,8 +685,8 @@ Rebranding
     古いURLでもアクセス可能。
 
 
-versionining
-============
+versioning
+==========
 
 - バージョンはずっと0.0.1-SNAPSHOTだったが、ソースコードを分割して、
   それぞれのリポジトリで非互換な修正が入るとビルドが通らなくなるので、
