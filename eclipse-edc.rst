@@ -495,13 +495,13 @@ usage control
 
 - Policyは `policydefinitions <https://app.swaggerhub.com/apis/eclipse-edc-bot/management-api/0.3.1#/Policy%20Definition/>`_ のAPIで登録する。
 
-- `MVDでポリシーを登録してるところ <https://github.com/eclipse-edc/MinimumViableDataspace/blob/main/deployment/data/MVD.postman_collection.json#L92-L131>`_
-  が参考になるかもしれない。
-  MVDは
-  `regionの値でアクセス制御するためのルール関数 <https://github.com/eclipse-edc/MinimumViableDataspace/blob/659505e2a3dee432341d3e91d6f22509dfcff6ec/extensions/policies/src/main/java/org/eclipse/edc/mvd/RegionConstraintFunction.java>`_
-  を実装して使っている。
-  `関数の登録するためのextension <https://github.com/eclipse-edc/MinimumViableDataspace/blob/659505e2a3dee432341d3e91d6f22509dfcff6ec/extensions/policies/src/main/java/org/eclipse/edc/mvd/SeedPoliciesExtension.java>`_
-  がセットで必要。
+- MVDの関連部分が参考になるかもしれない。
+
+  - `Postman/NewmanでAPIを呼び出してポリシーを登録 <https://github.com/eclipse-edc/MinimumViableDataspace/blob/main/deployment/data/MVD.postman_collection.json#L92-L131>`_ してるところ。
+
+  - `regionの値でアクセス制御するためのルール関数 <https://github.com/eclipse-edc/MinimumViableDataspace/blob/659505e2a3dee432341d3e91d6f22509dfcff6ec/extensions/policies/src/main/java/org/eclipse/edc/mvd/RegionConstraintFunction.java>`_
+
+  - `関数を登録するためのextension <https://github.com/eclipse-edc/MinimumViableDataspace/blob/659505e2a3dee432341d3e91d6f22509dfcff6ec/extensions/policies/src/main/java/org/eclipse/edc/mvd/SeedPoliciesExtension.java>`_
 
 
 catalog
@@ -926,11 +926,11 @@ RegistrationService
   - Participant追加は、 `Authorization: Bearer DID-JWT` のようなヘッダー付きのリクエストをPOSTすることで行う。
 
   - Participantの情報は一旦storeに格納し、ParticipantManagerがPolicyに応じて参加を許可するか判断する。
-    デフォルトでは無条件に許可する。
 
-    - https://github.com/eclipse-edc/RegistrationService/blob/04df5c8f361d71520b48385872db63df68291537/core/registration-service/src/main/java/org/eclipse/edc/registration/RegistrationServiceExtension.java#L93-L96
+    - https://github.com/eclipse-edc/RegistrationService/blob/v0.3.1/core/registration-service/src/main/java/org/eclipse/edc/registration/RegistrationServiceExtension.java#L93-L96
+    - https://github.com/eclipse-edc/RegistrationService/blob/v0.3.1/core/registration-service-onboarding-policy-verifier/src/main/java/org/eclipse/edc/registration/verifier/OnboardingPolicyVerifierImpl.java#L53-L90
 
-- 参加登録されたParticipantのIdentityHubにtokenを渡す。
+- 参加登録されたParticipantのIdentityHubにtokenを渡す。 
 
   - https://github.com/eclipse-edc/MinimumViableDataspace/blob/8141afce75613f62ed236cb325a862b8af40b903/docs/developer/decision-records/2022-06-15-registration-service/README.md#1-dataspace-participant-enrollment
 
