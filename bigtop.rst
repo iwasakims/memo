@@ -7,6 +7,15 @@ Bigtop
 toolchain and provisioner
 =========================
 
+applying toolchain manifests without installing JDK
+---------------------------------------------------
+
+JDK is needed to run ``./gradlew toolchain`` which installs JDK.
+``puppet apply`` directly can be used
+`as done in toolchain task <https://github.com/apache/bigtop/blob/rel/3.2.1/build.gradle#L225-L237>`_ .::
+
+  $ sudo puppet apply --modulepath="/home/admin/srcs/bigtop:/etc/puppet/modules:/usr/share/puppet/modules:/etc/puppetlabs/code/modules:/etc/puppet/code/modules" -e "include bigtop_toolchain::installer"
+
 setting up build environment on CentOS 7/CentOS 8
 -------------------------------------------------
 
