@@ -925,10 +925,14 @@ RegistrationService
 
   - Participant追加は、 `Authorization: Bearer DID-JWT` のようなヘッダー付きのリクエストをPOSTすることで行う。
 
-  - Participantの情報は一旦storeに格納し、ParticipantManagerがPolicyに応じて参加を許可するか判断する。
+  - Participantの情報は一旦storeに格納し、非同期的にstoreの情報を見ているParticipantManagerがDataspaceRegistrationPolicyに応じて参加を許可するか判断する。
 
     - https://github.com/eclipse-edc/RegistrationService/blob/v0.3.1/core/registration-service/src/main/java/org/eclipse/edc/registration/RegistrationServiceExtension.java#L93-L96
+
     - https://github.com/eclipse-edc/RegistrationService/blob/v0.3.1/core/registration-service-onboarding-policy-verifier/src/main/java/org/eclipse/edc/registration/verifier/OnboardingPolicyVerifierImpl.java#L53-L90
+
+      - DidDocumentをDidResolverを使って取得する。
+        WebDidResolverはWebサーバからGETする。アクセス先のURLは、DIDのURNを加工して作る。
 
 - 参加登録されたParticipantのIdentityHubにtokenを渡す。 
 
