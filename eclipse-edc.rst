@@ -915,6 +915,19 @@ IdentityHub
 
 - https://github.com/eclipse-edc/IdentityHub
 
+- おもに以下の機能を提供
+
+  - verifiable credentialの保存
+
+    - Dataspace AuthorityのRegistration Serviceが、participantのenrollmentの過程で、
+      署名したverifiable credential(JWS?)を書き込む。
+
+    - キーバリュー的にVCを保存するが、キーは単にUUID#randomUUIDで決まるようだ。
+
+  - verifiable presentationの取得
+
+    - 検索条件などはなく、登録されているすべてのVCが返ってくるようだが?
+
 - DIDに関する概念ででてくる
   `Decentralized Web Node https://identity.foundation/decentralized-web-node/spec/#write`_
   なるものに相当するらしい。
@@ -938,23 +951,9 @@ IdentityHub
 
 - participantが各自IdentityHubを立てておき、DID documentの中にそのURLを入れる。
 
-- おもに以下の機能を提供
-
-  - verifiable presentationの検索
-
-  - verifiable credentialの保存
-
-    - Dataspace AuthorityのRegistration Serviceが、participantのenrollmentの過程で、
-      署名したverifiable credentialを書き込む。
-
-
-Verifiable Credentials
-----------------------
-
-- verifiable credentialのholderは、verifiable presentationを生成して、verifierに送る感じで使う。
-
-
-
+  - Connectorと同一プロセスにすることもできる。
+    `RegistrationServiceのintegration test用コンテナ https://github.com/eclipse-edc/RegistrationService/tree/v0.3.1/system-tests/launchers/participant`_
+    がその例。
 
 
 RegistrationService
@@ -982,9 +981,15 @@ RegistrationService
       - DidDocumentをDidResolverを使って取得する。
         WebDidResolverはWebサーバからGETする。アクセス先のURLは、DIDのURNを加工して作る。
 
-- 参加登録されたParticipantのIdentityHubにtokenを渡す。 
+- participantの参加登録は、
+  `IdentityHubとやりとりして https://github.com/eclipse-edc/MinimumViableDataspace/blob/8141afce75613f62ed236cb325a862b8af40b903/docs/developer/decision-records/2022-06-15-registration-service/README.md#1-dataspace-participant-enrollment`_
+  実行する。
 
-  - https://github.com/eclipse-edc/MinimumViableDataspace/blob/8141afce75613f62ed236cb325a862b8af40b903/docs/developer/decision-records/2022-06-15-registration-service/README.md#1-dataspace-participant-enrollment
+  - まずparticipantのVCを取得する。
+
+  - その後、
+    `membership VC https://github.com/eclipse-edc/RegistrationService/tree/v0.3.1/docs/developer/decision-records/2022-08-03-membership-credential`_
+    というJWSを格納する。
 
 
 FederatedCatalog
