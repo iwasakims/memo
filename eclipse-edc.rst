@@ -848,7 +848,7 @@ Docker Composeを利用して、ローカルノードで動作確認できる。
 
 - WebDidResolverがDIDを取得するために、nginxのコンテナがいる。
 
-まとめると以下の要領::
+- 上記をまとめてると、以下の要領でコマンドを実行することになる。::
 
   $ cd /home/iwasakims/srcs
   $ git clone https://github.com/eclipse-edc/MinimumViableDataspace
@@ -859,6 +859,18 @@ Docker Composeを利用して、ローカルノードで動作確認できる。
   $ ./gradlew -DuseFsVault="true" :launchers:registrationservice:shadowJar
   $ export MVD_UI_PATH=/home/iwasakims/srcs/eclipse-edc/DataDashboard
   $ docker compose --profile ui -f system-tests/docker-compose.yml up --build
+
+- cli-toolsというコンテナの、
+  `entrypoint.sh https://github.com/eclipse-edc/MinimumViableDataspace/blob/cc5cc02d8ca0ee69052ca765f611abe3ad82f5f8/system-tests/resources/cli-tools/entrypoint.sh`_
+  のなかで、participantのenrollmentを実行。
+
+  - identity-hub-cliでverifiable credentialを登録
+
+  - registry-service-cliでparticipantを登録
+
+- did-serverというnginxのコンテナが、
+  `DID document https://github.com/eclipse-edc/MinimumViableDataspace/blob/main/system-tests/resources/webdid/company1/did.json`_
+  の置き場。
 
 
 Azure CLI
@@ -903,10 +915,46 @@ IdentityHub
 
 - https://github.com/eclipse-edc/IdentityHub
 
-- コードはそのうち、TrustFrameworkAdoptionの方に移動されることになる?
+- DIDに関する概念ででてくる
+  `Decentralized Web Node https://identity.foundation/decentralized-web-node/spec/#write`_
+  なるものに相当するらしい。
+  だがしかし、そのコードの多くは
+  `identity_dwn https://github.com/eclipse-edc/IdentityHub/tree/identity_dwn`_
+  ブランチに残し、
+  `PR#160 https://github.com/eclipse-edc/IdentityHub/pull/160`_
+　で削除され、
+  `2023-09-06のdecision records https://github.com/eclipse-edc/docs/tree/e7730f432305775542503e4ecb61aa7e829bea30/developer/decision-records/2023-09-06-identity-trust`_
+  に書かれているように、EDCの仕組みを作る方向に向かうようだ。
+  いまは
+  `Tractus-X配下でされている枠組み https://github.com/eclipse-tractusx/ssi-docu`_
+  が、標準化のために、
+  `Eclipse Dataspace Working Group https://www.eclipse.org/org/workinggroups/dataspace-charter.php`_
+  の方に移されるとも。
+
+- Gaia-Xとの関係性てきな話題については、以下も参照。
 
   - https://github.com/eclipse-edc/Connector/discussions/2303
   - https://github.com/eclipse-edc/TrustFrameworkAdoption
+
+- participantが各自IdentityHubを立てておき、DID documentの中にそのURLを入れる。
+
+- おもに以下の機能を提供
+
+  - verifiable presentationの検索
+
+  - verifiable credentialの保存
+
+    - Dataspace AuthorityのRegistration Serviceが、participantのenrollmentの過程で、
+      署名したverifiable credentialを書き込む。
+
+
+Verifiable Credentials
+----------------------
+
+- verifiable credentialのholderは、verifiable presentationを生成して、verifierに送る感じで使う。
+
+
+
 
 
 RegistrationService
