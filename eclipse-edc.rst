@@ -819,10 +819,7 @@ MinimumViableDataspace
   - https://github.com/eclipse-edc/MinimumViableDataspace/blob/8141afce75613f62ed236cb325a862b8af40b903/extensions/refresh-catalog/src/main/java/org/eclipse/edc/mvd/RegistrationServiceNodeDirectoryExtension.java
 
 - DID/VCでParticipantを認証する仕組みとして
-  `IdentityHub <https://github.com/eclipse-edc/IdentityHub>`_
-  と
-  `RegistrationService <https://github.com/eclipse-edc/RegistrationService>`_
-  を利用。
+  `IdentityHub`_ と `RegistrationService`_ を利用。
 
   - https://github.com/eclipse-edc/MinimumViableDataspace/tree/8141afce75613f62ed236cb325a862b8af40b903/docs/developer/decision-records/2022-06-20-mvd-onboarding
   - https://github.com/eclipse-edc/MinimumViableDataspace/tree/8141afce75613f62ed236cb325a862b8af40b903/docs/developer/decision-records/2022-06-16-distributed-authorization
