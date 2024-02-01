@@ -861,7 +861,7 @@ Docker Composeを利用して、ローカルノードで動作確認できる。
   $ docker compose --profile ui -f system-tests/docker-compose.yml up --build
 
 - cli-toolsというコンテナの、
-  `entrypoint.sh https://github.com/eclipse-edc/MinimumViableDataspace/blob/cc5cc02d8ca0ee69052ca765f611abe3ad82f5f8/system-tests/resources/cli-tools/entrypoint.sh`_
+  `entrypoint.sh <https://github.com/eclipse-edc/MinimumViableDataspace/blob/cc5cc02d8ca0ee69052ca765f611abe3ad82f5f8/system-tests/resources/cli-tools/entrypoint.sh>`_
   のなかで、participantのenrollmentを実行。
 
   - identity-hub-cliでverifiable credentialを登録
@@ -869,7 +869,7 @@ Docker Composeを利用して、ローカルノードで動作確認できる。
   - registry-service-cliでparticipantを登録
 
 - did-serverというnginxのコンテナが、
-  `DID document https://github.com/eclipse-edc/MinimumViableDataspace/blob/main/system-tests/resources/webdid/company1/did.json`_
+  `DID document <https://github.com/eclipse-edc/MinimumViableDataspace/blob/main/system-tests/resources/webdid/company1/did.json>`_
   の置き場。
 
 
@@ -882,7 +882,7 @@ MVDはAxure BlobのみをAssetのデータ置き場としてサポートして�
 テスト用にAzure Blogのcontainerやblobを作る上では、
 Azure CLIのazコマンドを使うのが楽。
 Ubuntu環境であれば、
-`LinuxにAzure CLIをインストールする https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt`_
+`LinuxにAzure CLIをインストールする <https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt>`_
 手順にあるように、aptでインストールできる。::
 
   $ sudo apt-get update
@@ -929,19 +929,19 @@ IdentityHub
     - 検索条件などはなく、登録されているすべてのVCが返ってくるようだが?
 
 - DIDに関する概念ででてくる
-  `Decentralized Web Node https://identity.foundation/decentralized-web-node/spec/#write`_
+  `Decentralized Web Node <https://identity.foundation/decentralized-web-node/spec/#write>`_
   なるものに相当するらしい。
   だがしかし、そのコードの多くは
-  `identity_dwn https://github.com/eclipse-edc/IdentityHub/tree/identity_dwn`_
+  `identity_dwn <https://github.com/eclipse-edc/IdentityHub/tree/identity_dwn>`_
   ブランチに残し、
-  `PR#160 https://github.com/eclipse-edc/IdentityHub/pull/160`_
+  `PR#160 <https://github.com/eclipse-edc/IdentityHub/pull/160>`_
   で削除され、
-  `2023-09-06のdecision records https://github.com/eclipse-edc/docs/tree/e7730f432305775542503e4ecb61aa7e829bea30/developer/decision-records/2023-09-06-identity-trust`_
+  `2023-09-06のdecision records <https://github.com/eclipse-edc/docs/tree/e7730f432305775542503e4ecb61aa7e829bea30/developer/decision-records/2023-09-06-identity-trust>`_
   に書かれているように、EDCの仕組みを作る方向に向かうようだ。
   いまは
-  `Tractus-X配下でされている枠組み https://github.com/eclipse-tractusx/ssi-docu`_
+  `Tractus-X配下でされている枠組み <https://github.com/eclipse-tractusx/ssi-docu>`_
   が、標準化のために、
-  `Eclipse Dataspace Working Group https://www.eclipse.org/org/workinggroups/dataspace-charter.php`_
+  `Eclipse Dataspace Working Group <https://www.eclipse.org/org/workinggroups/dataspace-charter.php>`_
   の方に移されるとも。
 
 - Gaia-Xとの関係性てきな話題については、以下も参照。
@@ -952,7 +952,7 @@ IdentityHub
 - participantが各自IdentityHubを立てておき、DID documentの中にそのURLを入れる。
 
   - Connectorと同一プロセスにすることもできる。
-    `RegistrationServiceのintegration test用コンテナ https://github.com/eclipse-edc/RegistrationService/tree/v0.3.1/system-tests/launchers/participant`_
+    `RegistrationServiceのintegration test用コンテナ <https://github.com/eclipse-edc/RegistrationService/tree/v0.3.1/system-tests/launchers/participant>`_
     がその例。
 
 
@@ -982,13 +982,13 @@ RegistrationService
         WebDidResolverはWebサーバからGETする。アクセス先のURLは、DIDのURNを加工して作る。
 
 - participantの参加登録は、
-  `IdentityHubとやりとりして https://github.com/eclipse-edc/MinimumViableDataspace/blob/8141afce75613f62ed236cb325a862b8af40b903/docs/developer/decision-records/2022-06-15-registration-service/README.md#1-dataspace-participant-enrollment`_
+  `IdentityHubとやりとりして <https://github.com/eclipse-edc/MinimumViableDataspace/blob/8141afce75613f62ed236cb325a862b8af40b903/docs/developer/decision-records/2022-06-15-registration-service/README.md#1-dataspace-participant-enrollment>`_
   実行する。
 
   - まずparticipantのVCを取得する。
 
   - その後、
-    `membership VC https://github.com/eclipse-edc/RegistrationService/tree/v0.3.1/docs/developer/decision-records/2022-08-03-membership-credential`_
+    `membership VC <https://github.com/eclipse-edc/RegistrationService/tree/v0.3.1/docs/developer/decision-records/2022-08-03-membership-credential>`_
     というJWSを格納する。
 
 
