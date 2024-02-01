@@ -137,7 +137,7 @@ REST API
   controlとmanagementは固有の指定( `web.http.control.path` や `web.http.management.path` )がない場合、defaultを使う。
   ( `useDefaultContext(true)` されている。)
 
-- Swaggerのアノテーションを利用して、*.yamlなどを生成している。
+- Swaggerのアノテーションを利用して、.yamlなどを生成している。
 
   - https://github.com/eclipse-edc/Connector/blob/9adb0e4a09f4b0518a903e61890f94229ebda69e/docs/developer/decision-records/2022-03-15-swagger-annotations/README.md
 
