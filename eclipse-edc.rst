@@ -935,7 +935,7 @@ IdentityHub
   `identity_dwn https://github.com/eclipse-edc/IdentityHub/tree/identity_dwn`_
   ブランチに残し、
   `PR#160 https://github.com/eclipse-edc/IdentityHub/pull/160`_
-　で削除され、
+  で削除され、
   `2023-09-06のdecision records https://github.com/eclipse-edc/docs/tree/e7730f432305775542503e4ecb61aa7e829bea30/developer/decision-records/2023-09-06-identity-trust`_
   に書かれているように、EDCの仕組みを作る方向に向かうようだ。
   いまは
