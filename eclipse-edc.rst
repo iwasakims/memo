@@ -100,6 +100,15 @@ REST API
 
   - https://github.com/eclipse-edc/Connector/blob/9adb0e4a09f4b0518a903e61890f94229ebda69e/extensions/common/http/jetty-core/src/main/java/org/eclipse/edc/web/jetty/JettyConfiguration.java
 
+  - 各ポート番号ごとにServerConnectorが作られる。
+    ここで指定されたcontext名を
+    `ServerConnectorの名前 <https://github.com/eclipse-edc/Connector/blob/v0.5.0/extensions/common/http/jetty-core/src/main/java/org/eclipse/edc/web/jetty/JettyService.java#L98>`_
+    と、
+    `ContextHandlerのバーチャルホスト名に埋め込めるコネクタ名 <https://github.com/eclipse-edc/Connector/blob/v0.5.0/extensions/common/http/jetty-core/src/main/java/org/eclipse/edc/web/jetty/JettyService.java#L169>`_
+    の両方にセットすることで、connectorとhandlerの紐付けをしている。
+    `JettyServer#registerServlet <https://github.com/eclipse-edc/Connector/blob/v0.5.0/extensions/common/http/jetty-core/src/main/java/org/eclipse/edc/web/jetty/JettyService.java#L126>`_
+    で、context名をキーとして、servletがhandlerに結び付けられる。
+
 - 上記のcontext aliasとしてはcontrol、management、protocol、publicがある。
 
   - https://github.com/eclipse-edc/Connector/blob/9adb0e4a09f4b0518a903e61890f94229ebda69e/docs/developer/decision-records/2022-11-09-api-refactoring/renaming.md
@@ -188,6 +197,15 @@ REST API
     ./extensions/data-plane/data-plane-api/build.gradle.kts:        apiGroup.set("control-api")
     ./extensions/control-plane/transfer/transfer-data-plane/build.gradle.kts:        apiGroup.set("control-api")
     ./extensions/control-plane/api/control-plane-api/build.gradle.kts:        apiGroup.set("control-api")
+
+
+https
+-----
+
+- `edc.web.https.keystore.path <https://github.com/eclipse-edc/Connector/blob/v0.5.0/extensions/common/http/jetty-core/src/main/java/org/eclipse/edc/web/jetty/JettyExtension.java#L38-L45>`_
+  が設定されている場合は、httpsが利用される。
+  `そうでなければhttp <https://github.com/eclipse-edc/Connector/blob/v0.5.0/extensions/common/http/jetty-core/src/main/java/org/eclipse/edc/web/jetty/JettyService.java#L90-L96>`_ 。
+  この設定は、コンテキストごとに別れていない。
 
 
 test
