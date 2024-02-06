@@ -324,3 +324,31 @@ build with depended components then run smoke-tests.::
       --stack hdfs,yarn,mapreduce \
       --smoke-tests hdfs,yarn,mapreduce
 
+
+systemd
+=======
+
+running systemd services inside container
+-----------------------------------------
+
+systemd 237 or above
+`checks the pid and the permission of PID file of non-root service as a fix for CVE-2018-16888 <https://github.com/systemd/systemd/pull/7816/files>`_ .
+/sys/fs/cgroups must be mounted to run service via systemd inside containers.
+
+`The article of Red Hat <https://developers.redhat.com/blog/2016/09/13/running-systemd-in-a-non-privileged-container>`_
+elaborate the workaround.
+
+`BIGTOP-3302 <https://issues.apache.org/jira/browse/BIGTOP-3302>`_
+addressed the issue.
+
+
+runuser must be used instead of su
+----------------------------------
+
+CVE-2018-16888 affects init script run via systemd.
+runuser must be used instead of su (without `-` or `-l`)
+to pass the check of pid file.
+
+See
+`BIGTOP-3302 <https://issues.apache.org/jira/browse/BIGTOP-3302>`_
+for details.
