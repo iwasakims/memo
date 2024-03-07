@@ -53,7 +53,7 @@ cd storm
 git checkout v2.4.0
 mvn clean install -DskipTests -Dhadoop.version=3.2.4
 cp external/storm-hdfs-blobstore/target/storm-hdfs-blobstore-2.4.0.jar ${DIST}/storm-2.4.0/lib/
-cp examples/storm-starter/target/storm-starter-2.4.0.jar ${DIST}/storm-2.4.0/
+cp examples/storm-starter/target/storm-starter-2.4.0.jar ${DIST}/storm-2.4.0/lib-tools/
 ```
 
 ```
@@ -126,5 +126,5 @@ sleep 3
 docker exec h03 /bin/bash -c 'nohup /storm/bin/storm supervisor &'
 sleep 3
 
-docker exec h01 /storm/bin/storm jar /storm/storm-starter-2.4.0.jar org.apache.storm.starter.WordCountTopology
+docker exec h01 /storm/bin/storm jar /storm/lib-tools/storm-starter-2.4.0.jar org.apache.storm.starter.WordCountTopology
 ```
