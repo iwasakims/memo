@@ -54,6 +54,8 @@ git checkout v2.4.0
 mvn clean install -DskipTests -Dhadoop.version=3.2.4
 cp external/storm-hdfs-blobstore/target/storm-hdfs-blobstore-2.4.0.jar ${DIST}/storm-2.4.0/lib/
 cp examples/storm-starter/target/storm-starter-2.4.0.jar ${DIST}/storm-2.4.0/lib-tools/
+
+mv ${DIST}/storm-2.4.0/lib/hadoop-auth-2.8.5.jar ${DIST}/storm-2.4.0/lib/hadoop-auth-2.8.5.jar.org
 ```
 
 ```

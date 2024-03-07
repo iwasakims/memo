@@ -23,4 +23,6 @@ export JAVA_HOME=${JAVA_HOME}
 
 # export STORM_CONF_DIR=""
 
-export STORM_EXT_CLASSPATH="$(/hadoop/bin/hadoop classpath)"
+# slf3j-reload4j conflicts with log4j-over-slf4j used by Storm.
+export STORM_EXT_CLASSPATH="$(/hadoop/bin/hadoop classpath --glob | sed -e 's/:[^:]*slf4j-reload4j-[0-9.]*\.jar//g')"
+# export STORM_EXT_CLASSPATH="$(/hadoop/bin/hadoop classpath)"
