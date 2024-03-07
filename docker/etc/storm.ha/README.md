@@ -11,23 +11,42 @@ docker network create --subnet=172.18.0.0/16 hadoop
 
 ```
 export DIST=~/dist/storm-ha
+mkdir -p ${DIST}
 cd ${DIST}
 
 wget https://dlcdn.apache.org/hadoop/common/hadoop-3.2.4/hadoop-3.2.4.tar.gz
 tar zxf hadoop-3.2.4.tar.gz
 cp ~/srcs/memo/docker/etc/hadoop.ha/* hadoop-3.2.4/etc/hadoop/
 
-wget https://dlcdn.apache.org/zookeeper/zookeeper-3.5.9/apache-zookeeper-3.5.9-bin.tar.gz
+wget https://archive.apache.org/dist/zookeeper/zookeeper-3.5.9/apache-zookeeper-3.5.9-bin.tar.gz
 tar zxf apache-zookeeper-3.5.9-bin.tar.gz
 mv apache-zookeeper-3.5.9-bin zookeeper-3.5.9
-mv zookeeper-3.5.9 ${DIST}/
 cp ~/srcs/memo/docker/etc/zookeeper/zoo.cfg zookeeper-3.5.9/conf/
 
 wget https://archive.apache.org/dist/storm/apache-storm-2.4.0/apache-storm-2.4.0.tar.gz
 tar zxf apache-storm-2.4.0.tar.gz
 mv apache-storm-2.4.0 storm-2.4.0
 cp ~/srcs/memo/docker/etc/storm.ha/* storm-2.4.0/conf/
+```
 
+```
+### For recent Maven rejecting HTTP.
+###
+# $ cat << EOF  > ~/.m2/settings.xml
+# <settings xmlns="http://maven.apache.org/SETTINGS/1.2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+#         xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 http://maven.apache.org/xsd/settings-1.2.0.xsd" >
+#     <mirrors>
+#        <mirror>
+#            <id>maven-default-http-blocker</id>
+#            <mirrorOf>dummy</mirrorOf>
+#            <name>Dummy mirror to override default blocking mirror that blocks http</name>
+#            <url>http://0.0.0.0/</url>
+#        </mirror>
+#     </mirrors>
+# </settings>
+# EOF
+
+export DIST=~/dist/storm-ha
 cd ~/srcs
 git clone https://github.com/apache/storm
 cd storm
@@ -41,12 +60,10 @@ cp examples/storm-starter/target/storm-starter-2.4.0.jar ${DIST}/storm-2.4.0/
 export ZOOKEEPER_VERSION=3.5.9
 export HADOOP_VERSION=3.2.4
 export STORM_VERSION=2.4.0
-export DIST=~/dist
+export DIST=~/dist/storm-ha
 cd ${DIST}
 mkdir -p logs
-```
 
-```
 docker kill h01 h02 h03
 docker rm h01 h02 h03
 
@@ -65,6 +82,12 @@ docker exec h02 /zookeeper/bin/zkServer.sh start
 docker exec h03 mkdir /zk
 docker exec h03 bash -c 'echo 3 > /zk/myid'
 docker exec h03 /zookeeper/bin/zkServer.sh start
+
+sleep 3
+
+docker exec h01 /hadoop/bin/hdfs --daemon start journalnode
+docker exec h02 /hadoop/bin/hdfs --daemon start journalnode
+docker exec h03 /hadoop/bin/hdfs --daemon start journalnode
 
 sleep 3
 
