@@ -115,18 +115,12 @@ docker exec h03 /hadoop/bin/yarn --daemon start nodemanager
 
 sleep 3
 
-docker exec h01 /bin/bash -c 'nohup /storm/bin/storm nimbus &'
-sleep 3
-docker exec h02 /bin/bash -c 'nohup /storm/bin/storm nimbus &'
-sleep 3
-docker exec h03 /bin/bash -c 'nohup /storm/bin/storm nimbus &'
-sleep 3
-docker exec h01 /bin/bash -c 'nohup /storm/bin/storm supervisor &'
-sleep 3
-docker exec h02 /bin/bash -c 'nohup /storm/bin/storm supervisor &'
-sleep 3
-docker exec h03 /bin/bash -c 'nohup /storm/bin/storm supervisor &'
-sleep 3
+docker exec -d h01 /bin/bash -c '/storm/bin/storm nimbus'
+docker exec -d h01 /bin/bash -c '/storm/bin/storm supervisor'
+docker exec -d h02 /bin/bash -c '/storm/bin/storm nimbus'
+docker exec -d h02 /bin/bash -c '/storm/bin/storm supervisor'
+docker exec -d h03 /bin/bash -c '/storm/bin/storm nimbus'
+docker exec -d h03 /bin/bash -c '/storm/bin/storm supervisor'
 
 docker exec h01 /storm/bin/storm jar /storm/lib-tools/storm-starter-2.4.0.jar org.apache.storm.starter.WordCountTopology
 ```
