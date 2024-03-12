@@ -662,7 +662,7 @@ data-plane
 
     - `ドキュメント上はprovider connectorがデータを中継する想定になっているように見える <https://github.com/eclipse-edc/Connector/tree/5803513f0c4cc795c0d1d069f7039c8ca1bd8f7e/extensions/control-plane/transfer/transfer-data-plane>`_
       が、
-      `Samplesのtransfer-02-consumer-pull <この場合、データをpullするのはconsumer connectorではなく、そのクライアントということになる。<https://github.com/eclipse-edc/Samples/tree/c24cc293a928c1e6dd65799abd48a6b878c36ad4/transfer/transfer-02-consumer-pull>`_
+      `Samplesのtransfer-02-consumer-pull <https://github.com/eclipse-edc/Samples/tree/c24cc293a928c1e6dd65799abd48a6b878c36ad4/transfer/transfer-02-consumer-pull>`_
       では、consumer connectorがHTTP proxyとして振る舞っているように見える。
 
 
@@ -694,7 +694,7 @@ IDE
 
 - IDE(IntelliJ)で開くと、Gradleデーモンがメモリ不足で落ちる場合がある。
   落ちない場合もある。
- ヒープサイズはgradle.propertiesに以下を追加することで増やせるが..。::
+  ヒープサイズはgradle.propertiesに以下を追加することで増やせるが..。::
 
     org.gradle.jvmargs=-Xmx4g
 
