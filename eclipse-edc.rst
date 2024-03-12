@@ -308,8 +308,7 @@ documentation
 -------------
 
 - ドキュメント自動生成用のモジュールやアノテーションの定義は、
-  #2001で、DataSpaceConnectorとは別のソースツリーに移動された。
-  https://github.com/eclipse-dataspaceconnector/GradlePlugins
+  #2001で、 GradlePlugins_  配下に移動された。
 
 
 configuration
@@ -820,6 +819,46 @@ Samples
     $ ./gradlew clean test -p system-tests -DincludeTags=EndToEndTest --tests Transfer03providerPushTest -PverboseTest
 
   - 最近は、testcontainersを使って、backendなどをDockerで起動するようになった様子。
+
+
+Runtime_Metamodel
+=================
+
+- EDCのモジュール構造を記述するためのアノテーションを定義している。
+
+- フィールドのinjectionなどの、
+  `DependencyGraph内の処理に関する順序 <https://github.com/eclipse-edc/Connector/blob/v0.5.1/core/common/boot/src/main/java/org/eclipse/edc/boot/system/DependencyGraph.java#L209-L213>`_
+  としては、 ``BaseExtension > CoreExtension > その他`` 。
+
+- ExtensionPointは、  GradlePlugins_ で定義された、モジュール定義のドキュメントを自動生成する仕組みの中で利用される。
+  単に、実装すべきInterfaceであることを示すという感じ。
+
+
+GradlePlugins
+=============
+
+- いくつかのプラグインを定義している。
+
+  - モジュール定義のドキュメントを自動生成。
+
+    - 各サブモジュールをビルドしたときにできる ``build/edc.json`` がそれ。
+
+    - `対象となるのはextensionかspi <https://github.com/eclipse-edc/GradlePlugins/blob/main/plugins/autodoc/autodoc-processor/src/main/java/org/eclipse/edc/plugins/autodoc/core/processor/EdcModuleProcessor.java#L161-L177>`_ 。
+      spiモジュールについては、 ``@Spi`` なインターフェースがただ一つあるという前提のようだ。
+
+  - EDCのGradleモジュールの `convention <https://docs.gradle.org/current/userguide/designing_gradle_plugins.html#architecture">`_ を定義。
+
+  - サブモジュール名の重複がないかどうかを確認。
+
+  - OpenAPIの定義をマージ。
+
+  - テストのサマリを出力。
+
+- org.eclipse.edc.edc-build (のベースとなるedc-build-base)により、
+  `上記のプラグイン一式が組み込まれる <https://github.com/eclipse-edc/GradlePlugins/blob/v0.5.1/plugins/edc-build/src/main/java/org/eclipse/edc/plugins/edcbuild/EdcBuildBasePlugin.java#L39-L53>`_ 。
+
+- `Connectorのbuild.gradle.kts <https://github.com/eclipse-edc/Connector/blob/v0.5.1/build.gradle.kts#L25-L58>`_
+  を見ると使い方がなんとなく分かる。
 
 
 MinimumViableDataspace
