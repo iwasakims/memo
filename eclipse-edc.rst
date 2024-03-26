@@ -237,9 +237,6 @@ test
   
     $ ./gradlew test -p system-tests/e2e-transfer-test/runner -DincludeTags="PostgresqlIntegrationTest"
 
-  - アノテーションのクラス名とタグ名が一致していないので分かりにくい?
-    https://github.com/eclipse-edc/Connector/blob/main/common/util/src/testFixtures/java/org/eclipse/dataspaceconnector/common/util/junit/annotations/PostgresqlDbIntegrationTest.java#L31-L32
-
 - JUnitのテストケース内でServiceExtension実装をテストするための枠組みが、
   core/common/junit下に定義されている。
 
@@ -273,8 +270,7 @@ e2e-transfer-test
     $ ./gradlew clean test -p system-tests/e2e-transfer-test/runner -DincludeTags=EndToEndTest --tests '*EndToEndTransferInMemoryTest' -PverboseTest
 
 - EndToEndTransferPostgresqlTestはPostgreSQLにデータを永続化する。
-  これも、コンテナを利用してPostgreSQLのサーバを建てることで、簡単に実行できる。
-  アノテーションが `@PostgresqlDbIntegrationTest` だが、定義されているTagがPostgresqlIntegrationTestで紛らわしい。::
+  これも、コンテナを利用してPostgreSQLのサーバを建てることで、簡単に実行できる。::
 
     $ docker run --rm --name edc-postgres -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres
     $ ./gradlew clean test -p system-tests/e2e-transfer-test/runner -DincludeTags=PostgresqlIntegrationTest --tests '*EndToEndTransferPostgresqlTest' -PverboseTest
@@ -302,6 +298,16 @@ e2e-transfer-test
       --------------------------------------+---------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------+--------+-----------------------+---------------+----------+----------+--------+-----------------------
        f5ed763c-7ec1-427d-a47d-3099236b61bd | 1682079999930 | [{"edctype":"dataspaceconnector:permission","uid":null,"target":null,"action":{"type":"USE","includedIn":null,"constraint":null},"assignee":null,"assigner":null,"constraints":[],"duties":[]}] | []           | []     | {}                    |               |          |          |        | {"@policytype":"set"}
       (1 row)
+
+  - PostgreSQLの設定を変えたい場合、
+    `dockerhubのドキュメント <https://hub.docker.com/_/postgres>`_ にあるように、
+    postgresql.confを置き換えればよい。
+    コンテナはpostgresプロセスがPID 1で起動してくるので、
+    `pg_ctl reload` はできるが、 `pg_ctl restart` はできない。::
+
+      $ docker run -i --rm postgres cat /usr/share/postgresql/postgresql.conf.sample > my-postgres.conf
+      $ vi my-postgres.conf
+      $ docker run --rm --name edc-postgres -v "$PWD/my-postgres.conf":/etc/postgresql/postgresql.conf -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres -c 'config_file=/etc/postgresql/postgresql.conf'
 
 
 documentation
@@ -663,6 +669,17 @@ data-plane
       が、
       `Samplesのtransfer-02-consumer-pull <https://github.com/eclipse-edc/Samples/tree/c24cc293a928c1e6dd65799abd48a6b878c36ad4/transfer/transfer-02-consumer-pull>`_
       では、consumer connectorがHTTP proxyとして振る舞っているように見える。
+
+
+data-plane-signaling
+--------------------
+
+- おそらくconsumer pullの場合に、いつdata transfergが終わったか制御する必要があることから、
+  そのための仕組みを導入するために、大きめのリファクタリング込みで、
+  `data plane signaling <https://github.com/eclipse-edc/Connector/blob/08df4761392f1e37e54f4dd1d7f29f66d1832916/docs/developer/data-plane-signaling/data-plane-signaling.md>`_
+  という機構が追加された。
+
+  - https://github.com/eclipse-edc/Connector/tree/08df4761392f1e37e54f4dd1d7f29f66d1832916/docs/developer/decision-records/2023-12-12-dataplane-signaling
 
 
 Dataspace Protocol
