@@ -235,7 +235,8 @@ test
 
 - `@PostgresqlDbIntegrationTest` アノテーションが付いたテストを実行する場合、下記の要領。::
   
-    $ ./gradlew test -p system-tests/e2e-transfer-test/runner -DincludeTags="PostgresqlIntegrationTest"
+    $ ./gradlew clean test -p system-tests/e2e-transfer-test/runner -DincludeTags=PostgresqlIntegrationTest
+    $ ./gradlew clean test -p system-tests/e2e-transfer-test/runner -DincludeTags=PostgresqlIntegrationTest --tests '*TransferPullEndToEndTest*pullFromHttp' -PverboseTest
 
 - JUnitのテストケース内でServiceExtension実装をテストするための枠組みが、
   core/common/junit下に定義されている。
@@ -308,6 +309,9 @@ e2e-transfer-test
       $ docker run -i --rm postgres cat /usr/share/postgresql/postgresql.conf.sample > my-postgres.conf
       $ vi my-postgres.conf
       $ docker run --rm --name edc-postgres -v "$PWD/my-postgres.conf":/etc/postgresql/postgresql.conf -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres -c 'config_file=/etc/postgresql/postgresql.conf'
+
+  - `log_statement = 'all'` , `log_destination = 'stderr'` , `log_directory = '/var/log/postgresql'`
+    という設定で、クエリログを出力するのも、内部動作を確認する上でよい。
 
 
 documentation
