@@ -482,8 +482,10 @@ okhttp3のロギングはjava.util.loggingを使っているので、
 指定したファイルのpathが誤っているなどすると、単にログが出なくなるため、原因を見つけにくい。
 
 
-statemachine
-------------
+state-machine-lib
+-----------------
+
+- StatefulEntityは、StateMachineManagerのsingle threadedなExecutorによって状態遷移される。
 
 - StateMachineManagerが使われるのは3か所。
 
@@ -492,9 +494,21 @@ statemachine
 
   - CoreTransferExtensionで初期化されるTransferProcessManager。
 
-  - どちらもテスト用にWaitStrategyを差し込み可能になっている。
+- 基本的にはWaitStrategyはExponentialWaitStrategy(1000)が使われる。
+  なんらかのprosessが実行された場合はスリープなし、
+  そうでなければ1000ミリ秒後に次回、という感じ。
 
-    - see NegotiationWaitStrategy and TransferWaitStrategy
+- テスト用にWaitStrategyを差し込み可能になっている。
+  see NegotiationWaitStrategy and TransferWaitStrategy
+
+- `StateMachineManager#loop <https://github.com/eclipse-edc/Connector/blob/v0.5.1/core/common/state-machine/src/main/java/org/eclipse/edc/statemachine/StateMachineManager.java#L98-L116>`_
+  一回につき、
+  `登録されたprocessor <https://github.com/eclipse-edc/Connector/blob/v0.5.1/core/control-plane/transfer-core/src/main/java/org/eclipse/edc/connector/transfer/process/TransferProcessManagerImpl.java#L167-L174>`_
+  のすべてが実行される。
+  バックエンドのstoreがRDBの場合、以下のようなクエリが、
+  各stateを処理する各processorによって繰り返し実行される。::
+
+    SELECT * FROM edc_transfer_process WHERE state = $1 AND pending = $2 AND (lease_id IS NULL OR lease_id IN (SELECT lease_id FROM edc_lease WHERE ($3 > (leased_at + lease_duration)))) LIMIT $4 OFFSET $5
 
 
 usage control
@@ -580,11 +594,8 @@ transferprocesses
     tokenを作成する。
 
   - processRequestingで、provider connectorにDataRequestを送る。
-    リクエストはRemoteMessageDispatcherを利用して送信されるが、
-    現時点で実装はids-multipart用のものしかない様子。
+    リクエストはRemoteMessageDispatcherを利用して送信される。
 
-    - DataRequestメッセージ送信を行うのは、MultipartArtifactRequestSender。
-    
     - DataRequestメッセージを受信したprovider connector側では、
       ArtifactRequestHandlerがリクエストを処理する。
       ここでも、consumer側と同じようにTransferProcessManagerImplが使われ、
@@ -610,9 +621,10 @@ transferprocesses
         EmbeddedDataPlaneTransferClientとRemotDataPlaneTransferClientがある。
 
   - processInprogressで、StatusChecker実装が、transferが終わったか確認する。
-    Azure Blobだと、container内に、名前のsuffixが".complete"なblobがあるかを見る。
+    例えばAzure Blobだと、container内に、名前のsuffixが".complete"なblobがあるかを見る。
 
-  - provider側でsink.transfer(source)という形で、データコピーが実行される。
+  - provider pushの場合、
+    provider側でsink.transfer(source)という形で、データコピーが実行される。
     sinkはconsumer側に属するリソースなので、書き込み権限をどうやって与えるかがポイントになる。
     例えば、sinkがAzure Blobなら、consumer側のコネクタが、自身のstorage accountで、
     コンテナと、書き込みのにを許すSASトークンを作成し、それをvault経由でprovider側が読めるようにする。
@@ -626,11 +638,10 @@ data-plane
 - DataPlaneFrameWorkExtensionが本体。
   サンプル類はdata-plane-coreにdependencyを付けてロードしている。
 
-- TransferServiceがリクエストをvalidate。
-  現状の実装はPipelineServiceTransferServiceImplしかないような。
-
 - PipelineServiceImpl#transferがデータコピー処理の本体。
   sink.transfer(source) する。
+  PipelineServiceImpl implements PipelineService extends TransferService みたいな階層で、
+  インターフェースが切られているが、その理由は?
 
 - (data-plane-apiモジュールの)DataPlaneApiExtensionが、REST APIを提供する。
   controlとpublicという2種類のcontextを使い分ける。
