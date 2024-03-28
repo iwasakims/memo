@@ -820,11 +820,36 @@ versioning
 docs
 ====
 
-- Connectorからドキュメントを独立のリポジトリに移動し、
-  複数のリポジトリのドキュメントをまとめて一つに見せる仕組みができてた。
+- https://github.com/eclipse-edc/docs
 
-  - https://github.com/eclipse-edc/docs
-  - https://eclipse-edc.github.io/docs/#/README
+- 複数のリポジトリのドキュメントをまとめて一つに見せる仕組み。
+  もともとはConnectorにあったドキュメントを移動し、拡張したもの。
+
+- `eclipse-edc.github.io <https://eclipse-edc.github.io/docs/#/README>`_ でサイトがserveされている。
+
+- `docsify <https://docsify.js.org/#/>`_ というツールが使われていて、
+  ``docsify serve`` コマンドでローカルで確認可能。
+
+- ``git submodule`` で、
+  `各種リポジトリ <https://github.com/eclipse-edc/docs/blob/386106459626ad6dc74a988afac969807061a13e/.gitmodules#L34-L39>`_
+   を取得し、そのdocsをまとめてserveする。::
+
+    $ git clone https://github.com/eclipse-edc/docs
+    $ cd docs
+    $ git submodule update --init --remote
+    $ docsify serve docs
+
+- submoduleは、GitHubのworkflowで、
+  `週一回更新 <https://github.com/eclipse-edc/docs/blob/386106459626ad6dc74a988afac969807061a13e/.github/workflows/update-submodules.yml>`_
+  されていく。
+
+- `docsも自身のsubmodule <https://github.com/eclipse-edc/docs/blob/main/.gitmodules#L34-L36>`_
+  になっている。
+  docs/documentation/配下のmarkdownを編集すると、
+  docsifyでserveされてるサイトに即時反映されるので便利だが、
+  その修正をpull requestにするためには、
+  submoduleではない本体側に変更を反映する必要がある。
+
 
 
 Samples
