@@ -352,3 +352,28 @@ to pass the check of pid file.
 See
 `BIGTOP-3302 <https://issues.apache.org/jira/browse/BIGTOP-3302>`_
 for details.
+
+
+openEuler
+=========
+
+assuming 22.03 LTS SP3.
+
+
+Docker
+------
+
+https://docs.openeuler.org/en/docs/22.03_LTS/docs/Container/installation-and-deployment-3.html
+
+docker-engine package provides all required resources.::
+
+  $ sudo dnf install docker-engine
+  $ sudo usermod -aG docker openEuler
+  $ sudo systemctl start docker
+
+standalone docker-compose can be used as usual.::
+
+  $ sudo curl -SL https://github.com/docker/compose/releases/download/v2.27.0/docker-compose-linux-aarch64 -o /usr/local/bin/docker-compose
+  $ sudo chmod a+x /usr/local/bin/docker-compose
+  $ sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+  $ docker-compose --version
