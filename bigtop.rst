@@ -73,7 +73,11 @@ docker provisioner using published repository
 ---------------------------------------------
 
 `bigtop::bigtop_repo_apt_key <https://github.com/apache/bigtop/blob/release-3.2.1-RC0/bigtop-deploy/puppet/hieradata/bigtop/repo.yaml#L2>`_
-must match the public key used for packaging. Add ``--disable-gpg-check`` otherwise.::
+must match the public key used for packaging. Add ``--disable-gpg-check`` otherwise.
+
+
+For DEB, available platforms are ``amd64``, ``aarch64`` and ``ppc64el``.
+::
 
   $ cd provisioner/docker
   $ ./docker-hadoop.sh \
@@ -84,6 +88,19 @@ must match the public key used for packaging. Add ``--disable-gpg-check`` otherw
       --memory 16g \
       --repo http://repos.bigtop.apache.org/releases/3.2.1/ubuntu/22.04/amd64 \
       --stack hdfs,yarn,mapreduce
+
+For RPM, available platforms are ``x86_64``, ``aarch64`` and ``ppc64le``.
+::
+
+  $ cd provisioner/docker
+  $ ./docker-hadoop.sh \
+      --create 1 \
+      --image bigtop/puppet:3.1.1-rockylinux-8 \
+      --docker-compose-yml docker-compose-cgroupv2.yml \
+      --docker-compose-plugin \
+      --memory 16g \
+      --repo http://repos.bigtop.apache.org/releases/3.1.1/rockylinux/8/x86_64 \
+      --stack hdfs,yarn,mapreduce,hbase
 
 
 Develpment
@@ -368,7 +385,7 @@ https://docs.openeuler.org/en/docs/22.03_LTS/docs/Container/installation-and-dep
 docker-engine package provides all required resources.::
 
   $ sudo dnf install docker-engine
-  $ sudo usermod -aG docker openEuler
+  $ sudo usermod -aG docker openeuler
   $ sudo systemctl start docker
 
 standalone docker-compose can be used as usual.::
