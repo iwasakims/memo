@@ -199,7 +199,7 @@ PLATFORM is label set to `agent of Jenkins <https://ci.bigtop.apache.org/compute
 ::
 
   $ export GPG_TTY=$(tty)
-  $ export VERSION=3.2.1
+  $ export VERSION=3.3.0
   $ export OS=rockylinux
   $ export OSVER=8
   $ export BASEARCH=aarch64
@@ -209,7 +209,7 @@ PLATFORM is label set to `agent of Jenkins <https://ci.bigtop.apache.org/compute
 
   $ mkdir -p releases/${VERSION}/${OS}/${OSVER}/${BASEARCH}
   $ cd releases/${VERSION}/${OS}/${OSVER}/${BASEARCH}
-  $ for product in alluxio ambari bigtop-ambari-mpack bigtop-groovy bigtop-jsvc bigtop-utils flink gpdb hadoop hbase hive kafka livy oozie phoenix solr spark tez ycsb zeppelin zookeeper
+  $ for product in bigtop-groovy bigtop-jsvc bigtop-select bigtop-utils flink gpdb hadoop hbase hive kafka livy phoenix ranger solr spark tez zeppelin zookeeper
     do
       rm -rf ${product} &&
       curl -L -o ${product}.zip https://ci.bigtop.apache.org/job/Bigtop-${VERSION}-${BASEARCH}/DISTRO=${OS}-${OSVER},PLATFORM=${PLATFORM},PRODUCT=${product}/lastSuccessfulBuild/artifact/*zip*/archive.zip &&
@@ -243,7 +243,7 @@ PLATFORM is label set to `agent of Jenkins <https://ci.bigtop.apache.org/compute
 ::
 
   $ export GPG_TTY=$(tty)
-  $ export VERSION=3.2.1
+  $ export VERSION=3.3.0
   $ export OS=debian
   $ export OSVER=11
   $ export ARCH=amd64
@@ -255,7 +255,7 @@ PLATFORM is label set to `agent of Jenkins <https://ci.bigtop.apache.org/compute
 
   $ mkdir -p releases/${VERSION}/${OS}/${OSVER}/${ARCH}
   $ cd releases/${VERSION}/${OS}/${OSVER}/${ARCH}
-  $ for product in alluxio ambari bigtop-ambari-mpack bigtop-groovy bigtop-jsvc bigtop-utils flink gpdb hadoop hbase hive kafka livy oozie phoenix solr spark tez ycsb zeppelin zookeeper
+  $ for product in bigtop-groovy bigtop-jsvc bigtop-utils flink gpdb hadoop hbase hive kafka livy phoenix ranger solr spark tez zeppelin zookeeper
     do
       rm -rf ${product} &&
       curl -L -o ${product}.zip https://ci.bigtop.apache.org/job/Bigtop-${VERSION}-${BASEARCH}/DISTRO=${OS}-${OSVER},PLATFORM=${PLATFORM},PRODUCT=${product}/lastSuccessfulBuild/artifact/*zip*/archive.zip &&
