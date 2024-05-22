@@ -151,13 +151,13 @@ building and testins in container
 
 you can leverage Docker by ``*-pkg-ind`` and ``repo-ind`` task.::
 
-  $ ./gradlew hadoop-pkg-ind repo-ind -POS=ubuntu-22.04 -Pprefix=trunk -Dbuildwithdeps=true -Pdocker-run-option="--privileged" -Pmvn-cache-volume=true
-
-- ``-Dbuildwithdeps=true`` kicks packging of products depended by hadoop (such as bigtop-utils and zookeeper).
+  $ ./gradlew hadoop-pkg-ind repo-ind -POS=ubuntu-22.04 -Pprefix=trunk -Pdocker-run-option="--privileged" -Pmvn-cache-volume=true
 
 - ``-Pdocker-run-option="--privileged"`` is needed on the Fedora-35 and Ubuntu-22.04 now (depending on the version of systemd).
 
 - ``-Pmvn-cache-volume=true`` attaches docker volume to reuse local repository (~/.m2) to make repeatable build faster.
+
+- We can not use ``-Dbuildwithdeps=true`` for invoking packging of hadoop dependencies (such as bigtop-utils and zookeeper) with `*-ind` task now.
 
 You can deploy a cluster and run smoke-tests in container by docker provisioner which requires docker-compose.::
 
