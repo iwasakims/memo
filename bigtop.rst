@@ -192,7 +192,7 @@ download built packages then create Yum repository
 
 Example of rockylinux-8 built by https://ci.bigtop.apache.org/job/Bigtop-3.2.1-aarch64/
 
-BASEARCH is used as ``$basearch`` of Yum variables. Bigtop is using ``x86_64``, ``aarch64`` and ``ppc64le``. It is used as the name of Jenkins job too.
+BASEARCH is used as ``$basearch`` of Yum variables. Possible values are ``x86_64``, ``aarch64`` and ``ppc64le``. It is used as the name of Jenkins job too.
 
 PLATFORM is label set to `agent of Jenkins <https://ci.bigtop.apache.org/computer/docker-slave-06/>`_. Possible values are ``amd64-slave``, ``aarch64-slave`` and ``ppc64el-slave`` here.
 
@@ -209,7 +209,7 @@ PLATFORM is label set to `agent of Jenkins <https://ci.bigtop.apache.org/compute
 
   $ mkdir -p releases/${VERSION}/${OS}/${OSVER}/${BASEARCH}
   $ cd releases/${VERSION}/${OS}/${OSVER}/${BASEARCH}
-  $ for product in bigtop-groovy bigtop-jsvc bigtop-select bigtop-utils flink gpdb hadoop hbase hive kafka livy phoenix ranger solr spark tez zeppelin zookeeper
+  $ for product in bigtop-groovy bigtop-jsvc bigtop-select bigtop-utils alluxio flink gpdb hadoop hbase hive kafka livy phoenix ranger solr spark tez zeppelin zookeeper
     do
       rm -rf ${product} &&
       curl -L -o ${product}.zip https://ci.bigtop.apache.org/job/Bigtop-${VERSION}-${BASEARCH}/DISTRO=${OS}-${OSVER},PLATFORM=${PLATFORM},PRODUCT=${product}/lastSuccessfulBuild/artifact/*zip*/archive.zip &&
@@ -222,7 +222,7 @@ PLATFORM is label set to `agent of Jenkins <https://ci.bigtop.apache.org/compute
 
 ::
 
-  $ rm -rf repodata   
+  $ rm -rf repodata
   $ createrepo .
   $ gpg --detach-sign --armor repodata/repomd.xml
   
@@ -234,9 +234,10 @@ download built packages then create APT repository
 
 Example of debian-11 built by https://ci.bigtop.apache.org/job/Bigtop-3.2.1-x86_64/
 
-ARCH is used as ``$(ARCH)`` of deb. Bigtop is using ``amd64``, ``arm64`` and ``ppc64el``. Possible values are shown by ``dpkg-architecture -L``. ``ppc64el`` instead of ``ppc64le`` here.
+ARCH is used as ``$(ARCH)`` of deb. Possible values are ``amd64``, ``arm64`` and ``ppc64el`` as shown by ``dpkg-architecture -L``
+It is ``ppc64el`` for Deb packaging while ``ppc64le`` is used for RPM packaging.
 
-BASEARCH is used as ``$basearch`` of Yum variables. Bigtop is using ``x86_64``, ``aarch64`` and ``ppc64le``. It is used as the name of Jenkins job too.
+BASEARCH is used as ``$basearch`` of Yum variables. Possible values are ``x86_64``, ``aarch64`` and ``ppc64le``. Since it is used as the name of Jenkins jobs, it must be defined even on Deb packaging too.
 
 PLATFORM is label set to `agent of Jenkins <https://ci.bigtop.apache.org/computer/docker-slave-06/>`_. Possible values are ``amd64-slave``, ``aarch64-slave`` and ``ppc64el-slave`` here.
 
@@ -255,7 +256,7 @@ PLATFORM is label set to `agent of Jenkins <https://ci.bigtop.apache.org/compute
 
   $ mkdir -p releases/${VERSION}/${OS}/${OSVER}/${ARCH}
   $ cd releases/${VERSION}/${OS}/${OSVER}/${ARCH}
-  $ for product in bigtop-groovy bigtop-jsvc bigtop-utils flink gpdb hadoop hbase hive kafka livy phoenix ranger solr spark tez zeppelin zookeeper
+  $ for product in bigtop-groovy bigtop-jsvc bigtop-utils alluxio flink gpdb hadoop hbase hive kafka livy phoenix ranger solr spark tez zeppelin zookeeper
     do
       rm -rf ${product} &&
       curl -L -o ${product}.zip https://ci.bigtop.apache.org/job/Bigtop-${VERSION}-${BASEARCH}/DISTRO=${OS}-${OSVER},PLATFORM=${PLATFORM},PRODUCT=${product}/lastSuccessfulBuild/artifact/*zip*/archive.zip &&
