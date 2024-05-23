@@ -1139,3 +1139,20 @@ DataDashboard
 - Catalogの画面は、/federatedcatalogから取得したContractOfferをすべて並べて表示している感じ。
 
   - https://github.com/eclipse-edc/DataDashboard/blob/c3ec34f730ca4322121c67e54ea2ae980c96c2f0/src/modules/edc-demo/services/catalog-browser.service.ts
+
+
+
+notes for changes
+=================
+
+0.5.1
+-----
+
+- `#3818<https://github.com/eclipse-edc/Connector/issues/3818>`_ :
+  `JWTトークンの検証をDSPから切り離すrefatoring <https://github.com/eclipse-edc/Connector/tree/main/docs/developer/decision-records/2023-11-27-refactor-protocol-services>`_
+  の一環で、 ``*TransferService`` から ``PolicyEngine`` を使えるようにした。
+  結果として、IdentityAndTrustServiceのコンストラクタのシグネチャに変化あり。
+
+- SamplesではEDCのバージョンを
+  `0.4.1から0.5.1に上げている <https://github.com/eclipse-edc/Samples/commit/227416d49888e33af6ce17c761b3d7f4c82d3998>`_
+  ため、その差分から0.5.0と0.5.1の違いを理解しにくいが、あまり影響ない様子。
