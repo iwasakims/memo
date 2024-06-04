@@ -215,12 +215,13 @@ PLATFORM is label set to `agent of Jenkins <https://ci.bigtop.apache.org/compute
       curl -L -o ${product}.zip https://ci.bigtop.apache.org/job/Bigtop-${VERSION}-${BASEARCH}/DISTRO=${OS}-${OSVER},PLATFORM=${PLATFORM},PRODUCT=${product}/lastSuccessfulBuild/artifact/*zip*/archive.zip &&
       jar xf ${product}.zip &&
       mv archive/output/${product} . &&
-      find ${product} -name '*.rpm' | xargs rpm --define '_gpg_name Masatake Iwasaki' --addsign
       rmdir -p archive/output &&
       rm ${product}.zip
     done
 
 ::
+
+  $ find ${product} -name '*.rpm' | xargs rpm --define '_gpg_name Masatake Iwasaki' --addsign
 
   $ rm -rf repodata
   $ createrepo .
@@ -262,13 +263,13 @@ PLATFORM is label set to `agent of Jenkins <https://ci.bigtop.apache.org/compute
       curl -L -o ${product}.zip https://ci.bigtop.apache.org/job/Bigtop-${VERSION}-${BASEARCH}/DISTRO=${OS}-${OSVER},PLATFORM=${PLATFORM},PRODUCT=${product}/lastSuccessfulBuild/artifact/*zip*/archive.zip &&
       jar xf ${product}.zip &&
       mv archive/output/${product} . &&
-      find ${product} -name '*.deb' | xargs dpkg-sig --cache-passphrase --sign builder --sign-changes force_full &&
       rmdir -p archive/output &&
       rm ${product}.zip
     done
 
 ::
 
+  $ find ${product} -name '*.deb' | xargs dpkg-sig --cache-passphrase --sign builder --sign-changes force_full
   
   $ mkdir -p conf
   
