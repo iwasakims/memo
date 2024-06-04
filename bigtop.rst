@@ -194,7 +194,7 @@ Example of rockylinux-8 built by https://ci.bigtop.apache.org/job/Bigtop-3.2.1-a
 
 BASEARCH is used as ``$basearch`` of Yum variables. Possible values are ``x86_64``, ``aarch64`` and ``ppc64le``. It is used as the name of Jenkins job too.
 
-PLATFORM is label set to `agent of Jenkins <https://ci.bigtop.apache.org/computer/docker-slave-06/>`_. Possible values are ``amd64-slave``, ``aarch64-slave`` and ``ppc64el-slave`` here.
+PLATFORM is label set to `agent of Jenkins <https://ci.bigtop.apache.org/computer/docker-slave-06/>`_. Possible values are ``amd64-slave``, ``aarch64-slave`` and ``ppc64le-slave`` here.
 
 ::
 
@@ -240,7 +240,7 @@ It is ``ppc64el`` for Deb packaging while ``ppc64le`` is used for RPM packaging.
 
 BASEARCH is used as ``$basearch`` of Yum variables. Possible values are ``x86_64``, ``aarch64`` and ``ppc64le``. Since it is used as the name of Jenkins jobs, it must be defined even on Deb packaging too.
 
-PLATFORM is label set to `agent of Jenkins <https://ci.bigtop.apache.org/computer/docker-slave-06/>`_. Possible values are ``amd64-slave``, ``aarch64-slave`` and ``ppc64el-slave`` here.
+PLATFORM is label set to `agent of Jenkins <https://ci.bigtop.apache.org/computer/docker-slave-06/>`_. Possible values are ``amd64-slave``, ``aarch64-slave`` and ``ppc64le-slave`` here.
 
 ::
 
