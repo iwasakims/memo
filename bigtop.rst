@@ -221,7 +221,7 @@ PLATFORM is label set to `agent of Jenkins <https://ci.bigtop.apache.org/compute
 
 ::
 
-  $ find ${product} -name '*.rpm' | xargs rpm --define '_gpg_name Masatake Iwasaki' --addsign
+  $ find . -name '*.rpm' | xargs rpm --define '_gpg_name Masatake Iwasaki' --addsign
 
   $ rm -rf repodata
   $ createrepo .
@@ -269,7 +269,7 @@ PLATFORM is label set to `agent of Jenkins <https://ci.bigtop.apache.org/compute
 
 ::
 
-  $ find ${product} -name '*.deb' | xargs dpkg-sig --cache-passphrase --sign builder --sign-changes force_full
+  $ find . -name '*.deb' | xargs dpkg-sig --cache-passphrase --sign builder --sign-changes force_full
   
   $ mkdir -p conf
   
