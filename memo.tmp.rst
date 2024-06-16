@@ -510,11 +510,18 @@ building with debug settings.::
   $ cd postgres
   $ git checkout REL13_5
   $ CFLAGS='-ggdb -O0' ./configure --prefix=/usr/local/pgsql135
-  $ make
+  $ make -j $(nproc)
   $ sudo make install
   $ cd contrib/pgstattuple
   $ make
   $ sudo make install
+  $ cd ..
+  $ git clone https://github.com/ossc-db/pg_statsinfo
+  $ cd pg_statsinfo
+  $ git checkout 13.0
+  $ make
+  $ sudo make install
+  
   $ export PATH=/usr/local/pgsql135/bin:$PATH
 
 setting up db instance and starting primary server::
