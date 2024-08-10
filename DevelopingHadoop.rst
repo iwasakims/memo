@@ -702,3 +702,14 @@ edit ssl-site.xml::
     <name>ssl.server.keystore.keypassword</name>
     <value>password</value>
   </property>
+
+
+installing OpenSSL 1.1.1 on Ubuntu 22.04
+----------------------------------------
+
+The package version must be fixed with the upstream ones.::
+
+  $ wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl/openssl_1.1.1f-1ubuntu2.23_amd64.deb
+  $ wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl-dev_1.1.1f-1ubuntu2.23_amd64.deb
+  $ wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.23_amd64.deb
+  $ sudo dpkg -i openssl_1.1.1f-1ubuntu2.23_amd64.deb libssl-dev_1.1.1f-1ubuntu2.23_amd64.deb libssl1.1_1.1.1f-1ubuntu2.23_amd64.deb 
