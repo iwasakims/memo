@@ -462,3 +462,21 @@ https://docs.gradle.org/current/userguide/publishing_maven.html
 ::
 
   $ ./gradlew publishToMavenLocal -Pskip.signing
+
+
+
+Alluxio
+=======
+
+- alluxio.hadoop.FileSystemがAlluxioのFileSystem実装。
+
+- org.apache.hadoop.fs.FileSystem#openは、alluxio.client.file.FileSystem#openFileに対応付けられる感じ。
+
+- ``return new FSDataInputStream(new HdfsFileInputStream(mFileSystem, uri, mStatistics));``
+  みたいな形で、wrapされるalluxio.hadoop.HdfsFileInputStreamのさらに内側に、
+  alluxio.client.file.FileInStreamのサブクラス(AlluxioFileInStream)が埋まってる。
+
+- FileInStreamの中で、read箇所のブロックに対応するalluxio.client.block.stream.BlockInStreamを作る。
+
+- BlockInStreamの内部では、DataReaderのインスタンスを作ってデータをreadする。
+  リモートのAlluxio workerにリクエストを送ってデータを読む場合、GrpcDataReader。
