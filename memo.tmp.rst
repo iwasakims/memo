@@ -480,3 +480,19 @@ Alluxio
 
 - BlockInStreamの内部では、DataReaderのインスタンスを作ってデータをreadする。
   リモートのAlluxio workerにリクエストを送ってデータを読む場合、GrpcDataReader。
+
+- クライアント側の設定は結構複雑
+
+  - 以下などから取得した内容をマージして使う。
+
+    - org.apache.hadoop.conf.Configuration
+    - クラスパス上のalluxio-site.properties
+    - alluxio-masterからRPCで取得
+
+  - 優先順位は
+    `alluxio.conf.Source <https://github.com/Alluxio/alluxio/blob/v2.9.3/core/common/src/main/java/alluxio/conf/Source.java>`_
+    の値で決まる。ローカル優先。
+
+  - 同じRUNTIMEでも、alluxio-site.propertiesよりも、
+    `HadoopのConfiguration経由が優先 <https://github.com/Alluxio/alluxio/blob/v2.9.3/core/client/hdfs/src/main/java/alluxio/hadoop/AbstractFileSystem.java#L503-L504>`_
+    される。
