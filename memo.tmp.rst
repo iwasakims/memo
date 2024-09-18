@@ -468,6 +468,9 @@ https://docs.gradle.org/current/userguide/publishing_maven.html
 Alluxio
 =======
 
+FileSystem
+----------
+
 - alluxio.hadoop.FileSystemがAlluxioのFileSystem実装。
 
 - org.apache.hadoop.fs.FileSystem#openは、alluxio.client.file.FileSystem#openFileに対応付けられる感じ。
@@ -480,6 +483,11 @@ Alluxio
 
 - BlockInStreamの内部では、DataReaderのインスタンスを作ってデータをreadする。
   リモートのAlluxio workerにリクエストを送ってデータを読む場合、GrpcDataReader。
+
+
+
+Configuration
+-------------
 
 - クライアント側の設定は結構複雑
 
@@ -496,3 +504,90 @@ Alluxio
   - 同じRUNTIMEでも、alluxio-site.propertiesよりも、
     `HadoopのConfiguration経由が優先 <https://github.com/Alluxio/alluxio/blob/v2.9.3/core/client/hdfs/src/main/java/alluxio/hadoop/AbstractFileSystem.java#L503-L504>`_
     される。
+
+
+ASYCN_THROUGH
+-------------
+
+- ASYCN_THROUGHで書き込むと、
+  typeが
+  `ALLUXIO_BLOCK <https://github.com/Alluxio/alluxio/blob/v2.9.4/core/transport/src/main/proto/grpc/block_worker.proto#L49>`_
+  なWriteRequestでデータを送った後、
+  `completeFile <https://github.com/Alluxio/alluxio/blob/v2.9.4/core/server/master/src/main/java/alluxio/master/file/FileSystemMaster.java#L220-L237>`_
+  するときに
+  `asyncPersistOptions <https://github.com/Alluxio/alluxio/blob/v2.9.4/core/transport/src/main/proto/grpc/file_system_master.proto#L83>`_
+  をセットしてリクエストを送る。その後、
+  `PersistenceScheduler <https://github.com/Alluxio/alluxio/blob/v2.9.4/core/server/master/src/main/java/alluxio/master/file/DefaultFileSystemMaster.java#L4611-L4615>`_
+  が非同期に、このファイルをUFSに書き込むためのジョブを起動する。
+
+
+Testing with Bigtop provisioner
+-------------------------------
+
+launch pseudo distributed cluster by pre-built packages.::
+
+  ./docker-hadoop.sh \
+    --create 1 \
+    --memory 16g \
+    --image bigtop/puppet:trunk-rockylinux-8 \
+    --repo http://repos.bigtop.apache.org/releases/3.3.0/rockylinux/8/x86_64 \
+    --stack hdfs,yarn,mapreduce,alluxio
+
+or with locally built packages.::
+
+  ./docker-hadoop.sh \
+    --create 1 \
+    --memory 16g \
+    --image bigtop/puppet:trunk-ubuntu-22.04 \
+    --repo file:///bigtop-home/output/apt \
+    --disable-gpg-check \
+    --stack hdfs,yarn,mapreduce,alluxio
+  
+``vi /etc/alluxio/conf/alluxio-site.properties``::
+
+  alluxio.user.short.circuit.enabled=false
+  alluxio.user.file.writetype.default=CACHE_THROUGH
+  alluxio.underfs.s3.streaming.upload.enabled=true
+  s3a.accessKeyId=XXXXX
+  s3a.secretKey=XXXXXXXXXX
+
+``vi /etc/alluxio/conf/log4j.properties`` and ``vi /etc/hadoop/conf/log4j.properties``::
+
+  log4j.logger.alluxio.client.file=DEBUG
+  log4j.logger.alluxio.client.block.stream=DEBUG
+  log4j.logger.alluxio.underfs=DEBUG
+  log4j.logger.alluxio.worker.grpc=DEBUG
+  log4j.logger.alluxio.conf=DEBUG
+
+``vi /etc/hadoop/conf/core-site.xml``::
+
+    <property>
+      <name>alluxio.user.file.writetype.default</name>
+      <value>CACHE_THROUGH</value>
+    </property>
+  
+    <property>
+      <name>fs.alluxio.impl</name>
+      <value>alluxio.hadoop.FileSystem</value>
+    </property>
+
+``vi /etc/hadoop/conf/hadoop-env.sh``::
+
+  export HADOOP_CLASSPATH=/usr/lib/alluxio/client/build/alluxio-2.9.4-hadoop3-client.jar
+
+preparing services::
+
+  usermod -aG hadoop root
+  systemctl restart alluxio-master alluxio-worker alluxio-job-master alluxio-job-worker
+  
+  hdfs dfs -mkdir /alluxio
+  
+  alluxio fs mkdir /mnt
+  alluxio fs mount /mnt/hdfs hdfs://$(hostname --fqdn):8020/alluxio
+  alluxio fs mount /mnt/s3 s3://my-test-backet/alluxio
+
+puttting file via alluxio.hadoop.FileSystem::
+
+  dd if=/dev/zero of=256mb.dat bs=1M count=256
+  hadoop fs -put -d 256mb.dat alluxio://localhost:19998/mnt/hdfs/
+  hadoop fs -put -d 256mb.dat alluxio://localhost:19998/mnt/s3/
