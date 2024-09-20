@@ -493,9 +493,9 @@ Configuration
 
   - 以下などから取得した内容をマージして使う。
 
-    - org.apache.hadoop.conf.Configuration
     - クラスパス上のalluxio-site.properties
     - alluxio-masterからRPCで取得
+    - (org.apache.hadoop.conf.Configuration)
 
   - 優先順位は
     `alluxio.conf.Source <https://github.com/Alluxio/alluxio/blob/v2.9.3/core/common/src/main/java/alluxio/conf/Source.java>`_
@@ -519,6 +519,26 @@ ASYCN_THROUGH
   をセットしてリクエストを送る。その後、
   `PersistenceScheduler <https://github.com/Alluxio/alluxio/blob/v2.9.4/core/server/master/src/main/java/alluxio/master/file/DefaultFileSystemMaster.java#L4611-L4615>`_
   が非同期に、このファイルをUFSに書き込むためのジョブを起動する。
+
+
+extensions
+----------
+
+- underfsのライブラリの.jarは、
+  `java.nio.file.Files#newDirectoryStreamで順次読み込む <https://github.com/Alluxio/alluxio/blob/v2.9.4/core/common/src/main/java/alluxio/extensions/ExtensionFactoryRegistry.java#L216-L229>`_
+  ため、同じunderfsの複数のバージョンのライブラリが存在する場合、どれが使われるかは事前に分からない。
+  `mount時のalluxio.underfs.versionの値で制御 <https://docs.alluxio.io/os/user/2.9.4/en/ufs/HDFS.html#supported-hdfs-versions>`_
+  できる。
+
+- alluxio.underfs.versionのバージョン番号は、ある程度柔軟にマッチされる。
+  例えば、libディレクトリにhdfs用のunderfsのjarとして、
+  ``alluxio-underfs-hdfs-3.3.4-2.9.4.jar`` のみが存在する場合、
+  3.3や3.3.3は許されるが、2.10や3.2はエラーになる。::
+   
+    alluxio fs mount --option alluxio.underfs.version=2.10 /mnt/hdfs hdfs://nn1:8020/alluxio
+    alluxio fs mount --option alluxio.underfs.version=3.2 /mnt/hdfs hdfs://nn1:8020/alluxio
+    alluxio fs mount --option alluxio.underfs.version=3.3 /mnt/hdfs hdfs://nn1:8020/alluxio
+    alluxio fs mount --option alluxio.underfs.version=3.3.3 /mnt/hdfs hdfs://nn1:8020/alluxio
 
 
 Testing with Bigtop provisioner
@@ -555,9 +575,12 @@ or with locally built packages.::
 
   log4j.logger.alluxio.client.file=DEBUG
   log4j.logger.alluxio.client.block.stream=DEBUG
-  log4j.logger.alluxio.underfs=DEBUG
-  log4j.logger.alluxio.worker.grpc=DEBUG
   log4j.logger.alluxio.conf=DEBUG
+  log4j.logger.alluxio.extensions=DEBUG
+  log4j.logger.alluxio.underfs=DEBUG
+  log4j.logger.alluxio.underfs.hdfs=DEBUG
+  log4j.logger.alluxio.underfs.s3=DEBUG
+  log4j.logger.alluxio.worker.grpc=DEBUG
 
 ``vi /etc/hadoop/conf/core-site.xml``::
 
