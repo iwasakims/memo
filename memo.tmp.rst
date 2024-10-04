@@ -614,3 +614,25 @@ puttting file via alluxio.hadoop.FileSystem::
   dd if=/dev/zero of=256mb.dat bs=1M count=256
   hadoop fs -put -d 256mb.dat alluxio://localhost:19998/mnt/hdfs/
   hadoop fs -put -d 256mb.dat alluxio://localhost:19998/mnt/s3/
+
+
+
+netty4
+======
+
+- pipeline中のChannelHandlerは、
+  `<1本の双方向リスト https://github.com/netty/netty/blob/netty-4.1.100.Final/transport/src/main/java/io/netty/channel/DefaultChannelPipeline.java#L64-L65>`_
+  につながれている。
+
+  - inboundはheadからtailに向かって処理されていく。
+
+  - outboundはtailからheadに向かって処理されていく。
+
+  - handlerがinboundの方しか対応していなければ(ChannelInboundHandlerしか実装していなければ)、outboundの処理ではスキップされる。
+    このスキップは、
+    `マスク <https://github.com/netty/netty/blob/netty-4.1.100.Final/transport/src/main/java/io/netty/channel/ChannelHandlerMask.java>`_
+    を利用して行われる。
+
+  - この辺については、
+    `ChannlePipelineのコメントの説明 <https://github.com/netty/netty/blob/netty-4.1.100.Final/transport/src/main/java/io/netty/channel/ChannelPipeline.java#L32-L221>`_
+    が分かりやすい。
