@@ -636,3 +636,32 @@ netty4
   - この辺については、
     `ChannlePipelineのコメントの説明 <https://github.com/netty/netty/blob/netty-4.1.100.Final/transport/src/main/java/io/netty/channel/ChannelPipeline.java#L32-L221>`_
     が分かりやすい。
+
+
+Camel
+=====
+
+- Consumerというのは、外からデータを受け取るin。
+
+- Producerというのは、外にデータを送るout。
+
+- Consumerが外からデータを受け取ってExchangeを作る。
+
+  - 受け取ったデータは ``Exchange#setIn`` される。
+
+  - 戻りのレスポンスデータがあれば ``Exchange#setOut`` される。
+
+
+camel-netty
+-----------
+
+- Exchangeを作るのは、
+  `server channelのpipeline末尾に追加される <https://github.com/apache/camel/blob/camel-4.2.0/components/camel-netty/src/main/java/org/apache/camel/component/netty/DefaultServerInitializerFactory.java#L103-L111>`_
+  `ServerChannelHandler <https://github.com/apache/camel/blob/camel-4.2.0/components/camel-netty/src/main/java/org/apache/camel/component/netty/handlers/ServerChannelHandler.java>`_
+  。
+
+- レスポンスを入れるのは、
+  `client channelのpipeline末尾に追加される <https://github.com/apache/camel/blob/camel-4.2.0/components/camel-netty/src/main/java/org/apache/camel/component/netty/DefaultClientInitializerFactory.java#L95-L96>`_
+  `ClientChannelHandler <https://github.com/apache/camel/blob/camel-4.2.0/components/camel-netty/src/main/java/org/apache/camel/component/netty/handlers/ClientChannelHandler.java>`_ 
+  。
+
