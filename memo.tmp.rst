@@ -649,6 +649,8 @@ Camel
 
   - 受け取ったデータは ``Exchange#setIn`` される。
 
+- ExchangeはConsumerに紐づけられたProcessorで、processされる。
+
   - 戻りのレスポンスデータがあれば ``Exchange#setOut`` される。
 
 
