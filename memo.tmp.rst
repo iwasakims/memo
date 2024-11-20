@@ -667,3 +667,54 @@ camel-netty
   `ClientChannelHandler <https://github.com/apache/camel/blob/camel-4.2.0/components/camel-netty/src/main/java/org/apache/camel/component/netty/handlers/ClientChannelHandler.java>`_ 
   。
 
+
+CentOS 7
+========
+
+using vault repo for installing packages::
+
+  # cat >>/etc/yum.repos.d/CentOS-Vault.repo <<'EOF'
+  
+  [C7.9.2009-base]
+  name=CentOS-7.9.2009 - Base
+  baseurl=http://vault.centos.org/7.9.2009/os/$basearch/
+  gpgcheck=1
+  gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+  enabled=1
+  
+  [C7.9.2009-updates]
+  name=CentOS-7.9.2009 - Updates
+  updatesurl=http://vault.centos.org/7.9.2009/os/$basearch/
+  gpgcheck=1
+  gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+  enabled=1
+  EOF
+  
+  
+  # yum --disablerepo='*' --enablerepo=C7.9.2009-base install file
+
+
+Ozone
+=====
+
+- とりあえず手元で動かして実験するには、
+  `docker-compose用の資材 <https://github.com/apache/ozone/blob/ozone-1.4.0/hadoop-ozone/dist/src/main/compose/ozone/README.md>`_
+  が利用できる。
+
+- `ozone sh key put` したときの処理の流れ
+
+  - `CreateKeyRequest <https://github.com/apache/ozone/blob/ozone-1.4.0/hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/protocolPB/OzoneManagerProtocolClientSideTranslatorPB.java#L679>`_
+    を送る。
+
+  - `OMKeyCreateRequest <https://github.com/apache/ozone/blob/ozone-1.4.0/hadoop-ozone/ozone-manager/src/main/java/org/apache/hadoop/ozone/om/request/key/OMKeyCreateRequest.java>`_
+    のロジックがmaster側で実行される。
+
+    - `HA構成かどうかで分岐 <https://github.com/apache/ozone/blob/ozone-1.4.0/hadoop-ozone/ozone-manager/src/main/java/org/apache/hadoop/ozone/protocolPB/OzoneManagerProtocolServerSideTranslatorPB.java#L206-L242>`_
+      がある。HAだと、Ratisでリクエストを送る。 `OMClientRequest#preExecute` の部分は、どちらにせよその前に、このmaster上で実行される。
+
+- ProtocolBuffer2と3それぞれのためのコードを、
+  `同じ.protoファイル <https://github.com/apache/ozone/tree/ozone-1.4.0/hadoop-ozone/interface-client/src/main/proto>`_
+  から生成している。
+  `その過程でパッケージ名を3用に動的に書き換え <https://github.com/apache/ozone/blob/ozone-1.4.0/hadoop-ozone/interface-client/pom.xml#L111-L156>`_
+  している。
+
