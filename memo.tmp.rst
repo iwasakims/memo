@@ -697,9 +697,8 @@ using vault repo for installing packages::
 Ozone
 =====
 
-- とりあえず手元で動かして実験するには、
-  `docker-compose用の資材 <https://github.com/apache/ozone/blob/ozone-1.4.0/hadoop-ozone/dist/src/main/compose/ozone/README.md>`_
-  が利用できる。
+rpc
+---
 
 - `ozone sh key put` したときの処理の流れ
 
@@ -717,4 +716,47 @@ Ozone
   から生成している。
   `その過程でパッケージ名を3用に動的に書き換え <https://github.com/apache/ozone/blob/ozone-1.4.0/hadoop-ozone/interface-client/pom.xml#L111-L156>`_
   している。
+
+
+compose
+-------
+
+とりあえず手元で動かして実験するには、
+`docker-compose用の資材 <https://github.com/apache/ozone/blob/ozone-1.4.0/hadoop-ozone/dist/src/main/compose/ozone/README.md>`_
+が利用できる。
+
+コンテナにはldbコマンドが用意されているので、RocksDBの中身を覗いてみることができる。
+
+::
+
+  $ docker exec -i -t ozone-om-1 /bin/bash
+  
+    $ ldb --db=/data/metadata/om.db list_column_families
+    Column families in /data/metadata/om.db:
+    {default, fileTable, principalToAccessIdsTable, deletedTable, userTable, s3SecretTable, transactionInfoTable, openKeyTable, snapshotInfoTable, directoryTable, prefixTable, compactionLogTable, multipartInfoTable, volumeTable, tenantStateTable, deletedDirectoryTable, tenantAccessIdTable, openFileTable, snapshotRenamedTable, dTokenTable, metaTable, keyTable, bucketTable}
+    
+    $ ldb --db=/data/metadata/om.db --column_family=fileTable --max_keys=1 scan | strings
+    
+    /-9223372036854775552/-9223372036854775040/-9223372036854775040/README.md :
+    vol1
+    bucket1
+            README.md
+
+::
+
+  $ docker exec -i -t ozone-datanode-1 /bin/bash
+  
+    $ ldb \
+        --db=/data/hdds/hdds/CID-35c6416b-9ea8-473b-aa2a-5fcf7bd487ea/DS-7c62ebf2-58e3-436c-8435-80d4a6d3dfa6/container.db/ \\
+        --column_family=block_data \\
+        --max_keys=1 \\
+        --hex \\
+        scan
+    0x00000000000000017C313133373530313533363235363030303031 : 0x0A0E080110818080E097E587CA0118021A0B0A045459504512034B4559222F0A1A3131333735303135333632353630303030315F6368756E6B5F31100018E41F2A0C0802108080011A043FE8A01C28E41F
+
+
+references
+----------
+
+- https://blog.cloudera.com/apache-ozone-metadata-explained/
 
