@@ -153,6 +153,65 @@ conf2/hbase-site.xml::
   </configuration>
 
 
+Loop on hbase-shell
+-------------------
+
+::
+
+  (0..9).each { |i| put 'test', 'r'+i.to_s, 'f:q'+i.to_s, 'v'+i.to_s }
+
+
+Scan filter on hbase-shell
+--------------------------
+
+::
+
+  scan 't1', {FILTER => "PrefixFilter ('r') AND ColumnRangeFilter ('q3', true, 'q6', false)"}
+
+
+Java API on hbase-shell
+-----------------------
+
+::
+
+  require 'java'
+  java_import org.apache.hadoop.hbase.CellUtil
+  java_import org.apache.hadoop.hbase.HBaseConfiguration
+  java_import org.apache.hadoop.hbase.TableName
+  java_import org.apache.hadoop.hbase.client.ConnectionFactory
+  java_import org.apache.hadoop.hbase.client.Get
+  java_import org.apache.hadoop.hbase.util.Bytes
+  
+  conf = HBaseConfiguration.create()
+  conn = ConnectionFactory.createConnection(conf)
+  table = conn.getTable(TableName.valueOf('test'))
+  get = Get.new(Bytes.toBytes('r1'))
+  result = table.get(get)
+  
+  result.rawCells().each { |c| print Bytes.toString(CellUtil.cloneValue(c)) }
+
+
+HBase RDD on spark-shell
+------------------------
+
+::
+
+  import scala.collection.JavaConversions._
+  import org.apache.hadoop.hbase.CellUtil
+  import org.apache.hadoop.hbase.HBaseConfiguration
+  import org.apache.hadoop.hbase.TableName
+  import org.apache.hadoop.hbase.client.Scan
+  import org.apache.hadoop.hbase.spark.HBaseContext
+  import org.apache.hadoop.hbase.util.Bytes
+  
+  val hbconf = HBaseConfiguration.create()
+  val hc = new HBaseContext(sc, hbconf)
+  val scan = new Scan()
+  val rdd = hc.hbaseRDD(TableName.valueOf("test"), scan)
+  rdd.foreach(r => r._2.listCells.foreach(c => println(c)))
+
+
+
 JVM
 ===
 
@@ -711,6 +770,12 @@ rpc
     - `HA構成かどうかで分岐 <https://github.com/apache/ozone/blob/ozone-1.4.0/hadoop-ozone/ozone-manager/src/main/java/org/apache/hadoop/ozone/protocolPB/OzoneManagerProtocolServerSideTranslatorPB.java#L206-L242>`_
       がある。HAだと、Ratisでリクエストを送る。 `OMClientRequest#preExecute` の部分は、どちらにせよその前に、このmaster上で実行される。
 
+    - `SCMのallocateBlockを呼び出して <https://github.com/apache/ozone/blob/ozone-1.4.0/hadoop-ozone/ozone-manager/src/main/java/org/apache/hadoop/ozone/om/request/key/OMKeyCreateRequest.java#L140-L154>`_
+      ブロックを確保する。ブロックの格納先情報は、レスポンスとしてクライアントに戻る。
+
+    - `キーのキャッシュ情報を更新 <https://github.com/apache/ozone/blob/ozone-1.4.0/hadoop-ozone/ozone-manager/src/main/java/org/apache/hadoop/ozone/om/request/key/OMKeyCreateRequest.java#L314-L326>`_
+      する。RocksDBに書くのは、もっと後のcommitするとき。
+
 - ProtocolBuffer2と3それぞれのためのコードを、
   `同じ.protoファイル <https://github.com/apache/ozone/tree/ozone-1.4.0/hadoop-ozone/interface-client/src/main/proto>`_
   から生成している。
@@ -755,8 +820,16 @@ compose
     0x00000000000000017C313133373530313533363235363030303031 : 0x0A0E080110818080E097E587CA0118021A0B0A045459504512034B4559222F0A1A3131333735303135333632353630303030315F6368756E6B5F31100018E41F2A0C0802108080011A043FE8A01C28E41F
 
 
+
+rocksdb
+-------
+
+- Datanode上では、container毎にrocksdbのインスタンスが作られていたが、
+  `HDDS-3630 <https://issues.apache.org/jira/browse/HDDS-3630>`_
+  でそれをやめて一つにした。
+
+
 references
 ----------
 
 - https://blog.cloudera.com/apache-ozone-metadata-explained/
-
