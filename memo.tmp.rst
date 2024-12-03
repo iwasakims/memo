@@ -211,6 +211,49 @@ HBase RDD on spark-shell
   rdd.foreach(r => r._2.listCells.foreach(c => println(c)))
 
 
+setting long timeout for debugging on standalone cluster
+---------------------------------------------------------
+
+::
+
+    <property>
+      <name>hbase.zookeeper.property.tickTime</name>
+      <value>60000</value>
+    </property>
+    <property>
+      <name>hbase.zookeeper.property.minSessionTimeout</name>
+      <value>120000</value>
+    </property>
+    <property>
+      <name>hbase.zookeeper.property.maxSessionTimeout</name>
+      <value>3600000</value>
+    </property>
+    <property>
+      <name>zookeeper.session.timeout</name>
+      <value>3600000</value>
+    </property>
+    <property>
+      <name>zookeeper.session.timeout.localHBaseCluster</name>
+      <value>3600000</value>
+    </property>
+    <property>
+      <name>hbase.zookeeper.sync.timeout.millis</name>
+      <value>3600000</value>
+    </property>
+    <property>
+      <name>hbase.rpc.timeout</name>
+      <value>3600000</value>
+    </property>
+      <property>
+      <name>hbase.client.scanner.timeout.period</name>
+      <value>3600000</value>
+    </property>
+    <property>
+      <name>hbase.client.operation.timeout</name>
+      <value>3600000</value>
+    </property>
+
+
 
 JVM
 ===
