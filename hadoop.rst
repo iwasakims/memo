@@ -615,20 +615,40 @@ ApplicationHistoryServer
   コード中ではTimelineという単語が多いので、そのうちリネームされるのだろうか?
 
 
-cgroups
--------
+cgroup
+------
 
 - /proc/mountsの中身をparseして、
-  typeがcgroupで、optionsの中にcpuを含むもののマウントポイントを探す。
 
-  - さらにCgroupsLCEResourcesHandler.java#initializeControllerPathsで、
-    その下のhadoop-yarn(デフォルト値)というFileが書き込み可能かどうかのチェックが入る。
-    これは、LinuxContainerExecutor#initから呼ばれるので、
-    ちゃんと設定できていないとNodeManagerは起動に失敗する。
+- `ResourceHandlerModule <https://github.com/apache/hadoop/blob/rel/release-3.2.2/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/main/java/org/apache/hadoop/yarn/server/nodemanager/containermanager/linux/resources/ResourceHandlerModule.java>`_
+  というクラスが、新しい仕組み。
 
-- 基本はcpu.sharesで分配を制御する。
-  yarn.nodemanager.linux-container-executor.cgroups.strict-resource-usageがtrueならば、
-  cfs_period_usとcfs_quota_usの値もセットされる。
+- CgroupsLCEResourcesHandlerは、
+  `YARN-3542 <https://issues.apache.org/jira/browse/YARN-3542>`_
+  でdeprecatedになり、内部的には使われなくなった。
+
+  - CPUの制御を有効にする場合、以下が新しい設定方法。
+
+      <property>
+        <name>yarn.nodemanager.resource.cpu.enabled</name>
+        <value>true</value>
+      </property>
+
+  - 以下の旧設定は、
+    `上記と同じ効果 <https://github.com/apache/hadoop/blob/rel/release-3.2.2/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/main/java/org/apache/hadoop/yarn/server/nodemanager/containermanager/linux/resources/ResourceHandlerModule.java#L144-L151>`_
+    を持つ。::
+
+      <property>
+        <name>yarn.nodemanager.linux-container-executor.resources-handler.class</name>
+        <value>org.apache.hadoop.yarn.server.nodemanager.util.CgroupsLCEResourcesHandler</value>
+      </property>
+
+- デフォルトの設定では、 ``yarn.nodemanager.resource.memory.enforced`` がtrue、
+  かつ ``yarn.nodemanager.elastic-memory-control.enabled`` がfalseなので、
+  ``yarn.nodemanager.{pmem|vmem}-check-enabled`` によるcontainerのkillが
+  `実行されない <https://github.com/apache/hadoop/blob/rel/release-3.2.2/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/main/java/org/apache/hadoop/yarn/server/nodemanager/containermanager/monitor/ContainersMonitorImpl.java#L762-L765>`_
+  ように見える。
+
 
 
 KMS
