@@ -184,6 +184,44 @@ You can log in to the node and see files if you need.::
   $ ./docker-hadoop.sh -dcp --exec 1 /bin/bash
 
 
+Enabling Kerberos security on running docker provisioner
+--------------------------------------------------------
+
+Kerberos authentication can be enabled by
+`adding hiera variables to generated site.yaml< https://github.com/apache/bigtop/blob/rel/3.3.0/provisioner/docker/docker-hadoop.sh#L154-L162>`_
+::
+
+  $ git diff
+  diff --git a/provisioner/docker/docker-hadoop.sh b/provisioner/docker/docker-hadoop.sh
+  index 38ece152..feadd8f7 100755
+  --- a/provisioner/docker/docker-hadoop.sh
+  +++ b/provisioner/docker/docker-hadoop.sh
+  @@ -172,6 +172,13 @@ bigtop::bigtop_repo_gpg_check: $gpg_check
+   hadoop_cluster_node::cluster_components: $3
+   hadoop_cluster_node::cluster_nodes: [$node_list]
+   hadoop::common_yarn::yarn_resourcemanager_scheduler_class: org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler
+  +hadoop::hadoop_security_authentication: "kerberos"
+  +kerberos::krb_site::domain: "bigtop.apache.org"
+  +kerberos::krb_site::realm: "BIGTOP.APACHE.ORG"
+  +kerberos::krb_site::kdc_server: "%{hiera('bigtop::hadoop_head_node')}"
+  +kerberos::krb_site::kdc_port: "88"
+  +kerberos::krb_site::admin_port: "749"
+  +kerberos::krb_site::keytab_export_dir: "/var/lib/bigtop_keytabs"
+   EOF
+ }
+
+and adding ``kerberos`` to the list of stacks.::
+
+  $ ./docker-hadoop.sh \
+      --create 1 \
+      --image bigtop/puppet:trunk-rockylinux-8 \
+      --docker-compose-yml docker-compose-cgroupv2.yml \
+      --docker-compose-plugin \
+      --memory 16g \
+      --repo http://repos.bigtop.apache.org/releases/3.0.1/centos/8/x86_64 \
+      --stack kerberos,hdfs,yarn,mapreduce
+
+
 Release process of Bigtop
 =========================
 
