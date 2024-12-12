@@ -627,7 +627,7 @@ cgroup
   `YARN-3542 <https://issues.apache.org/jira/browse/YARN-3542>`_
   でdeprecatedになり、内部的には使われなくなった。
 
-  - CPUの制御を有効にする場合、以下が新しい設定方法。
+  - CPUの制御を有効にする場合、以下が新しい設定方法。::
 
       <property>
         <name>yarn.nodemanager.resource.cpu.enabled</name>
@@ -644,11 +644,17 @@ cgroup
       </property>
 
 - デフォルトの設定では、 ``yarn.nodemanager.resource.memory.enforced`` がtrue、
-  かつ ``yarn.nodemanager.elastic-memory-control.enabled`` がfalseなので、
+  かつ ``yarn.nodemanager.elastic-memory-control.enabled`` がfalse。
+  Hadoop 3.2.2の場合のコードを見ると、
   ``yarn.nodemanager.{pmem|vmem}-check-enabled`` によるcontainerのkillが
   `実行されない <https://github.com/apache/hadoop/blob/rel/release-3.2.2/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/main/java/org/apache/hadoop/yarn/server/nodemanager/containermanager/monitor/ContainersMonitorImpl.java#L762-L765>`_
   ように見える。
 
+  - Hadoop 3.3.0では
+    `YARN-8930 <https://issues.apache.org/jira/browse/YARN-8930>`_
+    の
+    `変更<https://github.com/apache/hadoop/commit/f76e3c3db789dd6866fa0fef8e014cbfe8c8f80d>`_
+    によって、それが結果的に解消してるような。
 
 
 KMS
