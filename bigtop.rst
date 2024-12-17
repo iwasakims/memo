@@ -411,6 +411,21 @@ See
 for details.
 
 
+debugging units
+---------------
+
+::
+
+  # systemctl cat hadoop-mapreduce-historyserver.service
+
+  # systemctl list-dependencies hadoop-mapreduce-historyserver.service
+
+  # SYSTEMD_LOG_LEVEL=debug systemctl status hadoop-mapreduce-historyserver.service
+
+  
+
+
+
 openEuler
 =========
 

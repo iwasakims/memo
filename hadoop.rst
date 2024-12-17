@@ -653,7 +653,7 @@ cgroup
   - Hadoop 3.3.0では
     `YARN-8930 <https://issues.apache.org/jira/browse/YARN-8930>`_
     の
-    `変更<https://github.com/apache/hadoop/commit/f76e3c3db789dd6866fa0fef8e014cbfe8c8f80d>`_
+    `変更 <https://github.com/apache/hadoop/commit/f76e3c3db789dd6866fa0fef8e014cbfe8c8f80d>`_
     によって、それが結果的に解消してるような。
 
 

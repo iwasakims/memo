@@ -566,6 +566,32 @@ using vault repo for installing packages::
   # yum --disablerepo='*' --enablerepo=C7.9.2009-base install file
 
 
+CentOS 8
+========
+
+using vault repo for installing packages::
+
+  $ docker run -i -t centos:8 /bin/bash
+  
+  # cat >>/etc/yum.repos.d/CentOS-Vault.repo <<'EOF'
+  [C8.2.2004-baseos]
+  name=CentOS-8.2.2004 - BaseOS
+  baseurl=https://vault.centos.org/8.2.2004/BaseOS/$basearch/os/
+  gpgcheck=1
+  enabled=1
+  gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
+  
+  [C8.2.2004-appstream]
+  name=CentOS-8.2.2004 - AppStream
+  baseurl=https://vault.centos.org/8.2.2004/AppStream/$basearch/os/
+  gpgcheck=1
+  enabled=1
+  gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
+  EOF
+  
+  # yum --disablerepo='*' --enablerepo=C8.2.2004-appstream install crash
+
+
 Ozone
 =====
 
