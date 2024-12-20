@@ -103,6 +103,50 @@ For RPM, available platforms are ``x86_64``, ``aarch64`` and ``ppc64le``.
       --stack hdfs,yarn,mapreduce,hbase
 
 
+puppet versions(snapshot)
+-------------------------
+
+rockylinux-8::
+
+  # puppet --version
+  6.26.0
+
+rockylinux-9::
+
+  # puppet --version
+  7.27.0
+
+openeuler-22.03::
+
+  # puppet --version
+  7.22.0
+
+fedora-38::
+
+  # puppet --version
+  8.3.1
+
+ubuntu-22.04::
+
+  # puppet --version
+  5.5.22
+
+ubuntu-24.04::
+
+  # puppet --version
+  8.4.0
+
+debian-11::
+
+  # puppet --version
+  5.5.22
+
+debian-12::
+
+  # puppet --version
+  7.23.0
+
+
 Develpment
 ==========
 
@@ -421,8 +465,6 @@ debugging units
   # systemctl list-dependencies hadoop-mapreduce-historyserver.service
 
   # SYSTEMD_LOG_LEVEL=debug systemctl status hadoop-mapreduce-historyserver.service
-
-  
 
 
 
