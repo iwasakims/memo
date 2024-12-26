@@ -126,6 +126,11 @@ fedora-38::
   # puppet --version
   8.3.1
 
+fedora-40::
+
+  # puppet --version
+  8.5.1
+
 ubuntu-22.04::
 
   # puppet --version
