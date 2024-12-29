@@ -1,41 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <configuration>
-  <property>
-    <name>ozone.enabled</name>
-    <value>true</value>
-    <tag>OZONE, REQUIRED</tag>
-  </property>
-  <property>
-    <name>ozone.om.address</name>
-    <value>localhost</value>
-    <tag>OM, REQUIRED</tag>
-  </property>
-  <property>
-    <name>ozone.scm.client.address</name>
-    <value>localhost</value>
-    <tag>OZONE, SCM, REQUIRED</tag>
-  </property>
-  <property>
-    <name>ozone.scm.names</name>
-    <value>localhost</value>
-    <tag>OZONE, REQUIRED</tag>
-  </property>
 
   <property>
     <name>ozone.metadata.dirs</name>
     <value>/home/iwasakims/ozone/meta</value>
   </property>
+
   <property>
-    <name>hdds.datanode.dir</name>
-    <value>/home/iwasakims/ozone/hdds</value>
+    <name>ozone.scm.names</name>
+    <value>localhost</value>
   </property>
   <property>
-    <name>dfs.container.ratis.datanode.storage.dir</name>
-    <value>/home/iwasakims/ozone/ratis</value>
-  </property>
-  <property>
-    <name>hdds.scm.chillmode.enabled</name>
-    <value>false</value>
+    <name>ozone.scm.client.address</name>
+    <value>localhost</value>
   </property>
   <property>
     <name>ozone.scm.container.size</name>
@@ -46,6 +23,25 @@
     <value>32MB</value>
   </property>
   <property>
+    <name>ozone.scm.chunk.size</name>
+    <value>4MB</value>
+    <description>ozone.client.stream.buffer.flush.size % ozone.scm.chunk.size must be 0.</description>
+  </property>
+
+  <property>
+    <name>hdds.datanode.dir</name>
+    <value>/home/iwasakims/ozone/hdds</value>
+  </property>
+  <property>
+    <name>hdds.datanode.storage.utilization.critical.threshold</name>
+    <value>1.0</value>
+  </property>
+  <property>
+    <name>hdds.container.ratis.datanode.storage.dir</name>
+    <value>/home/iwasakims/ozone/ratis</value>
+  </property>
+
+  <property>
     <name>ozone.client.stream.buffer.max.size</name>
     <value>16MB</value>
     <description>ozone.scm.block.size % ozone.client.stream.buffer.max.size must be 0.</description>
@@ -55,11 +51,7 @@
     <value>8MB</value>
     <description>ozone.client.stream.buffer.max.size % ozone.client.stream.buffer.flush.size must be 0.</description>
   </property>
-  <property>
-    <name>ozone.scm.chunk.size</name>
-    <value>4MB</value>
-    <description>ozone.client.stream.buffer.flush.size % ozone.scm.chunk.size must be 0.</description>
-  </property>
+
   <property>
     <name>ozone.replication.type</name>
     <value>RATIS</value>
@@ -68,8 +60,5 @@
     <name>ozone.replication</name>
     <value>1</value>
   </property>
-  <property>
-    <name>hdds.datanode.storage.utilization.critical.threshold</name>
-    <value>1.0</value>
-  </property>
+
 </configuration>
