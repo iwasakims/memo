@@ -23,6 +23,9 @@ cli
 rpc
 ===
 
+misc
+----
+
 - `ozone sh key put` したときの処理の流れ
 
   - `CreateKeyRequest <https://github.com/apache/ozone/blob/ozone-1.4.0/hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/protocolPB/OzoneManagerProtocolClientSideTranslatorPB.java#L679>`_
@@ -45,6 +48,47 @@ rpc
   から生成している。
   `その過程でパッケージ名を3用に動的に書き換え <https://github.com/apache/ozone/blob/ozone-1.4.0/hadoop-ozone/interface-client/pom.xml#L111-L156>`_
   している。
+
+
+om
+--
+
+
+- `HDDS-7309 <https://issues.apache.org/jira/browse/HDDS-7309>`_
+  によって、一度OMのRPCはgRPC実装がデフォルトになったが、性能上の問題が出たので、
+  `HDDS-9446 <https://issues.apache.org/jira/browse/HDDS-9446>`_
+  によってHadoop RPC実装がデフォルトに戻された。
+  gRPCに関する問題がクリアされたら、また変わると考えられる。
+
+- gRPC版実装は、S3 gatewayからOzoneManagerへのアクセスについて、
+  `Hadoop RPCの仕様ベースで、リクエスト単位で認証するために、クライアントインスタンスを毎回作りなおす非効率を解消する目的 <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/docs/content/design/s3-performance.md>`_
+  で、
+  `HDDS-4440 <https://issues.apache.org/jira/browse/HDDS-4440>`_
+  によって作られた。
+  OzoneManagerでは現状、
+  `s3g用のgRPC版RPCServerが、基本のRpcServerとは別に起動 <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-ozone/ozone-manager/src/main/java/org/apache/hadoop/ozone/om/OzoneManager.java#L708-L711>`_
+  している。
+
+
+scm
+---
+
+- scmは
+  `複数のプロトコル <https://github.com/apache/ozone/tree/ozone-1.4.1/hadoop-hdds/interface-server/src/main/proto>`_
+  を、複数のserverインスタンスを使ってserveしている。
+  .protoのファイル名とプロトコル名称が微妙にマッチしていないのは、歴史的経緯だろうか。
+
+  - `omがblockの操作に使うScmBlockLocationProtocol <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/interface-server/src/main/proto/ScmServerProtocol.proto#L34-L42>`_
+
+  - `StorageContainerLocationProtocol <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/interface-admin/src/main/proto/ScmAdminProtocol.proto#L145-L187>`_
+
+  - `datanodeがscmとのやりとりに使うStorageContainerDatanodeProtocol <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/interface-server/src/main/proto/ScmServerDatanodeHeartbeatProtocol.proto>`_
+
+  - 認証のための `あれこれ <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/server/SCMSecurityProtocolServer.java>`_ 。
+
+    - `ScmSecurityProtocol <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/interface-server/src/main/proto/ScmServerSecurityProtocol.proto>`_
+
+    - `ScmSecretKeyProtocol <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/interface-server/src/main/proto/ScmSecretKeyProtocol.proto>`_
 
 
 
