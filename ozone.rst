@@ -40,6 +40,10 @@ misc
     - `SCMのallocateBlockを呼び出して <https://github.com/apache/ozone/blob/ozone-1.4.0/hadoop-ozone/ozone-manager/src/main/java/org/apache/hadoop/ozone/om/request/key/OMKeyCreateRequest.java#L140-L154>`_
       ブロックを確保する。ブロックの格納先情報は、レスポンスとしてクライアントに戻る。
 
+      - blockが割り当て可能なOPENなpipelineがあれば、それを使い、無ければpipelineを作る。
+
+      - replication typeがratisであれば、
+
     - `キーのキャッシュ情報を更新 <https://github.com/apache/ozone/blob/ozone-1.4.0/hadoop-ozone/ozone-manager/src/main/java/org/apache/hadoop/ozone/om/request/key/OMKeyCreateRequest.java#L314-L326>`_
       する。RocksDBに書くのは、もっと後のcommitするとき。
 
@@ -53,6 +57,13 @@ misc
 om
 --
 
+- RPCの定義上、
+  `メソッドは一つ <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-ozone/interface-client/src/main/proto/OmClientProtocol.proto#L2124-L2130>`_
+  で、
+  `リクエストのtype <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-ozone/interface-client/src/main/proto/OmClientProtocol.proto#L41-L149>`_
+  に応じてサーバ側の処理を分岐するスタイルに作りかえられていて、
+  `インターフェース上定義されていたメソッドの多くが使われなく <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-ozone/common/src/main/java/org/apache/hadoop/ozone/om/protocol/OzoneManagerProtocol.java#L101-L102>`_
+  なった。
 
 - `HDDS-7309 <https://issues.apache.org/jira/browse/HDDS-7309>`_
   によって、一度OMのRPCはgRPC実装がデフォルトになったが、性能上の問題が出たので、
@@ -90,6 +101,26 @@ scm
 
     - `ScmSecretKeyProtocol <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/interface-server/src/main/proto/ScmSecretKeyProtocol.proto>`_
 
+
+datanode
+--------
+
+- datanodeはStorageContainerDatanodeProtocolでscmに定期的にsendHeartbeatし、
+  レスポンスとして、SCMからの指示(コマンド)を受け取り処理する。
+  そこはHDFSのDataNodeと同じ感じ。
+
+- clientがデータを書くときは
+  `RatisのRPCを使い <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/ozoneimpl/OzoneContainer.java#L207-L209>`_
+  データを読むときは
+  `gRPCのRPCを使う <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/ozoneimpl/OzoneContainer.java#L220-L221>`_
+  。
+
+- datanodeはRatisを使う関係上、開いているサービスポートが多め。
+
+  - `containerのgRPCのポート <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/common/src/main/resources/ozone-default.xml#L48-L53>`_
+  - `Ratisのポート <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/common/src/main/resources/ozone-default.xml#L237-L254>`_
+  - `Web UIのHTTPポート <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/common/src/main/resources/ozone-default.xml#L2775-L2783>`_
+  - `datanode間のcontainerレプリケーション用ポート <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/replication/ReplicationServer.java#L205-L208>`_
 
 
 compose
@@ -129,16 +160,46 @@ compose
     0x00000000000000017C313133373530313533363235363030303031 : 0x0A0E080110818080E097E587CA0118021A0B0A045459504512034B4559222F0A1A3131333735303135333632353630303030315F6368756E6B5F31100018E41F2A0C0802108080011A043FE8A01C28E41F
 
 
+concepts
+========
 
-rocksdb
-=======
+container
+---------
 
-- Datanode上では、container毎にrocksdbのインスタンスが作られていたが、
+- container実データの管理上の単位。
+  設定されたサイズ上限に達すると、closeしてread onlyになり、新しいcontainerが作られる。
+  デフォルトのサイズ上限が
+  `5GB <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/common/src/main/resources/ozone-default.xml#L1021-L1034>`_ 。
+  大きくするほど、メタデータの無駄が少ないが、
+  リカバリ時のノード間のデータ複製が、container単位で実行されるので、
+  その所要時間時間は増える。
+
+- datanode上では、container毎にrocksdbのインスタンスが作られていたが、
+  メモリやWALのオーバーヘッド、合計使用ディスク容量を測るためのduの負荷などのネガがあり、
   `HDDS-3630 <https://issues.apache.org/jira/browse/HDDS-3630>`_
-  でそれをやめて一つにした。
+  でディスクボリューム毎に一つのrocksdbインスタンスを使うよう、リファクタリングした。
 
 
-references
-==========
+pipeline
+--------
 
-- https://blog.cloudera.com/apache-ozone-metadata-explained/
+- containerへの書き込みを(冗長化しつつ)行うための仕組み。
+  `replication typeがデフォルトのRaft <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/common/src/main/resources/ozone-default.xml#L1313-L1323>`_
+  である場合、1つのpipelineが、1つのRaft groupに対応する。
+
+- `HDDS-1564 <https://issues.apache.org/jira/browse/HDDS-1564>`_
+  以前は、datanodeが1つのpipelineにしか所属できなかった。
+
+- pipelineはdatanodeの加入離脱が無ければ固定数がopenされたままになる。
+  allocateBlockのコードパス上は、
+  `まず使えるpipelineを選び、そのpipelineに対応するcontainerを選ぶか、無ければ作る <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/pipeline/WritableRatisContainerProvider.java#L153-L167>`_
+  という段取りになる。
+
+- pipeline数には上限が設定されており、
+  `metadata用ディスクボリュームあたり2個 <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/common/src/main/resources/ozone-default.xml#L959-L965>`_
+  がデフォルト。
+
+- `ディスクボリュームあたりのcontainer数がデフォルト3個 <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/common/src/main/resources/ozone-default.xml#L952-L958>`_
+  という上限と合わせると、
+  `pipelineあたりのcontainer数の上限も高々2個 <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/ContainerManagerImpl.java#L362-L368>`_
+  ということになりそう。
