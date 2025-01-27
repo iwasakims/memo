@@ -122,6 +122,14 @@ datanode
   - `Web UIのHTTPポート <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/common/src/main/resources/ozone-default.xml#L2775-L2783>`_
   - `datanode間のcontainerレプリケーション用ポート <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/container/replication/ReplicationServer.java#L205-L208>`_
 
+- reconfigurationに対応しているが、
+  `reconfigurableな設定は限定的 <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/container-service/src/main/java/org/apache/hadoop/ozone/HddsDatanodeService.java#L289-L294>`_
+  。
+  ``hdds.datanode.dir`` を更新してディスクの追加/削除をオンラインでやるみたいなことは、まだできない?
+
+- `HDDS-10685 <https://issues.apache.org/jira/browse/HDDS-10685>`_
+  で、libhadoop.soを利用したshort circuit local readが開発中。
+
 
 compose
 =======
