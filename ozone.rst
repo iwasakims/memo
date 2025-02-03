@@ -130,6 +130,11 @@ datanode
 - `HDDS-10685 <https://issues.apache.org/jira/browse/HDDS-10685>`_
   で、libhadoop.soを利用したshort circuit local readが開発中。
 
+- デフォルト値では、ハートビートは30s間隔。5m音沙汰なしでstale。10mでdead。
+
+- datanodeがdeadになると、そのdatanodeが参加しているpipelineはすべてclose。
+  そのpipelineを使っているcontainerもすべてclose。
+
 
 compose
 =======
