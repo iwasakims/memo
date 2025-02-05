@@ -5,6 +5,31 @@
     <name>ozone.metadata.dirs</name>
     <value>/home/iwasakims/ozone/meta</value>
   </property>
+  <property>
+    <name>hdds.metadata.dirs</name>
+    <value>/home/iwasakims/ozone/hdds</value>
+  </property>
+
+  <property>
+    <name>ozone.om.ratis.storage.dir</name>
+    <value>/home/iwasakims/ozone/om/ratis</value>
+  </property>
+  <property>
+    <name>ozone.scm.ha.ratis.storage.dir</name>
+    <value>/home/iwasakims/ozone/scm/ratis</value>
+  </property>
+  <property>
+    <name>hdds.container.ratis.datanode.storage.dir</name>
+    <value>/home/iwasakims/ozone/datanode/ratis</value>
+  </property>
+  <property>
+    <name>hdds.datanode.dir</name>
+    <value>/home/iwasakims/ozone/datanode</value>
+  </property>
+  <property>
+     <name>ozone.scm.datanode.id.dir</name>
+     <value>/home/iwasakims/ozone/datanode/node</value>
+  </property>
 
   <property>
     <name>ozone.scm.names</name>
@@ -14,6 +39,7 @@
     <name>ozone.scm.client.address</name>
     <value>localhost</value>
   </property>
+
   <property>
     <name>ozone.scm.container.size</name>
     <value>128MB</value>
@@ -29,16 +55,8 @@
   </property>
 
   <property>
-    <name>hdds.datanode.dir</name>
-    <value>/home/iwasakims/ozone/hdds</value>
-  </property>
-  <property>
     <name>hdds.datanode.storage.utilization.critical.threshold</name>
     <value>1.0</value>
-  </property>
-  <property>
-    <name>hdds.container.ratis.datanode.storage.dir</name>
-    <value>/home/iwasakims/ozone/ratis</value>
   </property>
 
   <property>

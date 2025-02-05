@@ -173,6 +173,23 @@ compose
     0x00000000000000017C313133373530313533363235363030303031 : 0x0A0E080110818080E097E587CA0118021A0B0A045459504512034B4559222F0A1A3131333735303135333632353630303030315F6368756E6B5F31100018E41F2A0C0802108080011A043FE8A01C28E41F
 
 
+ratis
+=====
+
+- デフォルトで使うディレクトリが ``${ozone.metadata.dirs}/ratis`` なので、
+  疑似分散でom、scm、datanodeを同一ホストで起動するときは、
+  ディレクトリを分ける必要がある。
+
+  - ``ozone.om.ratis.storage.dir``
+  - ``ozone.scm.ha.ratis.storage.dir``
+  - ``hdds.container.ratis.datanode.storage.dir``
+
+- om-haとscm-haが導入された後は、
+  non-haの場合でも、replication factorがONEのRatisを使う前提で、
+  コードパスが共通化されている。
+  ``ozone.scm.ratis.enable`` のようなプロパティが存在するが、falseにすることはできない。
+
+
 concepts
 ========
 
@@ -216,3 +233,13 @@ pipeline
   という上限と合わせると、
   `pipelineあたりのcontainer数の上限も高々2個 <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/ContainerManagerImpl.java#L362-L368>`_
   ということになりそう。
+
+- pipelineは、scmの
+  `BackgroundPipelineCreator <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/pipeline/BackgroundPipelineCreator.java>`_
+  のスレッドが自動的に作る。
+  120s毎または、datanode追加時などに処理が走る。
+  RAFTの場合、replication factorがONEとTHREEの両方のpipeline作成を試行するが、
+  実用上ONEができてしまうと不都合なので、
+  ``ozone.scm.pipeline.creation.auto.factor.one`` をfalseに設定することで、
+  ONEを自動的に作らないようにすることができるようになった。
+  `(HDDS-2602) <https://issues.apache.org/jira/browse/HDDS-2602>`_
