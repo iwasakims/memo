@@ -243,3 +243,9 @@ pipeline
   ``ozone.scm.pipeline.creation.auto.factor.one`` をfalseに設定することで、
   ONEを自動的に作らないようにすることができるようになった。
   `(HDDS-2602) <https://issues.apache.org/jira/browse/HDDS-2602>`_
+
+- closeされたcontainerは、pipelineに対応づけられていない。
+  データを読むときは、 scmの ``getContainerWithPipelin`` の処理の中で、
+  `読み込み用のpipeline情報を作り <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/server/SCMClientProtocolServer.java#L291-L295>`_
+  、それを返す。
+  この場合のpiplineは、単にcontainerのreplicaを持つdatanodeのリストということになるはず。
