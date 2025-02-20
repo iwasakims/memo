@@ -217,8 +217,14 @@ pipeline
   `replication typeがデフォルトのRaft <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/common/src/main/resources/ozone-default.xml#L1313-L1323>`_
   である場合、1つのpipelineが、1つのRaft groupに対応する。
 
-- `HDDS-1564 <https://issues.apache.org/jira/browse/HDDS-1564>`_
+- `multi-raft support (HDDS-1564) <https://issues.apache.org/jira/browse/HDDS-1564>`_
   以前は、datanodeが1つのpipelineにしか所属できなかった。
+
+- multi raft対応後であっても、
+  ノード間の負荷が均等になるようにpipelineが作られる保証はない。
+  例えばdatanodeが4台いて、  ``ozone.scm.datanode.pipeline.limit`` が2の場合に、
+  "DN1,DN2,DN3", "DN1,DN2,DN3"のような構成DNが同じパイプラインが2つ作られ、
+  DN4が蚊帳の外となるような状態は発生しうる。
 
 - pipelineはdatanodeの加入離脱が無ければ固定数がopenされたままになる。
   allocateBlockのコードパス上は、
@@ -226,13 +232,15 @@ pipeline
   という段取りになる。
 
 - pipeline数には上限が設定されており、
+  `datanodeあたり2個<https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/common/src/main/resources/ozone-default.xml#L966-L974>`_
+  かつ
   `metadata用ディスクボリュームあたり2個 <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/common/src/main/resources/ozone-default.xml#L959-L965>`_
   がデフォルト。
 
-- `ディスクボリュームあたりのcontainer数がデフォルト3個 <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/common/src/main/resources/ozone-default.xml#L952-L958>`_
-  という上限と合わせると、
-  `pipelineあたりのcontainer数の上限も高々2個 <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/container/ContainerManagerImpl.java#L362-L368>`_
-  ということになりそう。
+- 上記のpipeline上限と、
+  `ディスクボリュームあたりのcontainer数がデフォルト3個 <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/common/src/main/resources/ozone-default.xml#L952-L958>`_
+  という上限とを加味して、
+  `pipelineあたりのcontainer数の上限が決まる。
 
 - pipelineは、scmの
   `BackgroundPipelineCreator <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/pipeline/BackgroundPipelineCreator.java>`_
@@ -244,8 +252,11 @@ pipeline
   ONEを自動的に作らないようにすることができるようになった。
   `(HDDS-2602) <https://issues.apache.org/jira/browse/HDDS-2602>`_
 
+- Ratisのreplication factorはONEかTHREEの2択。
+  datanodeが2台しかいない状態で、新規にTHREEのpipelineを作ることはできない。
+
 - closeされたcontainerは、pipelineに対応づけられていない。
-  データを読むときは、 scmの ``getContainerWithPipelin`` の処理の中で、
+  データを読むときは、scmの ``getContainerWithPipelin`` の処理の中で、
   `読み込み用のpipeline情報を作り <https://github.com/apache/ozone/blob/ozone-1.4.1/hadoop-hdds/server-scm/src/main/java/org/apache/hadoop/hdds/scm/server/SCMClientProtocolServer.java#L291-L295>`_
   、それを返す。
   この場合のpiplineは、単にcontainerのreplicaを持つdatanodeのリストということになるはず。
