@@ -540,6 +540,24 @@ camel-netty
   。
 
 
+RabbitMQ
+========
+
+Clustering on local machine works [as described in the documentation](https://www.rabbitmq.com/docs/clustering#single-machine).
+data and log files (prefixed with node names) are saved under ``$RABBITMQ_HOME/var``::
+
+  $ sudo apt install erlang-public-key  erlang-ssl erlang-xmerl erlang-os-mon erlang-inets erlang-elsap erlang-eldap
+  
+  $ wget https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.10.7/rabbitmq-server-generic-unix-3.10.7.tar.xz
+  $ tar Jvf rabbitmq-server-generic-unix-3.10.7.tar.xz
+  $ cd rabbitmq_server-3.10.7
+  $ RABBITMQ_NODE_PORT=5672 RABBITMQ_NODENAME=rabbit sbin/rabbitmq-server -detached
+  $ RABBITMQ_NODE_PORT=5673 RABBITMQ_NODENAME=hare sbin/rabbitmq-server -detached
+  $ sbin/rabbitmqctl -n hare stop_app
+  $ sbin/rabbitmqctl -n hare join_cluster rabbit@`hostname -s`
+  $ sbin/rabbitmqctl -n hare start_app
+
+
 CentOS 7
 ========
 
