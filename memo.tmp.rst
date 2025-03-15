@@ -558,6 +558,68 @@ data and log files (prefixed with node names) are saved under ``$RABBITMQ_HOME/v
   $ sbin/rabbitmqctl -n hare start_app
 
 
+DRBD
+====
+
+virter
+------
+
+DRBDを手元で動かしてみるためのVMその他を、libvirtを使ってセットアップするためのツール。
+Goで実装されていて、single binaryをダウンロードして実行することで使える。
+
+preparing libvirt on Ubuntu 24.04::
+
+  $ sudo apt install libvirt-daemon-system bridge-utils qemu-kvm libvirt-daemon
+  $ sudo usermod -a -G libvirt,kvm iwasakims
+  $ sudo mkdir -p /var/lib/libvirt/images
+  $ sudo chown root:libvirt /var/lib/libvirt/images
+  $ sudo chmod 775 /var/lib/libvirt/images
+  $ exit
+  
+  $ sudo virsh pool-define-as --name default --type dir --target /var/lib/libvirt/images
+  $ sudo virsh pool-build default
+  $ sudo virsh pool-start default
+  $ sudo virsh pool-autostart default
+
+using virter::
+
+  $ wget https://github.com/LINBIT/virter/releases/download/v0.28.1/virter-linux-amd64
+  $ sudo mv virter-linux-amd64 /usr/local/bin/virter
+  $ chmod a+x /usr/local/bin/virter
+
+  $ virter image ls --available
+  WARN[0000] could not look up storage pool default        error="Storage pool not found: no storage pool with matching name 'default'"
+  INFO[0000] Builtin image registry does not exist, writing to /home/iwasakims/.local/share/virter/images.toml
+  Name              URL
+  alma-8            https://repo.almalinux.org/almalinux/8/cloud/x86_64/images/AlmaLinux-8-GenericCloud-latest.x86_64.qcow2
+  alma-9            https://repo.almalinux.org/almalinux/9/cloud/x86_64/images/AlmaLinux-9-GenericCloud-latest.x86_64.qcow2
+  amazonlinux-2     https://cdn.amazonlinux.com/os-images/2.0.20250305.0/kvm/amzn2-kvm-2.0.20250305.0-x86_64.xfs.gpt.qcow2
+  amazonlinux-2023  https://cdn.amazonlinux.com/al2023/os-images/2023.6.20250303.0/kvm/al2023-kvm-2023.6.20250303.0-kernel-6.1-x86_64.xfs.gpt.qcow2
+  centos-6          https://cloud.centos.org/centos/6/images/CentOS-6-x86_64-GenericCloud.qcow2
+  centos-7          https://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.qcow2
+  centos-8          https://cloud.centos.org/centos/8/x86_64/images/CentOS-8-GenericCloud-8.4.2105-20210603.0.x86_64.qcow2
+  debian-10         https://cloud.debian.org/images/cloud/buster/latest/debian-10-generic-amd64.qcow2
+  debian-11         https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-generic-amd64.qcow2
+  debian-12         https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-generic-amd64.qcow2
+  debian-9          https://cdimage.debian.org/cdimage/openstack/current-9/debian-9-openstack-amd64.qcow2
+  rocky-8           https://download.rockylinux.org/pub/rocky/8/images/x86_64/Rocky-8-GenericCloud.latest.x86_64.qcow2
+  rocky-9           https://download.rockylinux.org/pub/rocky/9/images/x86_64/Rocky-9-GenericCloud.latest.x86_64.qcow2
+  ubuntu-bionic     https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64.img
+  ubuntu-focal      https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
+  ubuntu-jammy      https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
+  ubuntu-noble      https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img
+  ubuntu-xenial     https://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-disk1.img
+
+  $ virter image pull rocky-9
+
+  $ virter vm run --name rocky-9-hello --id 11 --nic "type=network,source=default,mac=1a:2b:3c:4d:5e:01" --wait-ssh rocky-9
+
+
+libvirt
+=======
+
+
+
 CentOS 7
 ========
 
