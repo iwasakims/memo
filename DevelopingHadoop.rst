@@ -466,6 +466,30 @@ debugging by spark-shell
         bin/spark-shell \
         --conf spark.executor.heartbeatInterval=600
 
+basic file operations with API::
+
+    scala> import java.nio.ByteBuffer
+    scala> import java.nio.charset.Charset
+    scala> import org.apache.hadoop.conf.Configuration
+    scala> import org.apache.hadoop.fs.FileSystem
+    scala> import org.apache.hadoop.fs.Path
+    
+    scala> val conf = new Configuration()
+    scala> conf.get("fs.defaultFS")
+    scala> val dfs = FileSystem.get(conf)
+    
+    scala> dfs.mkdirs(new Path("/foo/bar"))
+    
+    scala> val os = dfs.create(new Path("/foo/bar/baz.txt"))
+    scala> val ob ="baz".getBytes(Charset.forName("UTF-8"))
+    scala> os.write(ob, 0, ob.length)
+    scala> os.close()
+    
+    scala> val is = dfs.open(new Path("/foo/bar/baz.txt"))
+    scala> val ib = ByteBuffer.allocate(3).array
+    scala> is.read(ib, 0, ib.length)
+    scala> new String(ib, Charset.forName("UTF-8"))
+
 
 debugging shell scripts
 =======================

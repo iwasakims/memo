@@ -571,11 +571,9 @@ preparing libvirt on Ubuntu 24.04::
 
   $ sudo apt install libvirt-daemon-system bridge-utils qemu-kvm libvirt-daemon
   $ sudo usermod -a -G libvirt,kvm iwasakims
-  $ sudo mkdir -p /var/lib/libvirt/images
-  $ sudo chown root:libvirt /var/lib/libvirt/images
-  $ sudo chmod 775 /var/lib/libvirt/images
   $ exit
-  
+
+  $ sudo mkdir -p /var/lib/libvirt/images
   $ sudo virsh pool-define-as --name default --type dir --target /var/lib/libvirt/images
   $ sudo virsh pool-build default
   $ sudo virsh pool-start default
@@ -612,7 +610,7 @@ using virter::
 
   $ virter image pull rocky-9
 
-  $ virter vm run --name rocky-9-hello --id 11 --nic "type=network,source=default,mac=1a:2b:3c:4d:5e:01" --wait-ssh rocky-9
+  $ virter vm run --name rocky-9-hello --id 11 --wait-ssh rocky-9
 
 
 libvirt
