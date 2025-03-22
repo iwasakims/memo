@@ -610,7 +610,7 @@ using virter::
 
   $ virter image pull rocky-9
 
-  $ virter vm run --name rocky-9-hello --id 11 --wait-ssh rocky-9
+  $ virter vm run --name rocky-9-hello --id 11 --wait-ssh --disk "name=disk1,size=5GiB,format=qcow2,bus=virtio" rocky-9
 
 
 libvirt
@@ -668,3 +668,15 @@ using vault repo for installing packages::
   EOF
   
   # yum --disablerepo='*' --enablerepo=C8.2.2004-appstream install crash
+
+
+RHEL7
+=====
+
+debugging using UBI after create account on developers.redhat.com::
+
+  $ docker login registry.redhat.io
+  $ docker pull registry.redhat.io/ubi7/ubi:7.9-1445
+  $ docker run -i -t  registry.redhat.io/ubi7/ubi:7.9-1445 /bin/bash
+  
+  # yum --setopt='sslverify=0' install gdb
