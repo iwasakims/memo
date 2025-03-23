@@ -634,14 +634,14 @@ using vault repo for installing packages::
   
   [C7.9.2009-updates]
   name=CentOS-7.9.2009 - Updates
-  updatesurl=http://vault.centos.org/7.9.2009/os/$basearch/
+  baseurl=http://vault.centos.org/7.9.2009/updates/$basearch/
   gpgcheck=1
   gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
   enabled=1
   EOF
   
   
-  # yum --disablerepo='*' --enablerepo=C7.9.2009-base install file
+  # yum --disablerepo='*' --enablerepo='C7.9.*' install file
 
 
 CentOS 8
