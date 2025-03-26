@@ -584,7 +584,7 @@ using virter::
   $ wget https://github.com/LINBIT/virter/releases/download/v0.28.1/virter-linux-amd64
   $ sudo mv virter-linux-amd64 /usr/local/bin/virter
   $ chmod a+x /usr/local/bin/virter
-
+  
   $ virter image ls --available
   WARN[0000] could not look up storage pool default        error="Storage pool not found: no storage pool with matching name 'default'"
   INFO[0000] Builtin image registry does not exist, writing to /home/iwasakims/.local/share/virter/images.toml
@@ -609,8 +609,15 @@ using virter::
   ubuntu-xenial     https://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-disk1.img
 
   $ virter image pull rocky-9
-
+  
   $ virter vm run --name rocky-9-hello --id 11 --wait-ssh --disk "name=disk1,size=5GiB,format=qcow2,bus=virtio" rocky-9
+  $ virter vm ssh rocky-9-hello
+
+pulling old rocky-9 from vault::
+  
+  $ virter image pull rocky-92 https://dl.rockylinux.org/vault/rocky/9.2/images/x86_64/Rocky-9-GenericCloud.latest.x86_64.qcow2
+  $ virter vm run --name rocky-92-1 --id 11 --wait-ssh --disk "name=disk1,size=5GiB,format=qcow2,bus=virtio" rocky-92
+  $ virter vm ssh rocky-92-1
 
 
 building RPM on rocky-9
@@ -625,7 +632,6 @@ kmod-drbd::
   # git submodule update
 
   # make tarball
-  # make kmp-rpm
   # export KDIR=/usr/src/kernels/5.14.0-503.33.1.el9_5.x86_64
   # make kmp-rpm
 
@@ -642,7 +648,68 @@ drbd-utils::
   # make tarball VERSION=9.27.0
   # mkdir -p ~/rpmbuild/SOURCES
   # cp drbd-utils-9.27.0.tar.gz  ~/rpmbuild/SOURCES/
+  # ./configure --enable-spec
   # rpmbuild -bb drbd.spec --without sbinsymlinks --without heartbeat
+
+
+building RPM on rocky-92
+------------------------
+
+::
+
+  # cat > /etc/yum.repos.d/rocky-vault-92.repo <<'EOF'
+  [base92]
+  name=Rocky Linux 9.2 - base
+  baseurl=https://dl.rockylinux.org/vault/rocky/9.2/BaseOS/x86_64/os/
+  gpgcheck=1
+  enabled=0
+  countme=1
+  metadata_expire=6h
+  gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-9
+  
+  [appstream92]
+  name=Rocky Linux 9.2 - appstream
+  baseurl=https://dl.rockylinux.org/vault/rocky/9.2/AppStream/x86_64/os/
+  gpgcheck=1
+  enabled=0
+  countme=1
+  metadata_expire=6h
+  gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-9
+  
+  [devel92]
+  name=Rocky Linux 9.2 - devel
+  baseurl=https://dl.rockylinux.org/vault/rocky/9.2/devel/x86_64/os/
+  gpgcheck=1
+  enabled=0
+  countme=1
+  metadata_expire=6h
+  gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-9
+  EOF
+
+::
+
+  # dnf --disablerepo='*' --enablerepo=base92,appstream92 install \
+      git automake autoconf rpm-build kernel-devel kernel-headers kernel-rpm-macros kernel-abi-stablelists
+
+  # curl -L -O https://linbit.gateway.scarf.sh//downloads/drbd/9/drbd-9.1.19.tar.gz
+  # cd drbd-9.1.19
+  # export KDIR=/usr/src/kernels/5.14.0-284.30.1.el9_2.x86_64
+  # make kmp-rpm
+  # cd ..
+
+::
+
+  # dnf --disablerepo='*' --enablerepo=base92,appstream92 install \
+      gcc-c++ selinux-policy-devel automake autoconf keyutils-libs-devel libxslt docbook-style-xsl
+  # dnf --disablerepo='*' --enablerepo=devel92 install rubygem-asciidoctor po4a
+  # curl -L -O https://linbit.gateway.scarf.sh//downloads/drbd/utils/drbd-utils-9.27.0.tar.gz
+  # tar zxf drbd-utils-9.27.0.tar.gz
+  # mkdir -p ~/rpmbuild/SOURCES
+  # cp drbd-utils-9.27.0.tar.gz  ~/rpmbuild/SOURCES/
+  # cd drbd-utils-9.27.0
+  # ./configure --prefix=/usr --localstatedir=/var --sysconfdir=/etc --enable-spec
+  # rpmbuild -bb drbd.spec --without sbinsymlinks --without heartbeat
+  # cd ..
 
 
 CentOS 7
