@@ -613,9 +613,36 @@ using virter::
   $ virter vm run --name rocky-9-hello --id 11 --wait-ssh --disk "name=disk1,size=5GiB,format=qcow2,bus=virtio" rocky-9
 
 
-libvirt
-=======
+building RPM on rocky-9
+-----------------------
 
+kmod-drbd::
+
+  # dnf install git automake autoconf rpm-build kernel-devel kernel-headers kernel-rpm-macros kernel-abi-stablelists
+  # git clone --recursive https://github.com/LINBIT/drbd
+  # cd drbd
+  # git checkout drbd-9.2.13
+  # git submodule update
+
+  # make tarball
+  # make kmp-rpm
+  # export KDIR=/usr/src/kernels/5.14.0-503.33.1.el9_5.x86_64
+  # make kmp-rpm
+
+drbd-utils::
+
+  # dnf install gcc-c++ selinux-policy-devel automake autoconf keyutils-libs-devel libxslt docbook-style-xsl
+  # dnf --enablerepo=devel install rubygem-asciidoctor po4a
+  # git clone --recursive https://github.com/LINBIT/drbd-utils
+  # cd drbd-utils
+  # git checkout v9.27.0
+  # git submodule update
+  # ./autogen.sh
+  # ./configure --prefix=/usr --localstatedir=/var --sysconfdir=/etc
+  # make tarball VERSION=9.27.0
+  # mkdir -p ~/rpmbuild/SOURCES
+  # cp drbd-utils-9.27.0.tar.gz  ~/rpmbuild/SOURCES/
+  # rpmbuild -bb drbd.spec --without sbinsymlinks --without heartbeat
 
 
 CentOS 7
