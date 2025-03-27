@@ -660,7 +660,7 @@ building RPM on rocky-92
   # cat > /etc/yum.repos.d/rocky-vault-92.repo <<'EOF'
   [base92]
   name=Rocky Linux 9.2 - base
-  baseurl=https://dl.rockylinux.org/vault/rocky/9.2/BaseOS/x86_64/os/
+  baseurl=https://dl.rockylinux.org/vault/rocky/9.2/BaseOS/x86_64/kickstart/
   gpgcheck=1
   enabled=0
   countme=1
@@ -669,7 +669,7 @@ building RPM on rocky-92
   
   [appstream92]
   name=Rocky Linux 9.2 - appstream
-  baseurl=https://dl.rockylinux.org/vault/rocky/9.2/AppStream/x86_64/os/
+  baseurl=https://dl.rockylinux.org/vault/rocky/9.2/AppStream/x86_64/kickstart/
   gpgcheck=1
   enabled=0
   countme=1
@@ -678,34 +678,36 @@ building RPM on rocky-92
   
   [devel92]
   name=Rocky Linux 9.2 - devel
-  baseurl=https://dl.rockylinux.org/vault/rocky/9.2/devel/x86_64/os/
+  baseurl=https://dl.rockylinux.org/vault/rocky/9.2/devel/x86_64/kickstart/
   gpgcheck=1
   enabled=0
   countme=1
   metadata_expire=6h
   gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-9
   EOF
-
+  
 ::
 
   # dnf --disablerepo='*' --enablerepo=base92,appstream92 install \
       git automake autoconf rpm-build kernel-devel kernel-headers kernel-rpm-macros kernel-abi-stablelists
 
   # curl -L -O https://linbit.gateway.scarf.sh//downloads/drbd/9/drbd-9.1.19.tar.gz
+  # tar zxf drbd-9.1.19.tar.gz
+  # cp drbd-9.1.19.tar.gz drbd-9.1.19/
   # cd drbd-9.1.19
-  # export KDIR=/usr/src/kernels/5.14.0-284.30.1.el9_2.x86_64
+  # export KDIR=/usr/src/kernels/5.14.0-284.11.1.el9_2.x86_64
   # make kmp-rpm
   # cd ..
 
 ::
 
-  # dnf --disablerepo='*' --enablerepo=base92,appstream92 install \
-      gcc-c++ selinux-policy-devel automake autoconf keyutils-libs-devel libxslt docbook-style-xsl
-  # dnf --disablerepo='*' --enablerepo=devel92 install rubygem-asciidoctor po4a
+  # dnf --disablerepo='*' --enablerepo=base92,appstream92,devel92 install \
+      gcc-c++ selinux-policy-devel automake autoconf keyutils-libs-devel libxslt docbook-style-xsl rubygem-asciidoctor po4a
+  
   # curl -L -O https://linbit.gateway.scarf.sh//downloads/drbd/utils/drbd-utils-9.27.0.tar.gz
-  # tar zxf drbd-utils-9.27.0.tar.gz
   # mkdir -p ~/rpmbuild/SOURCES
   # cp drbd-utils-9.27.0.tar.gz  ~/rpmbuild/SOURCES/
+  # tar zxf drbd-utils-9.27.0.tar.gz
   # cd drbd-utils-9.27.0
   # ./configure --prefix=/usr --localstatedir=/var --sysconfdir=/etc --enable-spec
   # rpmbuild -bb drbd.spec --without sbinsymlinks --without heartbeat
