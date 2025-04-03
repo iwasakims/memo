@@ -714,6 +714,48 @@ building RPM on rocky-92
   # cd ..
 
 
+Building kmod-drbd on RHEL 9 container using UBI
+------------------------------------------------
+
+Create Red Hat developer account on
+`developers.redhat.com <https://developers.redhat.com/register>`_ .
+
+Some required rpms (listed below) are not available in UBI.
+Download them from
+`Red Hat customer portarl <https://access.redhat.com/downloads/content/package-browser>`_ .
+
+* bison
+* elfutils-libelf-devel
+* flex
+* kernel-abi-stablelists
+* kernel-devel
+* kernel-headers
+* kernel-rpm-macros
+* libzstd-devel
+
+Start container from UBI.::
+
+    # docker login registry.redhat.io
+    # docker pull registry.redhat.io/ubi9/ubi:9.2-489
+    # docker run -i -t -v ./depts:/path/to/deps registry.redhat.io/ubi9/ubi:9.2-489 /bin/bash
+
+Install build dependencies.::
+
+    # cd /path/to/deps
+    # dnf install \
+        git automake autoconf rpm-build kernel-devel kernel-headers kernel-rpm-macros kernel-abi-stablelists \
+        kmod \
+        ./*.rpm
+
+Build rpm by invoking kmp-rpm target.::
+
+    # tar zxf drbd-9.1.19.tar.gz
+    # cp drbd-9.1.19.tar.gz drbd-9.1.19/
+    # cd drbd-9.1.19
+    # export KDIR=/usr/src/kernels/5.14.0-284.11.1.el9_2.x86_64
+    # make kmp-rpm
+
+
 CentOS 7
 ========
 
