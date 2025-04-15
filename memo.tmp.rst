@@ -756,6 +756,23 @@ Build rpm by invoking kmp-rpm target.::
     # make kmp-rpm
 
 
+changelog
+---------
+
+- `genl2` implies
+  `GENL_MAGIC_VERSION is 2 <https://github.com/LINBIT/drbd-headers/blob/8d6501934c2a36fcf38440df9144b2748eb4008d/linux/drbd_genl_api.h#L36>`_
+  while genl means
+  `generic netlink <https://github.com/LINBIT/drbd-headers/blob/8d6501934c2a36fcf38440df9144b2748eb4008d/linux/drbd_genl.h>`_
+  .
+
+- `proto:86-101,118-122` shows range of
+  `protocol version <https://github.com/LINBIT/drbd/blob/drbd-9.1/drbd/linux/drbd_config.h#L13-L17>`_
+   which which the version can communicate.
+
+- `transport:19` seems to imply
+  `the version of transport <https://github.com/LINBIT/drbd-headers/blob/8d6501934c2a36fcf38440df9144b2748eb4008d/drbd_transport.h>`_
+
+
 CentOS 7
 ========
 
