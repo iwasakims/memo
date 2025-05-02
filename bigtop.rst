@@ -274,6 +274,25 @@ and adding ``kerberos`` to the list of stacks.::
 Release process of Bigtop
 =========================
 
+preparation
+-----------
+
+for signing packages, private key must be imported.::
+
+  # docker run -i -t -v releases:/releases bigtop/slaves:trunk-rockylinux-9 /bin/bash
+  # dnf install rpm-sign pinentry
+  # gpg --import path/to/your.private.key
+
+for uploading signed packages to S3, permissions must be granted in ACL setting of the `repos.bigtop.apache.org` bucket
+`as described in How to Release wiki <https://cwiki.apache.org/confluence/pages/viewpage.action?pageId=27849974#Howtorelease-5.5.UploadtoS3>`_ .
+since "canonical ID" is S3 specific, it can be seen in S3 console as bucket owner instead of IAM console.::
+
+  # curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+  # unzip awscliv2.zip
+  # sudo ./aws/install
+  # aws --profile iwasakims configure
+
+
 download built packages then create Yum repository
 --------------------------------------------------
 
@@ -303,7 +322,7 @@ PLATFORM is label set to `agent of Jenkins <https://ci.bigtop.apache.org/compute
       jar xf ${product}.zip &&
       mv archive/output/${product} . &&
       rmdir -p archive/output &&
-      rm ${product}.zip
+      rm -f ${product}.zip
     done
 
 ::
@@ -340,7 +359,7 @@ PLATFORM is label set to `agent of Jenkins <https://ci.bigtop.apache.org/compute
   $ export PLATFORM=amd64-slave
   $ export SIGN_KEY=36243EECE206BB0D
 
-::
+Since bigtop-select supports only RPM, it is excluded from the list for DEB.::
 
   $ mkdir -p releases/${VERSION}/${OS}/${OSVER}/${ARCH}
   $ cd releases/${VERSION}/${OS}/${OSVER}/${ARCH}
@@ -351,7 +370,7 @@ PLATFORM is label set to `agent of Jenkins <https://ci.bigtop.apache.org/compute
       jar xf ${product}.zip &&
       mv archive/output/${product} . &&
       rmdir -p archive/output &&
-      rm ${product}.zip
+      rm -f ${product}.zip
     done
 
 ::
