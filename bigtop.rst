@@ -373,7 +373,11 @@ Since bigtop-select supports only RPM, it is excluded from the list for DEB.::
       rm -f ${product}.zip
     done
 
-::
+`We used dpkg-sig for signing packages <https://cwiki.apache.org/confluence/pages/viewpage.action?pageId=27849974#Howtorelease-5.4.SignDEBpackagesandaptrepos>`_
+but
+`the dpkg-sig was removed <https://cwiki.apache.org/confluence/pages/viewpage.action?pageId=27849974#Howtorelease-5.4.SignDEBpackagesandaptrepos>`_
+from recent distros such as Debian 12 and Ubuntu 24.04.
+debsigs could be an alternative.::
 
   $ find . -name '*.deb' | xargs dpkg-sig --cache-passphrase --sign builder --sign-changes force_full
   
