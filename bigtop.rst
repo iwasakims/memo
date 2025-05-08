@@ -103,8 +103,18 @@ For RPM, available platforms are ``x86_64``, ``aarch64`` and ``ppc64le``.
       --stack hdfs,yarn,mapreduce,hbase
 
 
-puppet versions(snapshot)
--------------------------
+puppet versions
+---------------
+
+-  rockylinux-9: 7.27.0 (on ruby 3.0.7p220 (2024-04-23 revision 724a071175) [x86_64-linux])
+-  openeuler-22.03: 7.22.0 (on ruby 3.0.3p157 (2021-11-24 revision 3fb7d2cadc) [x86_64-linux])
+-  fedora-40: 8.5.1 (on ruby 3.3.7 (2025-01-15 revision be31f993d7) [x86_64-linux])
+-  debian-12: 7.23.0 (on ruby 3.1.2p20 (2022-04-12 revision 4491bb740a) [x86_64-linux-gnu])
+-  ubuntu-24.04: 8.4.0 (on ruby 3.2.3 (2024-01-18 revision 52bb2ac0a6) [x86_64-linux-gnu])
+
+
+puppet versions(old)
+--------------------
 
 rockylinux-8::
 
