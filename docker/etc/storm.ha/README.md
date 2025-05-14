@@ -117,6 +117,7 @@ sleep 3
 
 docker exec -d h01 /bin/bash -c '/storm/bin/storm nimbus'
 docker exec -d h01 /bin/bash -c '/storm/bin/storm supervisor'
+docker exec -d h01 /bin/bash -c '/storm/bin/storm ui'
 docker exec -d h02 /bin/bash -c '/storm/bin/storm nimbus'
 docker exec -d h02 /bin/bash -c '/storm/bin/storm supervisor'
 docker exec -d h03 /bin/bash -c '/storm/bin/storm nimbus'

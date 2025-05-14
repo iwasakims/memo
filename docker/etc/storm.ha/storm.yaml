@@ -35,6 +35,8 @@ storm.log.dir: "/logs"
 storm.local.dir: "/var/lib/storm/storm-local"
 storm.metricstore.class: "org.apache.storm.metricstore.NoOpMetricStore"
 
+ui.port: 8888
+
 topology.min.replication.count: 2
 topology.max.replication.wait.time.sec: 60
 #supervisor.worker.heartbeats.max.timeout.secs: 2147483647
@@ -45,3 +47,15 @@ blobstore.dir: hdfs://mycluster/blobstore
 nimbus.blobstore.class: org.apache.storm.hdfs.blobstore.HdfsBlobStore
 supervisor.blobstore.class: org.apache.storm.hdfs.blobstore.HdfsClientBlobStore
 client.blobstore.class: org.apache.storm.hdfs.blobstore.HdfsClientBlobStore
+
+# topology.metrics.reporters:
+#   - class: "org.apache.storm.metrics2.reporters.CsvStormReporter"
+#     report.period: 10
+#     report.period.units: "SECONDS"
+#     csv.log.dir: "/logs/csvmetrics"
+# 
+# topology.enable.v2.metrics.tick: true
+# 
+# topology.metrics.consumer.register:
+#   - class: "org.apache.storm.metric.LoggingMetricsConsumer"
+#     parallelism.hint: 1
