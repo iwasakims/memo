@@ -529,3 +529,22 @@ standalone docker-compose can be used as usual.::
   $ sudo chmod a+x /usr/local/bin/docker-compose
   $ sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
   $ docker-compose --version
+
+
+Development on  maxOS arm64
+===========================
+
+::
+
+  % docker volume create mvn-cache
+  % docker run -i -t --name openeuler2203 -v /Users/iwasakims/srcs/bigtop:/bigtop-home -v mvn-cache:/root/.m2 bigtop/slaves:trunk-openeuler-22.03-aarch64 /bin/bash
+  
+  $ cd /bigtop-home
+  $ ./gradlew spark-pkg -Dbuildwithdeps=true repo
+
+Since `uname -m` returns `arm64`, aliasing the docker image for running docker provisioner.::
+
+  % docker pull bigtop/puppet:trunk-openeuler-22.03-aarch64
+  % docker tag bigtop/puppet:trunk-openeuler-22.03-aarch64 bigtop/puppet:trunk-openeuler-22.03-arm64
+  % cd provisioner/docker
+  % ./docker-hadoop.sh --create 1 --memory 12g --image bigtop/puppet:trunk-openeuler-22.03 --repo file:///bigtop-home/output --disable-gpg-check --stack hdfs,yarn,mapreduce,spark
