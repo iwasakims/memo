@@ -205,7 +205,7 @@ adding local repository create by `./gradlew repo`::
   $ sudo apt update
 
 
-building and testins in container
+building and testing in container
 ---------------------------------
 
 you can leverage Docker by ``*-pkg-ind`` and ``repo-ind`` task.::
@@ -327,6 +327,7 @@ PLATFORM is label set to `agent of Jenkins <https://ci.bigtop.apache.org/compute
   $ cd releases/${VERSION}/${OS}/${OSVER}/${BASEARCH}
   $ for product in bigtop-groovy bigtop-jsvc bigtop-select bigtop-utils alluxio flink hadoop hbase hive kafka livy phoenix ranger solr spark tez zeppelin zookeeper
     do
+      echo ${product}
       rm -rf ${product} &&
       curl -L -o ${product}.zip https://ci.bigtop.apache.org/job/Bigtop-${VERSION}-${BASEARCH}/DISTRO=${OS}-${OSVER},PLATFORM=${PLATFORM},PRODUCT=${product}/lastSuccessfulBuild/artifact/*zip*/archive.zip &&
       jar xf ${product}.zip &&
@@ -375,6 +376,7 @@ Since bigtop-select supports only RPM, it is excluded from the list for DEB.::
   $ cd releases/${VERSION}/${OS}/${OSVER}/${ARCH}
   $ for product in bigtop-groovy bigtop-jsvc bigtop-utils alluxio flink hadoop hbase hive kafka livy phoenix ranger solr spark tez zeppelin zookeeper
     do
+      echo ${product}
       rm -rf ${product} &&
       curl -L -o ${product}.zip https://ci.bigtop.apache.org/job/Bigtop-${VERSION}-${BASEARCH}/DISTRO=${OS}-${OSVER},PLATFORM=${PLATFORM},PRODUCT=${product}/lastSuccessfulBuild/artifact/*zip*/archive.zip &&
       jar xf ${product}.zip &&
@@ -389,7 +391,9 @@ but
 from recent distros such as Debian 12 and Ubuntu 24.04.
 debsigs could be an alternative.::
 
-  $ find . -name '*.deb' | xargs dpkg-sig --cache-passphrase --sign builder --sign-changes force_full
+  $ find . -name '*.deb' | xargs debsigs --sign=origin -k ${SIGN_KEY}
+
+  $ rm -rf tmprepo
   
   $ mkdir -p conf
   
