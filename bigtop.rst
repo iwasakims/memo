@@ -116,51 +116,19 @@ puppet versions
 puppet versions(old)
 --------------------
 
-rockylinux-8::
+- rockylinux-8: 6.26.0
+- fedora-38: 8.3.1
+- ubuntu-22.04: 5.5.22
+- debian-11: 5.5.22
 
-  # puppet --version
-  6.26.0
 
-rockylinux-9::
+debugging puppet expressions on command line
+--------------------------------------------
 
-  # puppet --version
-  7.27.0
+::
 
-openeuler-22.03::
-
-  # puppet --version
-  7.22.0
-
-fedora-38::
-
-  # puppet --version
-  8.3.1
-
-fedora-40::
-
-  # puppet --version
-  8.5.1
-
-ubuntu-22.04::
-
-  # puppet --version
-  5.5.22
-
-ubuntu-24.04::
-
-  # puppet --version
-  8.4.0
-
-debian-11::
-
-  # puppet --version
-  5.5.22
-
-debian-12::
-
-  # puppet --version
-  7.23.0
-
+  # puppet apply -e 'notice("foo.bar.baz".split("\\.")[1, -1].join("."))'
+  Notice: Scope(Class[main]): bar.baz
 
 Develpment
 ==========
