@@ -703,6 +703,16 @@ hadoop.kms.authentication.zk-dt-secret-manager.*にZK接続用設定を書かな
   </property>
 
 
+Kerberos
+========
+
+encryption type numbers
+-----------------------
+
+- https://www.iana.org/assignments/kerberos-parameters/kerberos-parameters.xml
+- https://www.rfc-editor.org/rfc/rfc3961.html#page-31
+
+
 Kerberos authN on CentOS7 and HDP2.6.2
 ======================================
 
