@@ -27,7 +27,7 @@ since it has default_ccache_name entry.
 sudo vi /etc/krb5.conf.d/kcm_default_ccache
 ```
 
-On Rockylinux 9, `aes256-cts-hmac-sha384-192`
+On Rocky Linux 9, `aes256-cts-hmac-sha384-192`
 [(20)](https://www.iana.org/assignments/kerberos-parameters/kerberos-parameters.xml)
 is preferred as encryption type but it is not supported by OpenJDK 8.
 `permitted_enctypes` must be updated based on available types.
@@ -110,7 +110,7 @@ HttpFS
 ```
 cd ${HADOOP_HOME}
 kinit
-bin/hadoop --daemon start httpfs
+bin/hdfs --daemon start httpfs
 curl --negotiate -u : -k "https://localhost:14000/webhdfs/v1/zone1?op=LISTSTATUS"
 ```
 
