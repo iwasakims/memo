@@ -27,6 +27,18 @@ since it has default_ccache_name entry.
 sudo vi /etc/krb5.conf.d/kcm_default_ccache
 ```
 
+On Rockylinux 9, `aes256-cts-hmac-sha384-192`
+[(20)](https://www.iana.org/assignments/kerberos-parameters/kerberos-parameters.xml)
+is preferred as encryption type but it is not supported by OpenJDK 8.
+`permitted_enctypes` must be updated based on available types.
+
+
+```
+$ sudo vi /etc/krb5.conf.d/crypto-policies
+$ sudo cat /etc/krb5.conf.d/crypto-policies
+permitted_enctypes = es256-cts-hmac-sha1-96 aes128-cts-hmac-sha1-96
+```
+
 First component of principal name for HttpServer must be HTTP (in upper case).
 ```
 sudo kdb5_util create -s
