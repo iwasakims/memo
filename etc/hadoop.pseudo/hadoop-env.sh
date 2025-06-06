@@ -52,6 +52,7 @@
 # The java implementation to use.
 export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk
 #export JAVA_HOME="/usr/lib/jvm/java-1.8.0-openjdk-$(dpkg --print-architecture)"
+#export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-arm64
 export JAVA_HOME=${JAVA_HOME:-"hadoop-env.sh is not configured"}
 
 # Location of Hadoop's configuration information.  i.e., where this
