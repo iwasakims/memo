@@ -756,6 +756,26 @@ Build rpm by invoking kmp-rpm target.::
     # make kmp-rpm
 
 
+basic operations
+----------------
+
+configure and load drbd on both nodes.::
+
+  # vi /etc/drbd.d/global_common.conf
+  # vi /etc/drbd.d/r0.res
+  # drbdadm create-md all
+  # drbdadm up all
+  # drbdadm status all
+
+make one node primary::
+
+  # drbdadm primary --force all
+  # drbdadm status all
+  # mkfs -t xfs /dev/drbd0
+  # mkdir -p /mnt/test
+  # mount /dev/drbd0 /mnt/test
+
+
 changelog
 ---------
 
