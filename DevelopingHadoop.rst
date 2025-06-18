@@ -204,7 +204,33 @@ src/test/resources/contract-test-options.xml に書けばロードされるが�
 
 逆に、認証が必要なhadoop-awsやhadoop-openstackのtestは、
 src/test/resources/auth-keys.xmlというファイルが存在しないと実行されない。
-この制御はpom.xmlで定義でされている。::
+auth-keys.xmlは、認証設定を記述する場所として意図されたもので、
+src/test/recources/core-site.xmlの中でincludeされている。
+これをロードするコードがソース中にあるわけではない。
+::
+
+  <?xml version="1.0" encoding="UTF-8"?>
+  <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+  <configuration>
+    <property>
+      <name>fs.contract.test.fs.s3a</name>
+      <value>s3a://my-test-backet-name</value>
+    </property>
+    <property>
+      <name>test.fs.s3a.name</name>
+      <value>s3a://my-test-backet-name</value>
+    </property>
+    <property>
+      <name>fs.s3a.access.key</name>
+      <value>XXXXX</value>
+    </property>
+    <property>
+      <name>fs.s3a.secret.key</name>
+      <value>xxxxx</value>
+    </property>
+  </configuration>
+
+auth-keys.xmlが存在するかどうかのチェックはpom.xmlで定義でされている。::
 
   <profiles>
     <profile>
@@ -218,10 +244,8 @@ src/test/resources/auth-keys.xmlというファイルが存在しないと実行
         <maven.test.skip>true</maven.test.skip>
       </properties>
     </profile>
-　　...
+    ...
 
-auth-keys.xmlはsrc/test/recources/core-site.xmlの中でincludeされている。
-これをロードするコードがソース中にあるわけではない。
 
 また、hadoop-azureモジュールはauth-keys.xmlではなくazure-auth-keys.xmlというファイル名を想定している。
 pom.xmlでの制御もしていない。このあたりの一貫性はいまいち。
