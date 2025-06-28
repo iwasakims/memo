@@ -6,6 +6,8 @@
 (setq-default column-number-mode t)
 (setq use-dialog-box nil)
 (global-unset-key "\C-\\")
+(global-set-key "\C-h" 'delete-backward-char)
+(global-set-key "\C-xh" 'help-command)
 
 ;; GNU GLOBAL
 (setq load-path (cons "/usr/local/share/gtags" load-path))
