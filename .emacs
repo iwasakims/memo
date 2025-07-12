@@ -28,8 +28,8 @@
 (add-hook 'java-mode-hook '(lambda ()
                              (gtags-mode 1)
                              (c-toggle-electric-state -1)))
-(setq auto-mode-alist
-      (append '(("\\.groovy$" . java-mode)) auto-mode-alist))
+;(setq auto-mode-alist
+;      (append '(("\\.groovy$" . java-mode)) auto-mode-alist))
 
 ;; Javascript
 (setq js-indent-level 2)
@@ -62,6 +62,7 @@
 ;(setq erlang-root-dir "/usr/lib/erlang")
 ;(require 'erlang-start)
 ;(add-hook 'erlang-mode-hook '(lambda () (gtags-mode 1)))
+;(add-hook 'elixir-mode-hook '(lambda () (gtags-mode 1)))
 
 ;; golang
 ;(setq load-path (cons "~/srcs/go-mode.el" load-path))
@@ -141,3 +142,25 @@
 ;(setq grep-program "C:/opt/Git/usr/bin/grep.exe")
 ;(custom-set-variables
 ; '(find-ls-option '("-ls" . "-dilsb")))
+
+
+;(require 'package)
+;(add-to-list 'package-archives
+;             '("melpa" . "https://melpa.org/packages/") t)
+;(package-initialize)
+;
+;(custom-set-variables
+; ;; custom-set-variables was added by Custom.
+; ;; If you edit it by hand, you could mess it up, so be careful.
+; ;; Your init file should contain only one such instance.
+; ;; If there is more than one, they won't work right.
+; '(package-selected-packages '(elixir-mode groovy-mode))
+; '(groovy-indent-offset 2))
+;(custom-set-faces
+; ;; custom-set-faces was added by Custom.
+; ;; If you edit it by hand, you could mess it up, so be careful.
+; ;; Your init file should contain only one such instance.
+; ;; If there is more than one, they won't work right.
+; )
+;(setq auto-mode-alist
+;      (append '(("\\.groovy$" . groovy-mode) ("\\.gradle$" . groovy-mode)) auto-mode-alist))
