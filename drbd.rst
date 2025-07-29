@@ -201,6 +201,14 @@ Build rpm by invoking kmp-rpm target.::
 basic operations
 ----------------
 
+installing built packages::
+
+  # cd ~/rpmbuild/RPMS/x86_64/
+  # rpm -ivh drbd-selinux-9.27.0-1.el9.x86_64.rpm \
+             drbd-utils-9.27.0-1.el9.x86_64.rpm \
+             drbd-pacemaker-9.27.0-1.el9.x86_64.rpm \
+             kmod-drbd-9.1.19_5.14.0_284.11.1-1.x86_64.rpm 
+
 configure and load drbd on both nodes.::
 
   # vi /etc/drbd.d/global_common.conf
@@ -259,7 +267,7 @@ changelog
 pacemaker on rocky-92
 ---------------------
 
-::
+on both nodes::
 
   # cat >> /etc/yum.repos.d/rocky-vault-92.repo <<'EOF'
   
@@ -272,7 +280,13 @@ pacemaker on rocky-92
   metadata_expire=6h
   gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-9
   EOF
-
+  
+  # systemctl start pcsd.service
+  # passwd hacluster
   # dnf --disablerepo=appstream --enablerepo=appstream92 --enablerepo=ha92 install pcs pacemaker fence-agents-all
 
+on one of the node::
 
+  # pcs host auth srv01 addr=192.168.122.11 srv02 addr=192.168.122.12
+  # pcs cluster setup drbd_cluster srv01 addr=192.168.122.11 srv02 addr=192.168.122.12
+  # pcs cluster start --all
