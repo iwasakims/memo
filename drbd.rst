@@ -246,6 +246,15 @@ make one node primary::
   # mkdir -p /mnt/test
   # mount /dev/drbd0 /mnt/test
 
+make the node secondary::
+
+  # umount /mnt/test
+  # drbdadm secondary all
+
+stop drbd on both nodes::
+
+  # drbdadm down all
+
 
 changelog
 ---------
@@ -288,5 +297,17 @@ on both nodes::
 on one of the node::
 
   # pcs host auth srv01 addr=192.168.122.11 srv02 addr=192.168.122.12
-  # pcs cluster setup drbd_cluster srv01 addr=192.168.122.11 srv02 addr=192.168.122.12
+  # pcs cluster setup hacluster srv01 addr=192.168.122.11 srv02 addr=192.168.122.12
   # pcs cluster start --all
+
+  # pcs property set stonith-enabled=false
+  # pcs resource create pingd ocf:pacemaker:ping host_list="192.168.122.1" clone
+
+  # pcs cluster cib drbdcluster
+  # pcs -f drbdcluster resource create res_drbd_r0 ocf:linbit:drbd drbd_resource=r0
+  # pcs -f drbdcluster resource create res_fsmnt Filesystem device=/dev/drbd0 directory=/mnt/test fstype=xfs op start timeout=100s op monitor interval=100s timeout=100s
+  # pcs -f drbdcluster resource promotable res_drbd_r0 master-max=1 master-node-max=1 clone-max=2 clone-node-max=1 notify=true
+  # pcs -f drbdcluster constraint colocation add res_fsmnt with res_drbd_r0-clone INFINITY with-rsc-role=Master
+  # pcs -f drbdcluster constraint order promote res_drbd_r0-clone then start res_fsmnt
+  # pcs -f drbdcluster resource
+  # pcs cluster cib-push drbdcluster
