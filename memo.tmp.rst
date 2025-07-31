@@ -610,6 +610,57 @@ using vault repo for installing packages::
   # yum --disablerepo='*' --enablerepo=C8.2.2004-appstream install crash
 
 
+
+Pacemaker on Rocky Linux 8.4
+============================
+
+using verter to start VMs for example.::
+
+  $ virter image pull rocky-84 https://dl.rockylinux.org/vault/rocky/8.4/images/Rocky-8-GenericCloud-8.4-20210620.0.x86_64.qcow2
+  $ virter vm run --name rocky-84-1 --id 21 --wait-ssh --disk "name=disk1,size=5GiB,format=qcow2,bus=virtio" rocky-84
+  $ virter vm run --name rocky-84-2 --id 22 --wait-ssh --disk "name=disk1,size=5GiB,format=qcow2,bus=virtio" rocky-84
+
+installing pacemaker on both nodes.::
+
+  # yum-config-manager --disable baseos
+  # yum-config-manager --disable appstream
+  # yum-config-manager --disable extras
+  
+  # cat > /etc/yum.repos.d/rocky-vault-84.repo <<'EOF'
+  [base84]
+  name=Rocky Linux 8.4 - base
+  baseurl=https://dl.rockylinux.org/vault/rocky/8.4/BaseOS/x86_64/kickstart/
+  gpgcheck=1
+  enabled=1
+  gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rockyofficial
+  
+  [appstream84]
+  name=Rocky Linux 8.4 - appstream
+  baseurl=https://dl.rockylinux.org/vault/rocky/8.4/AppStream/x86_64/kickstart/
+  gpgcheck=1
+  enabled=1
+  gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rockyofficial
+  
+  [ha84]
+  name=Rocky Linux 8.4 - ha
+  baseurl=https://dl.rockylinux.org/vault/rocky/8.4/HighAvailability/x86_64/kickstart/
+  gpgcheck=1
+  enabled=1
+  gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rockyofficial
+  EOF
+  
+  # dnf install pcs pacemaker fence-agents-all
+  # passwd hapasswd
+  # systemctl start pcsd.service
+
+setting up cluster using pcs command::
+
+  # pcs host auth srv01 addr=192.168.122.21 srv02 addr=192.168.122.22
+  # pcs cluster setup hacluster srv01 addr=192.168.122.21 srv02 addr=192.168.122.22
+  # pcs property set stonith-enabled=false
+  # pcs resource create pingd ocf:pacemaker:ping host_list="192.168.122.1" clone
+
+
 RHEL7
 =====
 

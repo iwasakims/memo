@@ -281,7 +281,7 @@ on both nodes::
   # cat >> /etc/yum.repos.d/rocky-vault-92.repo <<'EOF'
   
   [ha92]
-  name=Rocky Linux 9.2 - devel
+  name=Rocky Linux 9.2 - ha
   baseurl=https://dl.rockylinux.org/vault/rocky/9.2/HighAvailability/x86_64/kickstart/
   gpgcheck=1
   enabled=0
