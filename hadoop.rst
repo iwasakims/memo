@@ -660,6 +660,9 @@ cgroup
 KMS
 ===
 
+ZooKeeper configuration
+-----------------------
+
 ZKSignerSecretProviderとZKDelegationTokenSecretManagerは、
 内部でcurator(zk client)のインスタンスを共用している。
 前者のZK接続用の設定あれば、後者に要らないというか、設定が使われない。
@@ -701,6 +704,35 @@ hadoop.kms.authentication.zk-dt-secret-manager.*にZK接続用設定を書かな
     <name>hadoop.kms.authentication.zk-dt-secret-manager.zkAuthType</name>
     <value>none</value>
   </property>
+
+
+cipher suite
+------------
+
+`HDFS-15098 <https://issues.apache.org/jira/browse/HDFS-15098>`_
+added SM4 support as cipher suite.
+
+In order to test SM4 codec, we need to put
+`the jar of Bouncy Castle Provider <https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on/1.78.1>`_
+on ``$JAVA_HOME/jre/lib/ext`` and add a line to ``$JAVA_HOME/jre/lib/security/java.security``
+even if OpensslSm4CtrCryptoCodec (backed by OpenSSL native liberary) is used.::
+
+  security.provider.10=org.bouncycastle.jce.provider.BouncyCastleProvider
+
+Cipher suite can be specified by ``-cipher`` option of ``hadoop key create`` command
+in which ``AES/CTR/NoPadding`` is used by default.::
+
+  $ bin/hadoop key create key-sm4 -cipher 'SM4/CTR/NoPadding'
+  $ bin/hdfs dfs -mkdir /zone1
+  $ bin/hdfs crypto -createZone -path /zone1 -keyName key-sm4
+  $ bin/hdfs dfs -put README.txt /zone1/
+  2021-05-17 13:39:45,686 DEBUG crypto.OpensslSm4CtrCryptoCodec: Using org.apache.hadoop.crypto.random.OpensslSecureRandom as random number generator.
+  2021-05-17 13:39:45,687 DEBUG util.PerformanceAdvisory: Using crypto codec org.apache.hadoop.crypto.OpensslSm4CtrCryptoCodec.
+
+If OpenSSL is built without SM4 support
+( `as openssl provided by Red Hat distribution <https://bugzilla.redhat.com/show_bug.cgi?id=1960818>`_ ),
+Java implementation (JceSm4CtrCryptoCodec) is used.
+See also `HADOOP-17609 <https://issues.apache.org/jira/browse/HADOOP-17609>`_ .
 
 
 Kerberos
@@ -923,5 +955,3 @@ Setup by Ansible
     $ ansible master1 -i hosts -u iwasakims -a '/home/iwasakims/hadoop-2.6.2/bin/yarn jar /home/iwasakims/hadoop-2.6.2/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.6.2.jar pi 9 1000000'
     
     $ ansible-playbook -i hosts stop-daemons.yml
-
-
