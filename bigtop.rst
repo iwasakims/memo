@@ -283,9 +283,9 @@ PLATFORM is label set to `agent of Jenkins <https://ci.bigtop.apache.org/compute
 ::
 
   $ export GPG_TTY=$(tty)
-  $ export VERSION=3.3.0
+  $ export VERSION=3.5.0
   $ export OS=rockylinux
-  $ export OSVER=8
+  $ export OSVER=9
   $ export BASEARCH=aarch64
   $ export PLATFORM=aarch64-slave
 
@@ -330,9 +330,9 @@ PLATFORM is label set to `agent of Jenkins <https://ci.bigtop.apache.org/compute
 ::
 
   $ export GPG_TTY=$(tty)
-  $ export VERSION=3.3.0
+  $ export VERSION=3.5.0
   $ export OS=debian
-  $ export OSVER=11
+  $ export OSVER=12
   $ export ARCH=amd64
   $ export BASEARCH=x86_64
   $ export PLATFORM=amd64-slave
