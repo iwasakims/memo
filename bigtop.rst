@@ -293,7 +293,7 @@ PLATFORM is label set to `agent of Jenkins <https://ci.bigtop.apache.org/compute
 
   $ mkdir -p releases/${VERSION}/${OS}/${OSVER}/${BASEARCH}
   $ cd releases/${VERSION}/${OS}/${OSVER}/${BASEARCH}
-  $ for product in bigtop-groovy bigtop-jsvc bigtop-select bigtop-utils alluxio flink hadoop hbase hive kafka livy phoenix ranger solr spark tez zeppelin zookeeper
+  $ for product in airflow bigtop-groovy bigtop-jsvc bigtop-select bigtop-utils alluxio flink hadoop hbase hive kafka livy phoenix ranger solr spark tez zeppelin zookeeper
     do
       echo ${product}
       rm -rf ${product} &&
@@ -342,7 +342,7 @@ Since bigtop-select supports only RPM, it is excluded from the list for DEB.::
 
   $ mkdir -p releases/${VERSION}/${OS}/${OSVER}/${ARCH}
   $ cd releases/${VERSION}/${OS}/${OSVER}/${ARCH}
-  $ for product in bigtop-groovy bigtop-jsvc bigtop-utils alluxio flink hadoop hbase hive kafka livy phoenix ranger solr spark tez zeppelin zookeeper
+  $ for product in airflow bigtop-groovy bigtop-jsvc bigtop-utils alluxio flink hadoop hbase hive kafka livy phoenix ranger solr spark tez zeppelin zookeeper
     do
       echo ${product}
       rm -rf ${product} &&
