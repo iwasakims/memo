@@ -130,6 +130,7 @@ debugging puppet expressions on command line
   # puppet apply -e 'notice("foo.bar.baz".split("\\.")[1, -1].join("."))'
   Notice: Scope(Class[main]): bar.baz
 
+
 Develpment
 ==========
 
@@ -520,3 +521,49 @@ Since `uname -m` returns `arm64`, aliasing the docker image for running docker p
   % docker tag bigtop/puppet:trunk-openeuler-22.03-aarch64 bigtop/puppet:trunk-openeuler-22.03-arm64
   % cd provisioner/docker
   % ./docker-hadoop.sh --create 1 --memory 12g --image bigtop/puppet:trunk-openeuler-22.03 --repo file:///bigtop-home/output --disable-gpg-check --stack hdfs,yarn,mapreduce,spark
+
+
+Manually installing pre-built packages
+======================================
+
+rockylinux-9::
+
+  $ sudo curl -L -o /etc/yum.repos.d/bigtop.repo https://downloads.apache.org/bigtop/bigtop-3.5.0/repos/rockylinux-9/bigtop.repo
+  $ sudo rpm --import https://downloads.apache.org/bigtop/bigtop-3.5.0/repos/GPG-KEY-bigtop
+  $ sudo dnf install airflow bigtop-utils
+  $ /usr/lib/airflow/bin/airflow version
+
+
+ubuntu-24.04::
+
+  curl -o /etc/apt/sources.list.d/bigtop.list https://downloads.apache.org/bigtop/bigtop-3.5.0/repos/ubuntu-24.04/bigtop.list
+  curl -s https://downloads.apache.org/bigtop/bigtop-3.5.0/repos/GPG-KEY-bigtop | sudo apt-key add -
+  sudo apt-get update
+  sudo apt-get install airflow bigtop-utils
+
+
+Manually applying Puppet manifest for pseudo distributed cluster
+================================================================
+
+ubuntu-24.04::
+
+  $ cat > bigtop-deploy/puppet/hieradata/site.yaml <<EOF
+  bigtop::hadoop_head_node: "$(hostname --fqdn)"
+  hadoop_cluster_node::cluster_nodes: ["$(hostname --fqdn)"]
+  hadoop_cluster_node::cluster_components: ["bigtop-utils", "airflow"]
+  EOF
+  
+  $ cat >> bigtop-deploy/puppet/hieradata/site.yaml <<'EOF'
+  bigtop::bigtop_repo_uri: http://repos.bigtop.apache.org/releases/3.5.0/ubuntu/24.04/$(ARCH)
+  EOF
+  
+  $ cp -r bigtop-deploy/puppet/hiera* /etc/puppet/
+  
+  $ puppet apply \
+      --hiera_config=/etc/puppet/hiera.yaml \
+      --modulepath=./bigtop-deploy/puppet/modules:/usr/share/puppet/modules:etc/puppet/code/modules \
+      ./bigtop-deploy/puppet/manifests
+
+bigtop_repo_url for rockylinux-9::
+
+  bigtop::bigtop_repo_uri: http://repos.bigtop.apache.org/releases/3.5.0/rockylinux/9/$basearch
