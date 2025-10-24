@@ -504,7 +504,7 @@ standalone docker-compose can be used as usual.::
   $ docker-compose --version
 
 
-Development on  maxOS arm64
+Development on macOS arm64
 ===========================
 
 ::
