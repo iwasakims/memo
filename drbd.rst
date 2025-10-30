@@ -311,3 +311,59 @@ on one of the node::
   # pcs -f drbdcluster constraint order promote res_drbd_r0-clone then start res_fsmnt
   # pcs -f drbdcluster resource
   # pcs cluster cib-push drbdcluster
+
+
+::
+
+  # pcs status --full
+  Cluster name: hacluster
+  Status of pacemakerd: 'Pacemaker is running' (last updated 2025-10-30 11:57:56Z)
+  Cluster Summary:
+    * Stack: corosync
+    * Current DC: srv02 (2) (version 2.1.5-7.el9-a3f44794f94) - partition with quorum
+    * Last updated: Thu Oct 30 11:57:57 2025
+    * Last change:  Thu Oct 30 11:29:46 2025 by hacluster via crmd on srv01
+    * 2 nodes configured
+    * 5 resource instances configured
+  
+  Node List:
+    * Node srv01 (1): online, feature set 3.16.2
+    * Node srv02 (2): online, feature set 3.16.2
+  
+  Full List of Resources:
+    * Clone Set: pingd-clone [pingd]:
+      * pingd     (ocf:pacemaker:ping):    Started srv01
+      * pingd     (ocf:pacemaker:ping):    Started srv02
+    * res_fsmnt   (ocf:heartbeat:Filesystem):      Started srv01
+    * Clone Set: res_drbd_r0-clone [res_drbd_r0] (promotable):
+      * res_drbd_r0       (ocf:linbit:drbd):       Promoted srv01
+      * res_drbd_r0       (ocf:linbit:drbd):       Unpromoted srv02
+  
+  Node Attributes:
+    * Node: srv01 (1):
+      * master-res_drbd_r0                : 10000
+      * pingd                             : 1
+    * Node: srv02 (2):
+      * master-res_drbd_r0                : 10000
+      * pingd                             : 1
+  
+  Migration Summary:
+  
+  Tickets:
+  
+  PCSD Status:
+    srv01: Online
+    srv02: Online
+  
+  Daemon Status:
+    corosync: active/disabled
+    pacemaker: active/disabled
+    pcsd: active/disabled
+  
+::
+
+  # drbdadm status all
+  r0 role:Primary
+    disk:UpToDate
+    rocky-92-2 role:Secondary
+      peer-disk:UpToDate
