@@ -671,3 +671,69 @@ debugging using UBI after create account on developers.redhat.com::
   $ docker run -i -t  registry.redhat.io/ubi7/ubi:7.9-1445 /bin/bash
   
   # yum --setopt='sslverify=0' install gdb
+
+
+Rocky Linux 8 VM by KVM
+=======================
+
+download base image.::
+
+    $ curl -L -O https://download.rockylinux.org/pub/rocky/8/images/x86_64/Rocky-8-GenericCloud.latest.x86_64.qcow2
+    $ sudo mv Rocky-8-GenericCloud.latest.x86_64.qcow2 /var/lib/libvirt/images/
+    $ sudo chown libvirt-qemu /var/lib/libvirt/images/Rocky-8-GenericCloud.latest.x86_64.qcow2
+    $ sudo chmod 600 /var/lib/libvirt/images/Rocky-8-GenericCloud.latest.x86_64.qcow2
+    
+create disk of the vm.::
+
+    $ sudo qemu-img create -b /var/lib/libvirt/images/Rocky-8-GenericCloud.latest.x86_64.qcow2 -F qcow2 \
+        -f qcow2 /var/lib/libvirt/images/rocky8.qcow2  20G
+
+create cloud-init configuration.::
+
+    $ mkdir cloud-init
+    
+    $ cat > cloud-init/meta-data <<'EOF'
+    instance-id: rocky8
+    local-hostname: rocky8
+    EOF
+    
+    $ cat > cloud-init/user-data <<'EOF'
+    #cloud-config
+    users:
+      - name: iwasakims
+        sudo: ALL=(ALL) NOPASSWD:ALL
+        ssh_authorized_keys:
+          - ssh-ed25519 AAAAC3XXXXXXXXXXXXXXXXXXXXXX
+    
+    packages:
+      - vim
+      - net-tools
+    
+    runcmd:
+      - [ systemctl, enable, --now, sshd ]
+    EOF
+    
+
+    $ sudo genisoimage -output /var/lib/libvirt/images/rocky8-cidata.iso \
+        -volid cidata -joliet -rock cloud-init/user-data cloud-init/meta-data
+
+create and start VM.::
+
+    $ sudo virt-install \
+      --name rocky8 \
+      --memory 4096 \
+      --vcpus 2 \
+      --disk path=/var/lib/libvirt/images/rocky8.qcow2,format=qcow2 \
+      --disk path=/var/lib/libvirt/images/rocky8-cidata.iso,device=cdrom \
+      --import \
+      --network network=default,model=virtio \
+      --os-variant rocky8 \
+      --graphics none \
+      --noautoconsole
+    
+    $ virsh domifaddr rocky8
+
+stop and remove VM and the volumes.::
+
+    $ virsh destroy rocky8
+    $ virsh undefine rocky8 --remove-all-storage
