@@ -309,6 +309,7 @@ on one of the node::
   # pcs -f drbdcluster resource promotable res_drbd_r0 master-max=1 master-node-max=1 clone-max=2 clone-node-max=1 notify=true
   # pcs -f drbdcluster constraint colocation add res_fsmnt with res_drbd_r0-clone INFINITY with-rsc-role=Master
   # pcs -f drbdcluster constraint order promote res_drbd_r0-clone then start res_fsmnt
+  # pcs -f drbdcluster constraint colocation add Promoted res_drbd_r0-clone with pingd-clone INFINITY
   # pcs -f drbdcluster resource
   # pcs cluster cib-push drbdcluster
 
