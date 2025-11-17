@@ -296,8 +296,8 @@ on both nodes::
 
 on one of the node::
 
-  # pcs host auth srv01 addr=192.168.122.11 srv02 addr=192.168.122.12
-  # pcs cluster setup hacluster srv01 addr=192.168.122.11 srv02 addr=192.168.122.12
+  # pcs host auth rocky-92-1 addr=192.168.122.11 rocky-92-2 addr=192.168.122.12
+  # pcs cluster setup hacluster rocky-92-1 addr=192.168.122.11 rocky-92-2 addr=192.168.122.12
   # pcs cluster start --all
 
   # pcs property set stonith-enabled=false
