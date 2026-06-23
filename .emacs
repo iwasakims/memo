@@ -52,10 +52,15 @@
 ;;(require 'paredit)
 ;;(add-hook 'clojure-mode-hook '(lambda () (paredit-mode 1)))
 
-; Scala
+; Scala(old)
 ;(setq load-path (cons "~/srcs/scala-tool-support/tool-support/emacs" load-path))
 ;(require 'scala-mode-auto)
 ;(add-hook 'scala-mode-hook '(lambda () (gtags-mode 1)))
+
+;Scala
+(use-package scala-mode
+  :ensure t
+  :mode "\\.s\\(cala\\|c\\)$")
 
 ;; Erlang
 ;(setq load-path (cons "/usr/lib/erlang/lib/tools-2.6.7/emacs " load-path))
