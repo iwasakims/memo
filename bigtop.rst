@@ -90,12 +90,14 @@ For DEB, available platforms are ``amd64``, ``aarch64`` and ``ppc64el``.
       --stack hdfs,yarn,mapreduce
 
 For RPM, available platforms are ``x86_64``, ``aarch64`` and ``ppc64le``.
-::
+
+Since installing python3 fails on bigtop/puppet:3.2.1-rockylinux-8 today,
+using later version can be workaround.::
 
   $ cd provisioner/docker
   $ ./docker-hadoop.sh \
       --create 1 \
-      --image bigtop/puppet:3.1.1-rockylinux-8 \
+      --image bigtop/puppet:3.2.1-rockylinux-8 \
       --docker-compose-yml docker-compose-cgroupv2.yml \
       --docker-compose-plugin \
       --memory 16g \
