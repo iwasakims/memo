@@ -133,10 +133,10 @@ building RPM on rocky-92
   # dnf --disablerepo='*' --enablerepo=base92,appstream92 install \
       git automake autoconf rpm-build kernel-devel kernel-headers kernel-rpm-macros kernel-abi-stablelists
 
-  # curl -L -O https://linbit.gateway.scarf.sh//downloads/drbd/9/drbd-9.1.19.tar.gz
-  # tar zxf drbd-9.1.19.tar.gz
-  # cp drbd-9.1.19.tar.gz drbd-9.1.19/
-  # cd drbd-9.1.19
+  # git clone https://github.com/LINBIT/drbd
+  # cd drbd/
+  # git checkout drbd-9.1.19
+  # make tarball
   # export KDIR=/usr/src/kernels/5.14.0-284.11.1.el9_2.x86_64
   # make kmp-rpm
   # cd ..
@@ -146,13 +146,18 @@ building RPM on rocky-92
   # dnf --disablerepo='*' --enablerepo=base92,appstream92,devel92 install \
       gcc-c++ selinux-policy-devel automake autoconf keyutils-libs-devel libxslt docbook-style-xsl rubygem-asciidoctor po4a
   
-  # curl -L -O https://linbit.gateway.scarf.sh//downloads/drbd/utils/drbd-utils-9.27.0.tar.gz
+  # git clone https://github.com/LINBIT/drbd-utils
+  # cd drbd-utils
+  # git checkout v9.27.0
+  # ./autogen.sh
+  # ./configure --prefix=/usr --localstatedir=/var --sysconfdir=/etc
+  # install /dev/null /usr/local/bin/lbvers.py
+  # make tarball VERSION=9.27.0
   # mkdir -p ~/rpmbuild/SOURCES
-  # cp drbd-utils-9.27.0.tar.gz  ~/rpmbuild/SOURCES/
-  # tar zxf drbd-utils-9.27.0.tar.gz
-  # cd drbd-utils-9.27.0
+  # cp drbd-utils-9.27.0.tar.gz ~/rpmbuild/SOURCES/
   # ./configure --prefix=/usr --localstatedir=/var --sysconfdir=/etc --enable-spec
   # rpmbuild -bb drbd.spec --without sbinsymlinks --without heartbeat
+  
   # cd ..
 
 
