@@ -60,7 +60,8 @@ pulling old rocky-9 from vault::
   $ virter image pull rocky-92 https://dl.rockylinux.org/vault/rocky/9.2/images/x86_64/Rocky-9-GenericCloud.latest.x86_64.qcow2
   $ virter vm run --name rocky-92-1 --id 11 --wait-ssh --disk "name=disk1,size=5GiB,format=qcow2,bus=virtio" rocky-92
   $ virter vm ssh rocky-92-1
-
+  
+  $ virter vm run --name rocky-92-2 --id 12 --wait-ssh --disk "name=disk1,size=5GiB,format=qcow2,bus=virtio" rocky-92
 
 building RPM on rocky-9
 -----------------------
@@ -294,10 +295,10 @@ on both nodes::
   metadata_expire=6h
   gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-9
   EOF
-  
+
+  # dnf --disablerepo='*' --enablerepo=base92,devel92,appstream92,ha92 install pcs pacemaker fence-agents-all
   # systemctl start pcsd.service
   # passwd hacluster
-  # dnf --disablerepo=appstream --enablerepo=appstream92 --enablerepo=ha92 install pcs pacemaker fence-agents-all
 
 on one of the node::
 
